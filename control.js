@@ -1,31 +1,31 @@
 display = new Array();
+var readings = new Array(); 
 
-function displayData(display) {
-    document.getElementById("dataPlaceholder").innerHTML=display;
+function appendData() {
+    var tmpString = "<h3>Readings:</h3>\n";
+    for (i=0;i<readings.length;i++){
+        tmpString = tmpString+"<p> Room: "+readings[i].room+
+                                    ", Path: "+readings[i].path+
+                                    ", Time Stamp: "+readings[i].ts+
+                                    ", Readings: "+readings[i].data.length+
+                                    "</p>\n";
+        console.log("3."+i+": "+tmpString);
+    }
+    tmpString = tmpString+"</br>\n";
+    $("#jsonData").append(tmpString) ;
 }
 
-function getData() {
+function getData(url) {
     $.get(
-        "http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json",
+        url,
         function(data) { parseData(data); },
         "text");
 }
 
 function parseData(json) {
-    //Fix bad quotes and no quotes around strings:
-    //var tmpjson = json.replace(/\'/g, "\"")
-    var obj = jQuery.parseJSON(json);//.replace(/\'/g, "\""));
-    display = new Array();
-    for (i=0;i<obj.data.length;i++){
-        var tmpArray = new Array();
-        tmpArray[0] = new Date(obj.data[i][0]);
-        console.log(new Date(obj.data[i][0]));
-        tmpArray[1] = obj.data[i][1];
-        console.log(obj.data[i][1]);
-        console.log(tmpArray);
-        display[i] = tmpArray;
-    }
-    displayData("Data: "+obj.data+"\n Date: "+display);
+    readings.push(jQuery.parseJSON(json));
+        //console.log(new Date(obj.data[i][0]));
+    appendData();
 }
 
 function getKHW() {
@@ -37,6 +37,8 @@ function getKHW() {
 }
 
 $(document).ready(function() {
-    getData();
+    getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-01.json");
+    getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-02.json");
+    getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json");
 });
 
