@@ -1,5 +1,14 @@
-display = new Array();
-var readings = new Array(); 
+var jsonFiles=new Array();
+jsonFiles[0]="http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json";
+//jsonFiles[1]="http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-02.json";
+//jsonFiles[2]="http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json";
+
+var readings = new Array();
+var concatdata = new Array();
+var maxtime = 0;
+var mintime = 0;
+var maxvalue = 0.0;
+var minvalue = 0.0;
 
 function appendData() {
     var tmpString = "<h3>Readings:</h3>\n";
@@ -9,13 +18,15 @@ function appendData() {
                                     ", Time Stamp: "+readings[i].ts+
                                     ", Readings: "+readings[i].data.length+
                                     "</p>\n";
-        console.log("3."+i+": "+tmpString);
     }
     tmpString = tmpString+"</br>\n";
-    $("#jsonData").append(tmpString) ;
+    $("#jsonData").append(tmpString);
 }
 
 function getData(url) {
+    //var dataURL = "http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json";
+    //var JSONdata = $.ajax({ type: "GET", url: dataURL,async: false }).responseText;
+    //parseData(JSONdata);
     $.get(
         url,
         function(data) { parseData(data); },
@@ -23,22 +34,37 @@ function getData(url) {
 }
 
 function parseData(json) {
-    readings.push(jQuery.parseJSON(json));
-        //console.log(new Date(obj.data[i][0]));
+    var readjson = jQuery.parseJSON(json);
+    readings.push(readjson);
     appendData();
-}
-
-function getKHW() {
-    kwhs = new Array();
-    for (i=0;i<display.length;i++){
-        kwhs[i] = display[i][1];
+    for (i=0; i<readjson.data.length; i++){
+        var tmpx = readjson.data[i][0];
+        var tmpy = readjson.data[i][1];
+        if (concatdata.length == 0){
+            maxtime = tmpx;
+            mintime = tmpx;
+            maxvalue = tmpy;
+            minvalue = tmpy;
+        }
+        else {
+            // Scaling stuff to get biggest and smallest values for charting
+            if (tmpx > maxtime){maxtime = tmpx;}
+            else if (tmpx < mintime){mintime = tmpx;}
+            if (tmpy > maxvalue){maxvalue = tmpy;}
+            else if (tmpy < minvalue){minvalue = tmpy;}
+        }
+        concatdata = concatdata.concat({x:new Date(tmpx),y: tmpy});
     }
-    return kwhs
+    console.log("concatdatalength:"+concatdata.length);
+    //chart();
 }
 
 $(document).ready(function() {
-    getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-01.json");
-    getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-02.json");
-    getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json");
+    //for(i=0;i<jsonFiles.length;i++){
+      getData(jsonFiles[0]);
+    //}
+    $("#buttonchart").click(function(){
+        //getData(jsonFiles[0]);
+        chart();
+    });
 });
-

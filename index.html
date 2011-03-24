@@ -1,108 +1,29 @@
 <html>
 <head>
 <script type="text/javascript" src="jquery-1.5.1.min.js"></script>
+<script type="text/javascript" src="control.js"></script>
 <script type="text/javascript" src="protovis-r3.2.js"></script>
+<script type="text/javascript" src="flare.js"></script>
 </head>
 <body>
 <h1>JSON METER</h1>
-<div>
+<form>
+    <input id="buttontchart" type="button" value="Chart" />
+    <input id="buttontree" type="button" value="Tree" />
+</form>
+<div id="chartdiv">
 <script type="text/javascript+protovis">
-
-var jsonFiles=new Array();
-jsonFiles[0]="http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-01.json";
-//jsonFiles[1]="http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-02.json";
-//jsonFiles[2]="http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json";
-
-var readings = new Array();
-var concatdata = new Array();
-var maxtime = 0;
-var mintime = 0;
-var maxvalue = 0.0;
-var minvalue = 0.0;
-
-function appendData() {
-    var tmpString = "<h3>Readings:</h3>\n";
-    for (i=0;i<readings.length;i++){
-        tmpString = tmpString+"<p> Room: "+readings[i].room+
-                                    ", Path: "+readings[i].path+
-                                    ", Time Stamp: "+readings[i].ts+
-                                    ", Readings: "+readings[i].data.length+
-                                    "</p>\n";
-    }
-    tmpString = tmpString+"</br>\n";
-    $("#jsonData").append(tmpString);
-}
-
-function getData(url) {
-    $.get(
-        url,
-        function(data) { parseData(data); },
-        "text");
-}
-
-function parseData(json) {
-    var readjson = jQuery.parseJSON(json);
-    readings.push(readjson);
-    appendData();
-    for (i=0; i<readjson.data.length; i++){
-        var tmpx = readjson.data[i][0];
-        var tmpy = readjson.data[i][1];
-        if (concatdata.length == 0){
-            maxtime = tmpx;
-            mintime = tmpx;
-            maxvalue = tmpy;
-            minvalue = tmpy;
-        }
-        else {
-            // Scaling stuff to get biggest and smallest values for charting
-            if (tmpx > maxtime){maxtime = tmpx;}
-            else if (tmpx < mintime){mintime = tmpx;}
-            if (tmpy > maxvalue){maxvalue = tmpy;}
-            else if (tmpy < minvalue){minvalue = tmpy;}
-        }
-        var ts = new Date(tmpx);
-        concatdata = concatdata.concat({x:ts,y: tmpy});
-    }
-    console.log("concatdatalength1:"+concatdata.length)
-    chart();
-}
-
-//$(document).ready(function() {
-    for(i=0;i<jsonFiles.length;i++){
-        getData(jsonFiles[i]);
-    }
-    //console.log("Max Date:"+maxtime);
-    //console.log("Min Date:"+mintime);
-    //console.log("Max Value:"+maxvalue);
-    //console.log("Min Value:"+minvalue);
-    //getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-01.json");
-    //console.log("Readings:"+readings);
-    //getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-02.json");
-    //console.log("Readings:"+readings);
-    //getData("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json");
-    //console.log("Readings:"+readings);
-    //mydata = createData(readings);
-    //console.log("mydata: "+mydata);
-//});
-
 function chart() {
-    //var dataURL = "http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json";
-    
-   // var JSONdata = $.ajax({ type: "GET", url: dataURL,
-   //     async: false }).responseText;
-        
-    //var sensor = JSON.parse(JSONdata);
-    
     var width = 1000;
     var height = 245;
-    var x = pv.Scale.linear(mintime, maxtime).range(0, width);
+    var x = pv.Scale.linear(concatdata, function(d) d.x).range(0, width);
     var y = pv.Scale.linear(0, maxvalue*1.1).range(0, height);
     
-    console.log("concatdatalength2:"+concatdata.length);
-    console.log("date: "+concatdata[0].y);
+    //console.log("concatdatalength2:"+concatdata.length);
+   // console.log("date: "+concatdata[0].x);
     
     var barWidth = width/concatdata.length;
-    console.log("barWidth: "+barWidth);
+    //console.log("barWidth: "+barWidth);
     var gap = 0;
     
     var vis = new pv.Panel()
@@ -125,16 +46,16 @@ function chart() {
         .left(x)
         .strokeStyle("#eee")
     .add(pv.Rule) //Bottom Rule
-        .bottom(-5)
+        .bottom(-10)
         .height(5)
         .visible(function(d) d > 0)
         .strokeStyle("#000")
     .anchor("bottom").add(pv.Label) // Bottom Text
         .text(x.tickFormat)
-        .textBaseline("bottom")
-        .textAngle(Math.PI / 2);
+        .textBaseline(-200);
+        //.textAngle(Math.PI / 2);
         
-    console.log("x.tickFormat: "+x.tickFormat);
+    //console.log("x.tickFormat: "+x.tickFormat);
         
     vis.add(pv.Rule) //Left Hand Rule
         .data(y.ticks())
