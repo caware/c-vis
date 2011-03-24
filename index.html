@@ -60,7 +60,8 @@ function parseData(json) {
             if (tmpy > maxvalue){maxvalue = tmpy;}
             else if (tmpy < minvalue){minvalue = tmpy;}
         }
-        concatdata = concatdata.concat({x:tmpx,y: tmpy});
+        var ts = new Date(tmpx);
+        concatdata = concatdata.concat({x:ts,y: tmpy});
     }
     console.log("concatdatalength1:"+concatdata.length)
     chart();
@@ -94,20 +95,63 @@ function chart() {
     
     var width = 1000;
     var height = 245;
+    var x = pv.Scale.linear(mintime, maxtime).range(0, width);
+    var y = pv.Scale.linear(0, maxvalue*1.1).range(0, height);
     
     console.log("concatdatalength2:"+concatdata.length);
+    console.log("date: "+concatdata[0].y);
     
     var barWidth = width/concatdata.length;
     console.log("barWidth: "+barWidth);
     var gap = 0;
     
-    var vis = new pv.Panel().width(width).height(height+5)
-        .add(pv.Bar)
-            .data(concatdata)
-            .bottom(0)
-            .width(barWidth-gap)
-            .height(function(d) d.y * (height/10))
-            .left(function() this.index * barWidth);
+    var vis = new pv.Panel()
+        .width(width)
+        .height(height+5)
+        .bottom(200)
+        .left(40)
+        .right(10)
+        .top(5);
+        //.add(pv.Bar)
+        //    .data(concatdata)
+        //    .bottom(10)
+        //    .width(barWidth-gap)
+        //    .height(function(d) d.y * (height/maxvalue))
+        //    .left(function() this.index * barWidth);
+    
+    vis.add(pv.Rule) //Bottom Ticks
+        .data(x.ticks())
+        .visible(function(d) d > 0)
+        .left(x)
+        .strokeStyle("#eee")
+    .add(pv.Rule) //Bottom Rule
+        .bottom(-5)
+        .height(5)
+        .visible(function(d) d > 0)
+        .strokeStyle("#000")
+    .anchor("bottom").add(pv.Label) // Bottom Text
+        .text(x.tickFormat)
+        .textBaseline("bottom")
+        .textAngle(Math.PI / 2);
+        
+    console.log("x.tickFormat: "+x.tickFormat);
+        
+    vis.add(pv.Rule) //Left Hand Rule
+        .data(y.ticks())
+        .bottom(y)
+        .strokeStyle(function (d) d ? "#eee" : "#000")
+        .anchor("left").add(pv.Label)
+        .text(y.tickFormat);
+        
+    
+    vis.add(pv.Line)
+        .data(concatdata)
+        .left(function(d) x(d.x))
+        .bottom(function(d) y(d.y))
+        .lineWidth(3);
+        
+        
+        
     vis.render();
 }
 </script>
