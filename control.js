@@ -10,18 +10,18 @@ var mintime = 0;
 var maxvalue = 0.0;
 var minvalue = 0.0;
 
-function appendData() {
-    var tmpString = "<h3>Readings:</h3>\n";
-    for (i=0;i<readings.length;i++){
-        tmpString = tmpString+"<p> Room: "+readings[i].room+
-                                    ", Path: "+readings[i].path+
-                                    ", Time Stamp: "+readings[i].ts+
-                                    ", Readings: "+readings[i].data.length+
-                                    "</p>\n";
-    }
-    tmpString = tmpString+"</br>\n";
-    $("#jsonData").append(tmpString);
-}
+//function appendData() {
+//    var tmpString = "<h3>Readings:</h3>\n";
+//    for (i=0;i<readings.length;i++){
+//        tmpString = tmpString+"<p> Room: "+readings[i].room+
+//                                    ", Path: "+readings[i].path+
+//                                    ", Time Stamp: "+readings[i].ts+
+//                                    ", Readings: "+readings[i].data.length+
+//                                    "</p>\n";
+//    }
+//    tmpString = tmpString+"</br>\n";
+//    $("#jsonData").append(tmpString);
+//}
 
 function getData(url) {
     //var dataURL = "http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/primary-cs1-riser/F-sockets/S-m24-2011-03.json";
@@ -35,8 +35,9 @@ function getData(url) {
 
 function parseData(json) {
     var readjson = jQuery.parseJSON(json);
-    readings.push(readjson);
-    appendData();
+    //console.log(readjson.data);
+    //readings.push(readjson);
+    //appendData();
     for (i=0; i<readjson.data.length; i++){
         var tmpx = readjson.data[i][0];
         var tmpy = readjson.data[i][1];
@@ -57,6 +58,7 @@ function parseData(json) {
     }
     console.log("concatdatalength:"+concatdata.length);
     //chart();
+    //tree();
 }
 
 $(document).ready(function() {
@@ -66,5 +68,9 @@ $(document).ready(function() {
     $("#buttonchart").click(function(){
         //getData(jsonFiles[0]);
         chart();
+    });
+    $("#buttontree").click(function(){
+        //getData(jsonFiles[0]);
+        tree();
     });
 });
