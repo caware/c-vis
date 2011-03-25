@@ -1,31 +1,137 @@
 <html>
 <head>
 <script type="text/javascript" src="jquery-1.5.1.min.js"></script>
-<script type="text/javascript" src="control.js"></script>
 <script type="text/javascript" src="protovis-r3.2.js"></script>
+<link rel="stylesheet" type="text/css" href="index.css" />
 </head>
 <body>
-<h1>JSON METER</h1>
-<form>
-    <input id="buttonchart" type="button" value="Chart" />
-    <input id="buttontree" type="button" value="Tree" />
-</form>
-<div id="chartdiv">
+<h1>William Gates Building Energy Usage</h1>
+<div id="content">
+<div id="treediv">
 <script type="text/javascript+protovis">
-function chart() {
-    var width = 1000;
-    var height = 245;
-    var x = pv.Scale.linear(concatdata, function(d) d.x).range(0, width);
-    var y = pv.Scale.linear(0, maxvalue*1.1).range(0, height);
+//function tree(){
+var treeURL = "rooms.json";
+var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
+var rooms = jQuery.parseJSON(JSONdata);
+var root = pv.dom(rooms)
+    .root("Sensors")
+    //.sort(function(a, b) pv.naturalOrder(a.nodeName, b.nodeName));
+
+/* Recursively compute the package sizes. */
+//root.visitAfter(function(n) {
+//  if (n.firstChild) {
+//    n.nodeValue = pv.sum(n.childNodes, function(n) n.nodeValue);
+//  }
+//});
+
+var treevis = new pv.Panel()
+    .width(200)
+    .height(function(){ return((root.nodes().length + 1) * 12);})
+    .margin(5);
+
+var layout = treevis.add(pv.Layout.Indent)
+    .nodes(function() {return root.nodes();})
+    .depth(12)
+    .breadth(12);
     
-    //console.log("concatdatalength2:"+concatdata.length);
-   // console.log("date: "+concatdata[0].x);
+var nodes = root.nodes();
+console.log(nodes[1]);
+for(i=0; i<nodes.length;i++){
+    var nm = nodes[i].nodeName
+    //if ((nm=="Ground")||(nm=="First")||(nm="Second")){
+    if (nm=="Ground"){nodes[i].toggle();}
+    else if (nm=="First"){nodes[i].toggle();}
+    else if (nm=="Second"){nodes[i].toggle();}
+    else if (nm=="North"){nodes[i].toggle();}
+    else if (nm=="South"){nodes[i].toggle();}
+    else if (nm=="East"){nodes[i].toggle();}
+    else if (nm=="West"){nodes[i].toggle();}
+    else if (nm=="Centre"){nodes[i].toggle();}
+    //console.log(node[i]);
+}
+
+layout.link.add(pv.Line);
+
+var node = layout.node.add(pv.Panel)
+    .top(function(n){return(n.y-6);})
+    .height(12)
+    .right(6)
+    .strokeStyle(null)
+    .events("all")
+    .event("mousedown", toggle);
+
+node.anchor("left").add(pv.Dot)
+    .strokeStyle("#1f77b4")
+    .fillStyle(function(n) n.toggled ? "#1f77b4" : n.firstChild ? "#aec7e8" : "#ff7f0e")
+    .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
+  .anchor("right").add(pv.Label)
+    .text(function(n){return n.nodeName;});
+
+//node.anchor("right").add(pv.Label)
+//    .textStyle(function(n) n.firstChild || n.toggled ? "#aaa" : "#000")
+//    .text(function(n) (n.nodeValue >> 10) + "KB");
+
+
+treevis.render();
+
+/* Toggles the selected node, then updates the layout. */
+function toggle(n) {
+    n.toggle(pv.event.altKey);
+    if(typeof n.nodeValue != "undefined"){
+        console.log("clicked: "+n.nodeValue);
+        var chartURL = "http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/"+n.nodeValue+"2011-03.json";
+        chart(chartURL);
+    }
+    return layout.reset().root;
+}
+//}
+    </script>
+</div>
+<div id="chartdiv">
+<script type="text/javascript">
+function chart(chartURL) {
+    //$('#chartdiv').empty();
+    console.log(chartURL);
     
-    var barWidth = width/concatdata.length;
+    var concatdata = new Array();
+    var maxtime = 0;
+    var mintime = 0;
+    var maxvalue = 0.0;
+    var minvalue = 0.0;
+    
+    var JSONdata = $.ajax({ type: "GET", url: chartURL,async: false }).responseText;
+    var readjson = jQuery.parseJSON(JSONdata);
+    
+    for (i=0; i<readjson.data.length; i++){
+        var tmpx = readjson.data[i][0];
+        var tmpy = readjson.data[i][1];
+        if (concatdata.length == 0){
+            maxtime = tmpx;
+            mintime = tmpx;
+            maxvalue = tmpy;
+            minvalue = tmpy;
+        }
+        else {
+            // Scaling stuff to get biggest and smallest values for charting
+            if (tmpx > maxtime){maxtime = tmpx;}
+            else if (tmpx < mintime){mintime = tmpx;}
+            if (tmpy > maxvalue){maxvalue = tmpy;}
+            else if (tmpy < minvalue){minvalue = tmpy;}
+        }
+        concatdata = concatdata.concat({x:new Date(tmpx),y: tmpy});
+    }
+    console.log("concatdata length:"+concatdata.length);
+    console.log("Concat Data 0-x:"+concatdata[0].y);
+    //var barWidth = width/concatdata.length;
     //console.log("barWidth: "+barWidth);
     var gap = 0;
+    var width = 600;
+    var height = 200;
+    var x = pv.Scale.linear(concatdata, function(d){ return d.x;}).range(0, width);
+    var y = pv.Scale.linear(0, maxvalue*1.1).range(0, height);
     
     var vis = new pv.Panel()
+        .canvas("chartdiv")
         .width(width)
         .height(height+5)
         .bottom(200)
@@ -41,42 +147,42 @@ function chart() {
     
     vis.add(pv.Rule) //Bottom Ticks
         .data(x.ticks())
-        .visible(function(d) d > 0)
+        .visible(function(d){return d>0;})
         .left(x)
         .strokeStyle("#eee")
     .add(pv.Rule) //Bottom Rule
         .bottom(-10)
         .height(5)
-        .visible(function(d) d > 0)
+        .visible(function(d){return d>0;})
         .strokeStyle("#000")
     .anchor("bottom").add(pv.Label) // Bottom Text
         .text(x.tickFormat)
         .textBaseline(-200);
-        //.textAngle(Math.PI / 2);
+    
         
     //console.log("x.tickFormat: "+x.tickFormat);
         
     vis.add(pv.Rule) //Left Hand Rule
         .data(y.ticks())
         .bottom(y)
-        .strokeStyle(function (d) d ? "#eee" : "#000")
+        .strokeStyle(function (d){return d ? "#eee" : "#000";})
         .anchor("left").add(pv.Label)
         .text(y.tickFormat);
-        
+    
     
     vis.add(pv.Line)
         .data(concatdata)
-        .left(function(d) x(d.x))
-        .bottom(function(d) y(d.y))
-        .lineWidth(3);
+        .left(function(d){return x(d.x);})
+        .bottom(function(d){return  y(d.y);})
+        .lineWidth(2);
         
         
-        
+    //setInterval(function() vis.render(), 35);
     vis.render();
+    console.log("made Y Rules");
 }
 </script>
 </div>
-<div id="jsonData">
 </div>
 </body>
 </html> 
