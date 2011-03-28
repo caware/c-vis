@@ -105,8 +105,9 @@
             console.log("Concat Data 0-x:"+concatdata[0].y);
             
             var gap = 0;
-            var width = 600;
-            var height = 200;
+            var width =$('#chartdiv').width();
+            //var height = 200;
+            var height =$('#chartdiv').height();
             var x = pv.Scale.linear(concatdata, function(d){ return d.x;}).range(0, width);
             var y = pv.Scale.linear(0, maxvalue*1.1).range(0, height);
             
@@ -146,6 +147,14 @@
                 .bottom(function(d){return  y(d.y);})
                 .lineWidth(2);
             
+            vis.add(pv.Label)
+                .data(["KWh"])
+                .left(-20)
+                .bottom(height/2)
+                .font("10pt Helvetica")
+                .textAlign("center")
+                .textAngle(-Math.PI/2);
+                
             //setInterval(function() vis.render(), 35);
             vis.render();
             console.log("made Y Rules");
