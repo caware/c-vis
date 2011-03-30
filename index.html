@@ -8,8 +8,12 @@
   <body>
       <div id="content">
     <div style="text-align:right;padding-right:20;">
-      <input checked id="scale" type="checkbox" onchange="vis.render()">
+      <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
       <label for="scale">Scale to fit</label>
+      <input name="scale" id="scalezoomed" type="radio" onchange="vis.render()">
+      <label for="zoomvalues">Zoom Y values</label>
+      <input checked name="scale" id="scaleoriginal" type="radio" onchange="vis.render()">
+      <label for="normalscale">Original scale</label>
     </div>
     <div id="treediv">
         <script type="text/javascript+protovis">
@@ -65,7 +69,7 @@
                 n.toggle(pv.event.altKey);
                 if(typeof n.nodeValue != "undefined"){
                     console.log("clicked: "+n.nodeValue);
-                    var chartURL = "http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/"+n.nodeValue+"2011-03.json";
+                    var chartURL = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-03.json";
                     chart(chartURL);
                 }
                 return layout.reset().root;
@@ -155,7 +159,19 @@ var focus = vis.add(pv.Panel)
                 Math.max(0, pv.search.index(data, d1, function(d) d.x) - 1),
                 pv.search.index(data, d2, function(d) d.x) + 1);
         fx.domain(d1, d2);
-        fy.domain(scale.checked ? [0, pv.max(dd, function(d) d.y)] : y.domain());
+        //fy.domain(scale.checked ? [0, pv.max(dd, function(d) d.y)] : y.domain());
+        
+        if (scalefit.checked){
+            fy.domain([0, (pv.max(dd, function(d) d.y) * 1.01) ]);
+        }
+        else if (scalezoomed.checked){
+            fy.domain([
+                (pv.min(dd, function(d) d.y) / 1.01),
+                (pv.max(dd, function(d) d.y) * 1.01)
+            ]);
+        }
+        else if (scaleoriginal.checked){fy.domain(y.domain());}
+        
         return dd;
       })
     .top(0)
