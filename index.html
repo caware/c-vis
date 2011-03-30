@@ -1,12 +1,16 @@
 <html>
-<head>
+  <head>
+    <title>Focus + Context</title>
     <script type="text/javascript" src="jquery-1.5.1.min.js"></script>
     <script type="text/javascript" src="protovis-r3.2.js"></script>
     <link rel="stylesheet" type="text/css" href="index.css" />
-</head>
-<body>
-    <h1>William Gates Building Energy Usage</h1>
-    <div id="content">
+  </head>
+  <body>
+      <div id="content">
+    <div style="text-align:right;padding-right:20;">
+      <input checked id="scale" type="checkbox" onchange="vis.render()">
+      <label for="scale">Scale to fit</label>
+    </div>
     <div id="treediv">
         <script type="text/javascript+protovis">
             var treeURL = "rooms.json";
@@ -68,12 +72,16 @@
             }
         </script>
     </div>
+    <div id="chartcontainer">
     <div id="chartdiv">
-        <script type="text/javascript">
-        function chart(chartURL) {
-            
-            console.log(chartURL);
-            
+    <script type="text/javascript+protovis">
+    //chart("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/S-m257-2011-03.json");
+    
+    var vis;
+    var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
+    var overallDateFormat = pv.Format.date("%d-%b '%y");
+    function chart(chartURL) {
+    console.log(chartURL);
             var concatdata = new Array();
             var maxtime = 0;
             var mintime = 0;
@@ -99,68 +107,141 @@
                     else if (tmpy < minvalue){minvalue = tmpy;}
                 }
                 concatdata = concatdata.concat({x:new Date(tmpx),y: tmpy});
+                //console.log(dateFormat.format(new Date(tmpx)));
             }
             
             console.log("concatdata length:"+concatdata.length);
             console.log("Concat Data 0-x:"+concatdata[0].y);
-            
-            var gap = 0;
-            var width =$('#chartdiv').width();
-            //var height = 200;
-            var height =$('#chartdiv').height();
-            var x = pv.Scale.linear(concatdata, function(d){ return d.x;}).range(0, width);
-            var y = pv.Scale.linear(0, maxvalue*1.1).range(0, height);
-            
-            var vis = new pv.Panel()
-                .canvas("chartdiv")
-                .width(width)
-                .height(height+5)
-                .bottom(200)
-                .left(40)
-                .right(10)
-                .top(5);
-            
-            vis.add(pv.Rule) //Bottom Ticks
-                .data(x.ticks())
-                .visible(function(d){return d>0;})
-                .left(x)
-                .strokeStyle("#eee")
-            .add(pv.Rule) //Bottom Rule
-                .bottom(-10)
-                .height(5)
-                .visible(function(d){return d>0;})
-                .strokeStyle("#000")
-            .anchor("bottom").add(pv.Label) // Bottom Text
-                .text(x.tickFormat)
-                .textBaseline(-200);
-            
-            vis.add(pv.Rule) //Left Hand Rule
-                .data(y.ticks())
-                .bottom(y)
-                .strokeStyle(function (d){return d ? "#eee" : "#000";})
-                .anchor("left").add(pv.Label)
-                .text(y.tickFormat);
-            
-            vis.add(pv.Line)
-                .data(concatdata)
-                .left(function(d){return x(d.x);})
-                .bottom(function(d){return  y(d.y);})
-                .lineWidth(2);
-            
-            vis.add(pv.Label)
-                .data(["KWh"])
-                .left(-20)
-                .bottom(height/2)
-                .font("10pt Helvetica")
-                .textAlign("center")
-                .textAngle(-Math.PI/2);
-                
-            //setInterval(function() vis.render(), 35);
-            vis.render();
-            console.log("made Y Rules");
-        }
-        </script>
-    </div>
-    </div>
-</body>
-</html> 
+    
+var start = new Date(concatdata[0].x);
+//var start = new Date(1990, 0, 1);
+var year = 1000 * 60 * 60 * 24 * 365;
+var data = concatdata; //pv.range(0, 20, .02).map(function(x) {
+//    return {x: new Date(start.getTime() + year * x),
+//            y: (1 + .1 * (Math.sin(x * 2 * Math.PI))
+//                + Math.random() * .1) * Math.pow(1.18, x)
+//                + Math.random() * .1};
+//  });
+var end = concatdata[concatdata.length - 1].x;
+
+/* Scales and sizing. */
+var w = 810,
+    h1 = 300,
+    h2 = 30,
+    x = pv.Scale.linear(start, end).range(0, w),
+    y = pv.Scale.linear(0, pv.max(data, function(d) d.y)).range(0, h2);
+
+/* Interaction state. Focus scales will have domain set on-render. */
+var i = {x:200, dx:100},
+    fx = pv.Scale.linear().range(0, w),
+    fy = pv.Scale.linear().range(0, h1);
+
+/* Root panel. */
+vis = new pv.Panel()
+    .canvas("chartdiv")
+    .width(w)
+    .height(h1 + 20 + h2)
+    .bottom(20)
+    .left(30)
+    .right(20)
+    .top(5);
+
+/* Focus panel (zoomed in). */
+var focus = vis.add(pv.Panel)
+    .def("init", function() {
+        var d1 = x.invert(i.x),
+            d2 = x.invert(i.x + i.dx),
+            dd = data.slice(
+                Math.max(0, pv.search.index(data, d1, function(d) d.x) - 1),
+                pv.search.index(data, d2, function(d) d.x) + 1);
+        fx.domain(d1, d2);
+        fy.domain(scale.checked ? [0, pv.max(dd, function(d) d.y)] : y.domain());
+        return dd;
+      })
+    .top(0)
+    .height(h1);
+
+/* X-axis ticks. */
+focus.add(pv.Rule)
+    .data(function(){
+        return fx.ticks();
+        })
+    .left(fx)
+    .strokeStyle("#eee")
+  .anchor("bottom").add(pv.Label)
+    .text(function(fx){
+        return zoomDateFormat.format(fx); //fx.tickFormat);
+        });
+
+/* Y-axis ticks. */
+focus.add(pv.Rule)
+    .data(function() fy.ticks(7))
+    .bottom(fy)
+    .strokeStyle(function(d) d ? "#aaa" : "#000")
+  .anchor("left").add(pv.Label)
+    .text(fy.tickFormat);
+
+/* Focus area chart. */
+focus.add(pv.Panel)
+    .overflow("hidden")
+  .add(pv.Area)
+    .data(function() focus.init())
+    .left(function(d) fx(d.x))
+    .bottom(1)
+    .height(function(d) fy(d.y))
+    .fillStyle("lightsteelblue")
+  .anchor("top").add(pv.Line)
+    .fillStyle(null)
+    .strokeStyle("steelblue")
+    .lineWidth(2);
+
+/* Context panel (zoomed out). */
+var context = vis.add(pv.Panel)
+    .bottom(0)
+    .height(h2);
+
+/* X-axis ticks. */
+context.add(pv.Rule)
+    .data(x.ticks())
+    .left(x)
+    .strokeStyle("#eee")
+  .anchor("bottom").add(pv.Label)
+    .text(function(x){
+        return overallDateFormat.format(x);
+        }); //x.tickFormat);
+
+/* Y-axis ticks. */
+context.add(pv.Rule)
+    .bottom(0);
+
+/* Context area chart. */
+context.add(pv.Area)
+    .data(data)
+    .left(function(d) x(d.x))
+    .bottom(1)
+    .height(function(d) y(d.y))
+    .fillStyle("lightsteelblue")
+  .anchor("top").add(pv.Line)
+    .strokeStyle("steelblue")
+    .lineWidth(2);
+
+/* The selectable, draggable focus region. */
+context.add(pv.Panel)
+    .data([i])
+    .cursor("crosshair")
+    .events("all")
+    .event("mousedown", pv.Behavior.select())
+    .event("select", focus)
+  .add(pv.Bar)
+    .left(function(d) d.x)
+    .width(function(d) d.dx)
+    .fillStyle("rgba(255, 128, 128, .4)")
+    .cursor("move")
+    .event("mousedown", pv.Behavior.drag())
+    .event("drag", focus);
+
+vis.render();
+}
+    </script>
+  </div></div></div></body>
+</html>
