@@ -9,29 +9,41 @@
       <div id="content">
     <div style="text-align:right;padding-right:20;">
       <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
-      <label for="scale">Scale to fit</label>
+      <label for="scalefit">Scale to fit</label>
       <input name="scale" id="scalezoomed" type="radio" onchange="vis.render()">
-      <label for="zoomvalues">Zoom Y values</label>
+      <label for="scalezoomed">Zoom Y values</label>
       <input checked name="scale" id="scaleoriginal" type="radio" onchange="vis.render()">
-      <label for="normalscale">Original scale</label>
+      <label for="scaleoriginal">Original scale</label>
+    </div>
+    <div style="text-align:left;padding-left:20;">
+      <label for="treegeo">Explore tree by: Geography</label>
+      <input checked name="treetype" id="treegeo" type="radio" onchange="tree()">
+      <label for="treeuse"> Function</label>
+      <input name="treetype" id="treeuse" type="radio" onchange="tree()">
     </div>
     <div id="treediv">
         <script type="text/javascript+protovis">
-            var treeURL = "rooms.json";
+            tree();
+             function tree(){
+                var treeURL = "rooms.json";
+                if (treegeo.checked){treeURL = "rooms.json";}
+                else {treeURL = "uses.json";}
+                
             var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
             var rooms = jQuery.parseJSON(JSONdata);
             var root = pv.dom(rooms)
-                .root("Sensors")
+                .root("Sensors");
             
             var treevis = new pv.Panel()
-                .width(200)
-                .height(function(){ return((root.nodes().length + 1) * 12);})
+                .canvas("treediv")
+                .width(260)
+                .height(function(){ return((root.nodes().length + 1) * 24);})
                 .margin(5);
             
             var layout = treevis.add(pv.Layout.Indent)
                 .nodes(function() {return root.nodes();})
-                .depth(12)
-                .breadth(12);
+                .depth(24)
+                .breadth(24);
             
             var nodes = root.nodes();
             for(i=0; i<nodes.length;i++){
@@ -57,13 +69,16 @@
                .event("mousedown", toggle);
             
             node.anchor("left").add(pv.Dot)
+                .radius("7")
                 .strokeStyle("#1f77b4")
                 .fillStyle(function(n) n.toggled ? "#1f77b4" : n.firstChild ? "#aec7e8" : "#ff7f0e")
                 .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
                 .anchor("right").add(pv.Label)
-                .text(function(n){return n.nodeName;});
+                .text(function(n){return n.nodeName;})
+                .font("12px/14px helvetica, Arial, Sans-serif");
             
             treevis.render();
+            //chart("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/S-m257-2011-03.json");
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
@@ -74,18 +89,15 @@
                 }
                 return layout.reset().root;
             }
-        </script>
-    </div>
-    <div id="chartcontainer">
-    <div id="chartdiv">
-    <script type="text/javascript+protovis">
+            }
+
     //chart("http://www.cl.cam.ac.uk/~pb22/meters.cl.cam.ac.uk/elec/S-m257-2011-03.json");
-    
+    console.log("runchart");
     var vis;
     var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
     var overallDateFormat = pv.Format.date("%d-%b '%y");
     function chart(chartURL) {
-    console.log(chartURL);
+    console.log("chartURL="+chartURL);
             var concatdata = new Array();
             var maxtime = 0;
             var mintime = 0;
@@ -93,6 +105,7 @@
             var minvalue = 0.0;
             
             var JSONdata = $.ajax({ type: "GET", url: chartURL,async: false }).responseText;
+            console.log("JSONdata:"+JSONdata);
             var readjson = jQuery.parseJSON(JSONdata);
             
             for (i=0; i<readjson.data.length; i++){
@@ -129,7 +142,7 @@ var data = concatdata; //pv.range(0, 20, .02).map(function(x) {
 var end = concatdata[concatdata.length - 1].x;
 
 /* Scales and sizing. */
-var w = 810,
+var w = 750,
     h1 = 300,
     h2 = 30,
     x = pv.Scale.linear(start, end).range(0, w),
@@ -259,5 +272,9 @@ context.add(pv.Panel)
 vis.render();
 }
     </script>
+
+    </div>
+    <div id="chartcontainer">
+    <div id="chartdiv">
   </div></div></div></body>
 </html>

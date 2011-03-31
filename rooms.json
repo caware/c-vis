@@ -25,7 +25,7 @@
                         "Sockets":"elec/primary-cs4-riser/G-sockets/S-m35-"
                     },
                     "GW16":{
-                        "Kitchen plant":"elec/primary-smb2/G-lighting/S-m33-",
+                        "Lighting":"elec/primary-smb2/G-lighting/S-m33-",
                         "Sockets":"elec/primary-smb2/G-sockets/S-m32-"
                     },
                     "GW32":{
