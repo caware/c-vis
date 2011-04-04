@@ -172,8 +172,8 @@
             }
             
             
-            $('#overallavgkwh').text('Average power for entire data set: '+(Math.round(overallavg*1000)/1000)+" kWh.");
-            $('#overalltotkwh').text('Total power in data set: '+(Math.round(overalltot*1000)/1000)+" kWh.");
+            $('#overallavgkwh').text('Average power for entire data set: '+(Math.round(overallavg*1000)/1000)+" kW.");
+            $('#overalltotkwh').text('Total energy in data set: '+(Math.round(overalltot*1000)/1000)+" kWh.");
             //console.log("DataArray: "+dataArray);
             //concatdata = dataArray[0].data;
             
@@ -234,7 +234,7 @@
                     var roundavg = Math.round(avg*1000)/1000;
                     console.log("Average usage: "+roundavg);
                     
-                    $('#averagekwh').text('Average power for selected region: '+roundavg+" kWh.");
+                    $('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
                     
                     if (scalefit.checked){
                         fy.domain([0, (pv.max(dd, function(d) d.y) * 1.01) ]);
