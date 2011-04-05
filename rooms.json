@@ -4,8 +4,8 @@
             "Ground":{
                 "North":{
                     "GN09":{
-                        "Air Conditioning":"elec/primary-cr2/S-m18-",
-                        "Machine Room Power":"elec/primary-cr-ac/S-m19-"
+                        "Machine Room Power":"elec/primary-cr2/S-m18-",
+                        "Air Conditioning":"elec/primary-cr-ac/S-m19-"
                     },
                     "GN17":{
                         "External Power":"elec/primary-G-exr/S-m20-",

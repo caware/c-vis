@@ -49,10 +49,10 @@
         "Computers & A/C":{
             "SE18":"elec/primary-se18/S-m27-"
         },
-        "A/C":{
+        "Computers":{
             "GN09":"elec/primary-cr2/S-m18-"
         },
-        "Computers": {
+        "A/C": {
             "GN09":"elec/primary-cr-ac/S-m19-"
         },
         "External":{
