@@ -26,9 +26,14 @@ div#content {
 div#chartinfo {
     width: 750px;
     margin-top: 15px;
-    height: 150px;
+    height: 250px;
     display: inline-block;
     float: right;
+}
+div#myGrid {
+    width:750px;
+    height:250px;
+    display:none;
 }
 
 p#charttitletext {
