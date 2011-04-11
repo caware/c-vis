@@ -8,6 +8,7 @@
     <script src="libs/slick.core.js"></script>
     <script src="libs/slick.grid.js"></script>
     <script src="libs/slick.editors.js"></script>
+    <script src="libs/slick.dataview.js"></script>
     
     <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.5.custom.css" media="screen" charset="utf-8"/>
@@ -34,6 +35,11 @@
     <script type="text/javascript+protovis">
         var urlArray = new Array();
         var dataArray = new Array();
+        
+        var plot = {"colour":"Colour", "room":"Room",
+                    "circuit":"Circuit", "avgselected":10.0,
+                    "avgtotal":15.0, "totalenergy":20.0}
+        var plotArray = new Array(plot, plot, plot, plot, plot);
         
         tree();
         
@@ -109,7 +115,7 @@
                         //console.log("clicked: "+n.nodeValue);
                         var chartURL = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
                         chart(chartURL);
-                        draw();
+                        //drawgrid();
                     }
                     return layout.reset().root;
                 }
@@ -157,6 +163,10 @@
                 
                 $('#charttitletext').text(readjson.description+" in "+readjson.room);
                 
+                plotArray[0].colour = "Blue";
+                plotArray[0].room = readjson.room;
+                plotArray[0].circuit = readjson.description;
+                
                 for (i=0; i<readjson.data.length; i++){
                     var tmpx = readjson.data[i][0];
                     var tmpy = readjson.data[i][1];
@@ -184,9 +194,17 @@
             
             $('#overallavgkwh').text('Average power for entire data set: '+(Math.round(overallavg*1000)/1000)+" kW.");
             $('#overalltotkwh').text('Total energy in data set: '+(Math.round(overalltot*1000)/1000)+" kWh.");
+            plotArray[0].avgtotal = Math.round(overallavg*1000)/1000;
+            plotArray[0].totalenergy = Math.round(overalltot*1000)/1000;
+            
             //console.log("DataArray: "+dataArray);
             //concatdata = dataArray[0].data;
             
+            //var plot = {"colour":"Colour", "room":"Room",
+            //        "circuit":"Circuit", "avgselected":10.0,
+            //        "avgtotal":15.0, "totalenergy":20.0}
+            //var plotArray = new Array(plot, plot, plot, plot, plot);
+            //
             //console.log("concatdata length:"+concatdata.length);
             //console.log("Concat Data 0-x:"+concatdata[0].y);
             
@@ -245,6 +263,9 @@
                     console.log("Average usage: "+roundavg);
                     
                     $('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
+                    plotArray[0].avgselected = roundavg;
+                    console.log("in innit, PA: "+plotArray[0].avgselected);
+                    drawgrid();
                     
                     if (scalefit.checked){
                         fy.domain([0, (pv.max(dd, function(d) d.y) * 1.01) ]);
@@ -335,23 +356,10 @@
                 .event("mousedown", pv.Behavior.drag())
                 .event("drag", focus);
             
+            console.log("bottom chart() PA: "+plotArray[0].avgselected);
             vis.render();
+            drawgrid();
         }
-    </script>
-    </div>
-    <div id="charttitle">
-        <p id="charttitletext"></p>
-    </div>
-    <div id="chartcontainer">
-        <div id="chartdiv">
-        </div>
-    </div>
-    <div id="chartinfo">
-        <p class="chartinformation" id="averagekwh"></p>
-        <p class="chartinformation" id="overallavgkwh"></p>
-        <p class="chartinformation" id="overalltotkwh"></p>
-    <div id="myGrid">
-        <script>
         
         var grid;
         
@@ -369,6 +377,7 @@
         var options = {
             enableCellNavigation: true,
             enableColumnReorder: false,
+            asyncEditorLoading: true,
             editable: true
         };
         
@@ -433,35 +442,55 @@
             this.init();
         }
         
-        //          {id:"PlotColour", name:"Colour", field:"PlotColour"},
-        //      {id:"Room", name:"Room", field:"Room"},
-        //      {id:"Function", name:"Function", field:"Function"},
-        //      {id:"StartMonth", name:"StartMonth", field:"StartMonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor: SelectCellEditor},
-        //       {id:"EndMonth", name:"EndMonth", field:"EndMonth"},
-        //       {id:"kWSelected", name:"Avg Power Selected (kW)", field:"kWSelected"},
-        //       {id:"kWTotal", name:"Avg Power Total (kW)", field:"kWTotal"},
-        //      {id:"TotalEnergy", name:"Total Energy (kWh)", field:"TotalEnergy"},
-        //  ];
+        function drawgrid() {
+            dataView = new Slick.Data.DataView();
+            
+            //console.log("@ draw time plotArray:" + plotArray[0].avgselected);
         
-        function draw() {
+        //var plot = {"colour":"Colour", "room":"Room",
+        //            "circuit":"Circuit", "avgselected":10.0,
+        //            "avgtotal":15.0, "totalenergy":20.0}
+        //var plotArray = new Array(plot, plot, plot, plot, plot);
+        
             var data = [];
             for (var i = 0; i < 5; i++) {
                 data[i] = {
-                    PlotColour: "Blue",
-                    Room: "GN17",
-                    Circuit: "Lighting",
+                    id:i,
+                    PlotColour: plotArray[0].colour,
+                    Room: plotArray[0].room,
+                    Circuit: plotArray[0].circuit,
                     StartMonth: "Feb",
                     EndMonth: "Sep",
-                    kWSelected: 6.79
+                    kWSelected: plotArray[0].avgselected,
+                    kWTotal: plotArray[0].avgtotal,
+                    TotalEnergy: plotArray[0].totalenergy
                 };
             }
             
-            grid = new Slick.Grid("#myGrid", data, columns, options);
+            grid = new Slick.Grid("#myGrid", dataView, columns, options);
+            
+            dataView.beginUpdate();
+			dataView.setItems(data);
+			dataView.endUpdate();
+            
+            grid.render();
             
             $("#myGrid").show();
         }
-        
-        </script>
+    </script>
+    </div>
+    <div id="charttitle">
+        <p id="charttitletext"></p>
+    </div>
+    <div id="chartcontainer">
+        <div id="chartdiv">
+        </div>
+    </div>
+    <div id="chartinfo">
+        <p class="chartinformation" id="averagekwh"></p>
+        <p class="chartinformation" id="overallavgkwh"></p>
+        <p class="chartinformation" id="overalltotkwh"></p>
+    <div id="myGrid">
         </div>
     </div>
     </div>
