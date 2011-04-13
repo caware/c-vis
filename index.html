@@ -110,7 +110,7 @@
             
                 function toggle(n) {
                     n.toggle(pv.event.altKey);
-                    console.log(n.nodeName);
+                    //console.log(n.nodeName);
                     if(typeof n.nodeValue != "undefined"){
                         //console.log("clicked: "+n.nodeValue);
                         var chartURL = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
@@ -125,10 +125,11 @@
         var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
         var overallDateFormat = pv.Format.date("%d-%b '%y");
         
+        
+        
+        
+        
         function chart(chartURL) {
-            //console.log("chartURL="+chartURL);
-            // var urlArray = new Array();
-            // var dataArray = new Array();
             
             var found = false;
             for(i=0; i<urlArray.length; i++){
@@ -144,10 +145,8 @@
                 urlArray.push(chartURL);
             }
             
-            console.log("urlArray: "+urlArray);
+            //console.log("urlArray: "+urlArray);
             
-            //if url exsists in array, remove it.
-            //if it doenst, add it. 
             var concatdata = new Array();
             var maxtime = 0;
             var mintime = 0;
@@ -156,12 +155,15 @@
             var overalltot = 0.0;
             var overallavg = 0.0;
             
+            console.log(urlArray.length);
+            
             for(i=0;i<urlArray.length;i++){
                 var JSONdata = $.ajax({ type: "GET", url: chartURL,async: false }).responseText;
                 //console.log("JSONdata:"+JSONdata);
                 var readjson = jQuery.parseJSON(JSONdata);
                 
                 $('#charttitletext').text(readjson.description+" in "+readjson.room);
+                console.log(i);
                 
                 plotArray[0].colour = "Blue";
                 plotArray[0].room = readjson.room;
@@ -256,15 +258,15 @@
                     for(a=0;a<dd.length;a++){
                         tot = tot + dd[a].y;
                     }
-                    console.log("total: "+tot);
-                    console.log("data.slice: "+dd.length);
+                    //console.log("total: "+tot);
+                    //console.log("data.slice: "+dd.length);
                     var avg = tot / dd.length;
                     var roundavg = Math.round(avg*1000)/1000;
-                    console.log("Average usage: "+roundavg);
+                    //console.log("Average usage: "+roundavg);
                     
                     $('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
                     plotArray[0].avgselected = roundavg;
-                    console.log("in innit, PA: "+plotArray[0].avgselected);
+                    //console.log("in innit, PA: "+plotArray[0].avgselected);
                     drawgrid();
                     
                     if (scalefit.checked){
@@ -356,7 +358,7 @@
                 .event("mousedown", pv.Behavior.drag())
                 .event("drag", focus);
             
-            console.log("bottom chart() PA: "+plotArray[0].avgselected);
+            //console.log("bottom chart() PA: "+plotArray[0].avgselected);
             vis.render();
             drawgrid();
         }
@@ -470,8 +472,8 @@
             grid = new Slick.Grid("#myGrid", dataView, columns, options);
             
             dataView.beginUpdate();
-			dataView.setItems(data);
-			dataView.endUpdate();
+            dataView.setItems(data);
+            dataView.endUpdate();
             
             grid.render();
             
