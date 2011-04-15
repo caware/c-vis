@@ -17,7 +17,8 @@ if len(sys.argv) != 3 or sys.argv[1] == "help":
 else:
     [dirtoread, filetowrite] = sys.argv[1:]
     
-    print "Input: "+dirtoread+", Output: "+filetowrite if debug
+    if debug:
+        print "Input: "+dirtoread+", Output: "+filetowrite
     
     totalfiles = 0
     currentsensor = ''
@@ -36,15 +37,18 @@ else:
                 #if we know about this sensor, add its readings only.
                 
                 for sensor in elec:
-                    print 'trying sensor ID:'+sensor['sensor']
+                    if debug:
+                        print 'trying sensor ID:'+sensor['sensor']
                     if sensor['sensor'] == 'S-m' + jsonfile['label'].split(' ', 1)[0]:
                         sensor['readings'].append(filename)
-                        print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
+                        if debug:
+                            print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
                         alreadyfound = True
                         break
                 
                 if not alreadyfound:
-                    print 'sensor '+'S-m' + str(jsonfile['label'].split(' ', 1)[0])+' not found, adding' 
+                    if debug:
+                        print 'sensor '+'S-m' + str(jsonfile['label'].split(' ', 1)[0])+' not found, adding' 
                     #if this is a new sensor, add its readings to elec.
                     tempsensor = {}
                     tempsensor['sensor'] = 'S-m' + jsonfile['label'].split(' ', 1)[0]
@@ -54,7 +58,8 @@ else:
                     tempsensor['readings'] = [filename]
                     #tempsensor['readings'].append(filename)
                     elec.append(tempsensor)
-                    print 'New sensor found: '+str(tempsensor)
+                    if debug:
+                        print 'New sensor found: '+str(tempsensor)
                     tempsensor = {}
                 
                 
@@ -67,11 +72,12 @@ else:
     sensors = {}
     sensors['elec'] = elec
     myjson['sensors'] = sensors
-    print '\n'
-    #print 'Total # sensors: '+str(len(elec))
-    print '\n'
-    #print 'Total Files Parsed: '+str(totalfiles)
-    print json.dumps(myjson)
+    if debug:
+        print '\n'
+        print 'Total # sensors: '+str(len(elec))
+        print '\n'
+        print 'Total Files Parsed: '+str(totalfiles)
+        print json.dumps(myjson)
     
     outputfile = open(filetowrite, 'w')
     outputfile.write(json.dumps(myjson))
