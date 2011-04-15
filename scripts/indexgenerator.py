@@ -9,13 +9,15 @@
 
 import os, sys, json
 
+debug = False
+
 if len(sys.argv) != 3 or sys.argv[1] == "help":
     print "Usage: indexgenerator.py root/of/json/file/tree/ path/to/output/json/file"
     sys.exit()
 else:
     [dirtoread, filetowrite] = sys.argv[1:]
     
-    print "Input: "+dirtoread+", Output: "+filetowrite
+    print "Input: "+dirtoread+", Output: "+filetowrite if debug
     
     totalfiles = 0
     currentsensor = ''
@@ -26,7 +28,7 @@ else:
     
     for dirname, dirnames, filenames in os.walk(dirtoread):
         for filename in filenames:
-            if (filename[-5:] == ".json"):
+            if (filename[-5:] == ".json") and filename != filetowrite:
                 readfile = open(os.path.join(dirname, filename), 'r').read()
                 jsonfile = json.loads(readfile)
                 
@@ -53,7 +55,6 @@ else:
                     #tempsensor['readings'].append(filename)
                     elec.append(tempsensor)
                     print 'New sensor found: '+str(tempsensor)
-                    #print elec
                     tempsensor = {}
                 
                 
