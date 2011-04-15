@@ -4,13 +4,11 @@
 # Generate an index file from a tree of json log files
 # Chris Elsmore (cce25)
 #
+# Usage: indexgenerator.py dir/containing/root/of/json/file/tree/
+#
 
 import os, sys, json
 
-#if sys.argv[1] == "-h" or "-help":
-#    print "Usage: indexgenerator.py dir/containing/root/of/json/file/tree/"
-#    sys.exit(1)
-#else:
 
 filetowrite = 'sensorindex.json'
 

@@ -33,22 +33,18 @@
     </div>
     <div id="treediv">
     <script type="text/javascript+protovis">
-        var urlArray = new Array();
-        var dataArray = new Array();
         
-        var plot = {"colour":"Colour", "room":"Room",
-                    "circuit":"Circuit", "avgselected":10.0,
-                    "avgtotal":15.0, "totalenergy":20.0}
-        var plotArray = new Array(plot, plot, plot, plot, plot);
+        var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
+        var plotArray = new Array();
         
         tree();
         
         function tree(){
-            var treeURL = "rooms.json";
             
+            var treeURL = "rooms.json";
             if (treegeo.checked){treeURL = "rooms.json";}
             else {treeURL = "uses.json";}
-                
+            
             var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
             var rooms = jQuery.parseJSON(JSONdata);
             var root = pv.dom(rooms)
@@ -67,7 +63,7 @@
                 .breadth(24);
             
             var nodes = root.nodes();
-            for(i=0; i<nodes.length;i++){
+            for(var i=0; i<nodes.length;i++){
                 var nm = nodes[i].nodeName
                 if (nm=="Ground"){nodes[i].toggle();}
                 else if (nm=="First"){nodes[i].toggle();}
@@ -108,19 +104,26 @@
             
             treevis.render();
             
-                function toggle(n) {
-                    n.toggle(pv.event.altKey);
-                    //console.log(n.nodeName);
-                    if(typeof n.nodeValue != "undefined"){
-                        //console.log("clicked: "+n.nodeValue);
-                        var chartURL = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
-                        chart(chartURL);
-                        //drawgrid();
-                    }
-                    return layout.reset().root;
+            function toggle(n) {
+                n.toggle(pv.event.altKey);
+                if(typeof n.nodeValue != "undefined"){
+                    var plot = {"id":0,"url":"","description":"",
+                        "startmonth":"Feb", "endmonth":"Nov",
+                        "colour":"Colour", "room":"Room",
+                        "circuit":"Circuit", "avgselected":10.0,
+                        "avgtotal":15.0, "totalenergy":20.0,
+                        "maxtime":0, "mintime":0,
+                        "maxenergy":0.0, "minenergy":0.0,
+                        "data":new Array()}
+                    plot.url = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
+                    plot.id = n.index;
+                    chart(plot);
                 }
+                return layout.reset().root;
             }
-
+            
+        }
+        
         var vis;
         var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
         var overallDateFormat = pv.Format.date("%d-%b '%y");
@@ -128,98 +131,70 @@
         
         
         
-        
-        function chart(chartURL) {
+        function chart(plotline) {
             
             var found = false;
-            for(i=0; i<urlArray.length; i++){
-                if(urlArray[i] == chartURL){
+            for(var i=0; i<plotArray.length; i++){
+                if(plotArray[i].id === plotline.id){
                     found = true;
-                    urlArray.splice(i,1);
-                    //console.log("alreadyhere");
+                    var rem = plotArray.splice(i,1)[0].id;
+                    break;
                 }
             }
-            //console.log("found: "+found);
-            if(found == false){
-                //console.log("nothere");
-                urlArray.push(chartURL);
+            if(!found){
+                if (plotArray.length == 5){
+                    console.log("Maximum amount of plots already drawn.");
+                }
+                else {
+                    plotArray.push(plotline);
+                }
             }
             
-            //console.log("urlArray: "+urlArray);
+            if(plotArray.length == 0){
+                return 0;
+            }
             
-            var concatdata = new Array();
-            var maxtime = 0;
-            var mintime = 0;
-            var maxvalue = 0.0;
-            var minvalue = 0.0;
-            var overalltot = 0.0;
-            var overallavg = 0.0;
-            
-            console.log(urlArray.length);
-            
-            for(i=0;i<urlArray.length;i++){
-                var JSONdata = $.ajax({ type: "GET", url: chartURL,async: false }).responseText;
-                //console.log("JSONdata:"+JSONdata);
+            for(var i=0;i<plotArray.length;i++){
+                var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url,async: false }).responseText;
                 var readjson = jQuery.parseJSON(JSONdata);
                 
+                plotArray[i].description = readjson.description;
                 $('#charttitletext').text(readjson.description+" in "+readjson.room);
-                console.log(i);
+                plotArray[i].colour = plotColours[i];
+                plotArray[i].room = readjson.room;
                 
-                plotArray[0].colour = "Blue";
-                plotArray[0].room = readjson.room;
-                plotArray[0].circuit = readjson.description;
-                
-                for (i=0; i<readjson.data.length; i++){
-                    var tmpx = readjson.data[i][0];
-                    var tmpy = readjson.data[i][1];
-                    overalltot = overalltot + tmpy;
-                    
-                    if (concatdata.length == 0){
-                        maxtime = tmpx;
-                        mintime = tmpx;
-                        maxvalue = tmpy;
-                        minvalue = tmpy;
+                for (var j=0; j<readjson.data.length; j++){
+                    var tmpx = readjson.data[j][0];
+                    var tmpy = readjson.data[j][1];
+                    plotArray[i].totalenergy = plotArray[i].totalenergy + tmpy;
+                    if (plotArray[i].data.length == 0){
+                        plotArray[i].maxtime = tmpx;
+                        plotArray[i].mintime = tmpx;
+                        plotArray[i].maxenergy = tmpy;
+                        plotArray[i].minenergy = tmpy;
                     }
                     else {
-                        if (tmpx > maxtime){maxtime = tmpx;}
-                        else if (tmpx < mintime){mintime = tmpx;}
-                        if (tmpy > maxvalue){maxvalue = tmpy;}
-                        else if (tmpy < minvalue){minvalue = tmpy;}
+                        if (tmpx > plotArray[i].maxtime){plotArray[i].maxtime = tmpx;}
+                        else if (tmpx < plotArray[i].mintime){plotArray[i].mintime = tmpx;}
+                        if (tmpy > plotArray[i].maxenergy){plotArray[i].maxenergy = tmpy;}
+                        else if (tmpy < plotArray[i].minenergy){plotArray[i].minenergy = tmpy;}
                     }
-                    concatdata = concatdata.concat({x:new Date(tmpx),y: tmpy});
-                    overallavg = overalltot / readjson.data.length;
-                    //console.log(dateFormat.format(new Date(tmpx)));
+                    plotArray[i].data = plotArray[i].data.concat({x:new Date(tmpx),y: tmpy});
                 }
-                dataArray.push(concatdata);
+                plotArray[i].avgtotal = Math.round((plotArray[i].totalenergy / plotArray[i].data.length)*1000)/1000;
+                plotArray[i].totalenergy = Math.round(plotArray[i].totalenergy*1000)/1000;
             }
             
             
-            $('#overallavgkwh').text('Average power for entire data set: '+(Math.round(overallavg*1000)/1000)+" kW.");
-            $('#overalltotkwh').text('Total energy in data set: '+(Math.round(overalltot*1000)/1000)+" kWh.");
-            plotArray[0].avgtotal = Math.round(overallavg*1000)/1000;
-            plotArray[0].totalenergy = Math.round(overalltot*1000)/1000;
+            $('#overallavgkwh').text('Average power for entire data set: '+plotArray[0].avgtotal+" kW.");
+            $('#overalltotkwh').text('Total energy in data set: '+plotArray[0].totalenergy+" kWh.");
             
-            //console.log("DataArray: "+dataArray);
-            //concatdata = dataArray[0].data;
+            //look through all data arrays
             
-            //var plot = {"colour":"Colour", "room":"Room",
-            //        "circuit":"Circuit", "avgselected":10.0,
-            //        "avgtotal":15.0, "totalenergy":20.0}
-            //var plotArray = new Array(plot, plot, plot, plot, plot);
-            //
-            //console.log("concatdata length:"+concatdata.length);
-            //console.log("Concat Data 0-x:"+concatdata[0].y);
             
-            var start = new Date(concatdata[0].x);
-            //var start = new Date(1990, 0, 1);
-            var year = 1000 * 60 * 60 * 24 * 365;
-            var data = concatdata; //pv.range(0, 20, .02).map(function(x) {
-            //    return {x: new Date(start.getTime() + year * x),
-            //            y: (1 + .1 * (Math.sin(x * 2 * Math.PI))
-            //                + Math.random() * .1) * Math.pow(1.18, x)
-            //                + Math.random() * .1};
-            //  });
-            var end = concatdata[concatdata.length - 1].x;
+            var start = new Date(plotArray[0].data[0].x);
+            var data = plotArray[0].data;
+            var end = plotArray[0].data[plotArray[0].data.length - 1].x;
             
             /* Scales and sizing. */
             var w = 700,
@@ -258,15 +233,12 @@
                     for(a=0;a<dd.length;a++){
                         tot = tot + dd[a].y;
                     }
-                    //console.log("total: "+tot);
-                    //console.log("data.slice: "+dd.length);
+                    
                     var avg = tot / dd.length;
                     var roundavg = Math.round(avg*1000)/1000;
-                    //console.log("Average usage: "+roundavg);
                     
                     $('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
                     plotArray[0].avgselected = roundavg;
-                    //console.log("in innit, PA: "+plotArray[0].avgselected);
                     drawgrid();
                     
                     if (scalefit.checked){
@@ -309,7 +281,7 @@
                 .left(function(d) fx(d.x))
                 .bottom(1)
                 .height(function(d) fy(d.y))
-                .fillStyle("lightsteelblue")
+                .fillStyle(null)
             .anchor("top").add(pv.Line)
                 .fillStyle(null)
                 .strokeStyle("steelblue")
@@ -338,7 +310,7 @@
                 .left(function(d) x(d.x))
                 .bottom(1)
                 .height(function(d) y(d.y))
-                .fillStyle("lightsteelblue")
+                .fillStyle(null)
             .anchor("top").add(pv.Line)
                 .strokeStyle("steelblue")
                 .lineWidth(2);
@@ -358,7 +330,6 @@
                 .event("mousedown", pv.Behavior.drag())
                 .event("drag", focus);
             
-            //console.log("bottom chart() PA: "+plotArray[0].avgselected);
             vis.render();
             drawgrid();
         }
@@ -366,14 +337,14 @@
         var grid;
         
         var columns = [
-            {id:"PlotColour", name:"Colour", field:"PlotColour"},
-            {id:"Room", name:"Room", field:"Room"},
-            {id:"Circuit", name:"Circuit", field:"Circuit"},
-            {id:"StartMonth", name:"StartMonth", field:"StartMonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor},
-            {id:"EndMonth", name:"EndMonth", field:"EndMonth"},
-            {id:"kWSelected", name:"Avg Power Selected (kW)", field:"kWSelected"},
-            {id:"kWTotal", name:"Avg Power Total (kW)", field:"kWTotal"},
-            {id:"TotalEnergy", name:"Total Energy (kWh)", field:"TotalEnergy"},
+            {id:"PlotColour", name:"Colour", field:"colour"},
+            {id:"Room", name:"Room", field:"room"},
+            {id:"Description", name:"Description", field:"description"},
+            {id:"StartMonth", name:"StartMonth", field:"startmonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor},
+            {id:"EndMonth", name:"EndMonth", field:"endmonth"},
+            {id:"kWSelected", name:"Avg Power Selected (kW)", field:"avgselected"},
+            {id:"kWTotal", name:"Avg Power Total (kW)", field:"avgtotal"},
+            {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy"},
         ];
         
         var options = {
@@ -447,32 +418,10 @@
         function drawgrid() {
             dataView = new Slick.Data.DataView();
             
-            //console.log("@ draw time plotArray:" + plotArray[0].avgselected);
-        
-        //var plot = {"colour":"Colour", "room":"Room",
-        //            "circuit":"Circuit", "avgselected":10.0,
-        //            "avgtotal":15.0, "totalenergy":20.0}
-        //var plotArray = new Array(plot, plot, plot, plot, plot);
-        
-            var data = [];
-            for (var i = 0; i < 5; i++) {
-                data[i] = {
-                    id:i,
-                    PlotColour: plotArray[0].colour,
-                    Room: plotArray[0].room,
-                    Circuit: plotArray[0].circuit,
-                    StartMonth: "Feb",
-                    EndMonth: "Sep",
-                    kWSelected: plotArray[0].avgselected,
-                    kWTotal: plotArray[0].avgtotal,
-                    TotalEnergy: plotArray[0].totalenergy
-                };
-            }
-            
             grid = new Slick.Grid("#myGrid", dataView, columns, options);
             
             dataView.beginUpdate();
-            dataView.setItems(data);
+            dataView.setItems(plotArray);
             dataView.endUpdate();
             
             grid.render();
