@@ -157,6 +157,8 @@
             for(var i=0;i<plotArray.length;i++){
                 var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url,async: false }).responseText;
                 var readjson = jQuery.parseJSON(JSONdata);
+                var tmptotal = 0;
+                var tmpdata = new Array();
                 
                 plotArray[i].description = readjson.description;
                 $('#charttitletext').text(readjson.description+" in "+readjson.room);
@@ -166,8 +168,10 @@
                 for (var j=0; j<readjson.data.length; j++){
                     var tmpx = readjson.data[j][0];
                     var tmpy = readjson.data[j][1];
-                    plotArray[i].totalenergy = plotArray[i].totalenergy + tmpy;
-                    if (plotArray[i].data.length == 0){
+                    //plotArray[i].totalenergy = plotArray[i].totalenergy + tmpy;
+                    //plotArray[i].totalenergy += tmpy;
+                    tmptotal += tmpy;
+                    if (tmpdata.length == 0){
                         plotArray[i].maxtime = tmpx;
                         plotArray[i].mintime = tmpx;
                         plotArray[i].maxenergy = tmpy;
@@ -179,12 +183,18 @@
                         if (tmpy > plotArray[i].maxenergy){plotArray[i].maxenergy = tmpy;}
                         else if (tmpy < plotArray[i].minenergy){plotArray[i].minenergy = tmpy;}
                     }
-                    plotArray[i].data = plotArray[i].data.concat({x:new Date(tmpx),y: tmpy});
+                    //plotArray[i].data = plotArray[i].data.concat({x:new Date(tmpx),y: tmpy});
+                    
+                    tmpdata.push({x:new Date(tmpx),y: tmpy});
+                    console.log("plotArray["+i+"].data.length ="+tmpdata.length);
                 }
-                plotArray[i].avgtotal = Math.round((plotArray[i].totalenergy / plotArray[i].data.length)*1000)/1000;
-                plotArray[i].totalenergy = Math.round(plotArray[i].totalenergy*1000)/1000;
+                plotArray[i].avgtotal = Math.round((tmptotal / tmpdata.length)*1000)/1000;
+                plotArray[i].totalenergy = Math.round(tmptotal*1000)/1000;
+                plotArray[i].data = tmpdata;
+                tmpdata = null;
+                tmptotal = 0;
             }
-            
+            //debugger;
             
             $('#overallavgkwh').text('Average power for entire data set: '+plotArray[0].avgtotal+" kW.");
             $('#overalltotkwh').text('Total energy in data set: '+plotArray[0].totalenergy+" kWh.");
@@ -219,11 +229,11 @@
                 }
                 dataArray.push(plotArray[i].data);
             }
-            debugger;
+            //debugger;
             
             
             //var start = new Date(plotArray[0].data[0].x);
-            var data = dataArray[0];
+            var data = dataArray;
             //var end = plotArray[0].data[plotArray[0].data.length - 1].x;
             
             /* Scales and sizing. */
@@ -254,36 +264,48 @@
                 .def("init", function() {
                     var d1 = x.invert(i.x),
                         d2 = x.invert(i.x + i.dx),
-                        dd = data.slice(Math.max(0, pv.search.index(data, d1, function(d) d.x) - 1),
-                            pv.search.index(data, d2, function(d) d.x) + 1);
+                        dd = new Array();
+                    for(var j=0; j<data.length; j++){
+                        dd.push(data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
+                            pv.search.index(data[j], d2, function(d) d.x) + 1));
+                    }
                     fx.domain(d1, d2);
+                    //debugger;
                     //fy.domain(scale.checked ? [0, pv.max(dd, function(d) d.y)] : y.domain());
                     
                     
                     var tot = 0;
-                    for(a=0;a<dd.length;a++){
-                        tot = tot + dd[a].y;
+                    for(var a=0;a<dd.length;a++){
+                        tot = 0;
+                        for(var b=0; b<dd[a].length;b++){
+                            tot+=dd[a][b].y;
+                        }
+                        //tot = tot + dd[a].y;
+                        var avg = tot / dd[a].length;
+                        plotArray[a].avgselected = Math.round(avg*1000)/1000;
                     }
                     
-                    var avg = tot / dd.length;
-                    var roundavg = Math.round(avg*1000)/1000;
+                    //var avg = tot / dd.length;
+                    //var roundavg = Math.round(avg*1000)/1000;
                     
-                    $('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
-                    plotArray[0].avgselected = roundavg;
+                    //$('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
+                    //plotArray[0].avgselected = roundavg;
                     drawgrid();
                     
-                    if (scalefit.checked){
-                        fy.domain([0, (pv.max(dd, function(d) d.y) * 1.01) ]);
-                    }
-                    else if (scalezoomed.checked){
-                        fy.domain([
-                            (pv.min(dd, function(d) d.y) / 1.01),
-                            (pv.max(dd, function(d) d.y) * 1.01)
-                        ]);
-                    }
-                    else if (scaleoriginal.checked){fy.domain(y.domain());}
-                    
-                    return dd;
+                    //if (scalefit.checked){
+                    //    fy.domain([0, (pv.max(dd, function(d) d.y) * 1.01) ]);
+                    //}
+                    //else if (scalezoomed.checked){
+                    //    fy.domain([
+                    //        (pv.min(dd, function(d) d.y) / 1.01),
+                    //        (pv.max(dd, function(d) d.y) * 1.01)
+                    //    ]);
+                    //}
+                    //else if (scaleoriginal.checked){
+                    fy.domain(y.domain());//}
+                    //debugger;
+                    console.log("dd:"+JSON.stringify(dd));
+                    return dd[0];
                 })
                 .top(0)
                 .height(h1);
@@ -318,6 +340,8 @@
                 .strokeStyle("steelblue")
                 .lineWidth(2);
             
+            //debugger;
+            
             /* Context panel (zoomed out). */
             var context = vis.add(pv.Panel)
                 .bottom(0)
@@ -336,15 +360,21 @@
                 .bottom(0);
             
             /* Context area chart. */
-            context.add(pv.Area)
-                .data(data)
-                .left(function(d) x(d.x))
-                .bottom(1)
-                .height(function(d) y(d.y))
-                .fillStyle(null)
-            .anchor("top").add(pv.Line)
-                .strokeStyle("steelblue")
-                .lineWidth(2);
+            //context.add(pv.Area)
+            //    .data(data[0])
+            //    .left(function(d) x(d.x))
+            //    .bottom(1)
+            //    .height(function(d) y(d.y))
+            //    .fillStyle(null)
+            //.anchor("top").add(pv.Line)
+            //    .strokeStyle("steelblue")
+            //.lineWidth(2);
+            context.add(pv.Line)
+                    .data(data[0])
+                    .left(function(d) x(d.x))
+                    .bottom(function(d) y(d.y))
+                    .lineWidth(2);
+            
             
             /* The selectable, draggable focus region. */
             context.add(pv.Panel)
