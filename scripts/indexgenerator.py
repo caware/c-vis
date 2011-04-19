@@ -54,7 +54,7 @@ else:
                     tempsensor['sensor'] = 'S-m' + jsonfile['label'].split(' ', 1)[0]
                     tempsensor['path'] = jsonfile['path']
                     tempsensor['room'] = jsonfile['room']           
-                    tempsensor['function'] = jsonfile['description']
+                    tempsensor['description'] = jsonfile['description']
                     tempsensor['readings'] = [filename]
                     #tempsensor['readings'].append(filename)
                     elec.append(tempsensor)
