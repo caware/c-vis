@@ -36,6 +36,12 @@ div#myGrid {
     display:none;
 }
 
+div#topbar {
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #ffd324;
+    border-bottom: 2px solid #ffd324;
+}
+
 p#charttitletext {
     text-align: center;
     padding-top: 0;
@@ -46,3 +52,12 @@ p.chartinformation {
     text-align: left;
     padding-left: 20;
 }
+
+/*p.alert {
+background: #fff6bf url(image_folder/exclamation_mark.gif) center no-repeat;
+background-position: 15px 50%;
+text-align: left;
+padding: 5px 20px 5px 45px;
+border-top: 2px solid #ffd324;
+border-bottom: 2px solid #ffd324;
+}*/

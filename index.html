@@ -16,6 +16,11 @@
 </head>
 <body>
     <div id="content">
+    <noscript>
+        <div id="topbar">
+            <p class="alert">Your browser either does not support Javascript or it is not enabled. Please enable JavaScript for full functionality.</p>
+        </div>
+    </noscript>
     <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
     <div style="text-align:right;padding-right:20;">
         <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
@@ -37,13 +42,111 @@
         var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
         var plotArray = new Array();
         
-        tree();
+        var vis;
+        var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
+        var overallDateFormat = pv.Format.date("%d-%b '%y");
         
-        function tree(){
+        var sensors = getSensors();
+        
+        console.log(sensors);
+        
+        //getSensors();
+        
+        tree(sensors);
+        
+        function getSensors(){
+            var jsonData = $.ajax({ type: "GET", url: "http://www.cl.cam.ac.uk/~cce25/sensorindex.json",async: false }).responseText;
+            var sensorindex = jQuery.parseJSON(jsonData);
+            
+            var elecsensors = sensorindex.sensors.elec;
+            var treedata = new Object();
+            //debugger;
+            //console.log(elecsensors);
+            
+            if (treegeo.checked){
+                var objfloor = new Object();
+                for(var i=0;i<elecsensors.length;i++){
+                    var roomArray = elecsensors[i].room.split("");
+                    var description = elecsensors[i].description;
+                    var room = elecsensors[i].room;
+                    var path = elecsensors[i].path;
+                    var floor="";
+                    var corridor="";
+                    
+                    var objroom = new Object();
+                    var objcorridor = new Object();
+                    //console.log(roomArray);
+                    switch (roomArray[0]){
+                        case "G":
+                            floor="Ground";
+                            break;
+                        case "F":
+                            floor="First";
+                            break;
+                        case "S":
+                            floor="Second";
+                            break;
+                    }
+                    
+                    switch (roomArray[1]){
+                        case "N":
+                            corridor="North";
+                            break;
+                        case "E":
+                            corridor="East";
+                            break;
+                        case "S":
+                            corridor="South";
+                            break;
+                        case "W":
+                            corridor="West";
+                            break;
+                        case "C":
+                            corridor="Centre";
+                            break;
+                    }
+                    
+                    if(!(floor in objfloor)){
+                        objfloor[floor] = {};
+                    }
+                    
+                    if(!(corridor in objfloor[floor])){
+                        objfloor[floor][corridor] = {};
+                    }
+                    
+                    if(!(room in objfloor[floor][corridor])){
+                        objfloor[floor][corridor][room] = {};
+                        objsensor = {};
+                        objsensor[description] = path;
+                        objfloor[floor][corridor][room] = objsensor;
+                    }
+                    else{
+                        objsensor = {};
+                        objsensor = objfloor[floor][corridor][room];
+                        objsensor[description] = path;
+                        objfloor[floor][corridor][room] = objsensor;
+                    }
+                    
+                }
+                //console.log(objfloor);
+                treedata.Elec = new Object();
+                treedata.Elec.Floor = new Object();
+                treedata.Elec.Floor = objfloor;
+                return treedata;
+            }
+            else {
+                console.log("no");
+            }
+        }
+        
+        function tree(sensortree){
             
             var treeURL = "rooms.json";
             if (treegeo.checked){treeURL = "rooms.json";}
             else {treeURL = "uses.json";}
+            
+            
+            //compare teh two paths being cretaed here with a console.log of both.
             
             var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
             var rooms = jQuery.parseJSON(JSONdata);
@@ -115,18 +218,17 @@
                         "maxtime":0, "mintime":0,
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
+                    //console.log(n.nodeValue);
                     plot.url = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
                     plot.id = n.index;
                     chart(plot);
+                    //console.log(plot.url);
                 }
                 return layout.reset().root;
             }
             
         }
         
-        var vis;
-        var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
-        var overallDateFormat = pv.Format.date("%d-%b '%y");
         
         
         
@@ -259,12 +361,14 @@
                 .right(20)
                 .top(5);
             
+            var dd;
+            
             /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
                 .def("init", function() {
                     var d1 = x.invert(i.x),
-                        d2 = x.invert(i.x + i.dx),
-                        dd = new Array();
+                        d2 = x.invert(i.x + i.dx);
+                    dd = new Array();
                     for(var j=0; j<data.length; j++){
                         dd.push(data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
                             pv.search.index(data[j], d2, function(d) d.x) + 1));
@@ -304,15 +408,15 @@
                     //else if (scaleoriginal.checked){
                     fy.domain(y.domain());//}
                     //debugger;
-                    console.log("dd:"+JSON.stringify(dd));
-                    return dd[0];
+                    console.log("dd.length:"+dd.length);
+                    return dd;
                 })
                 .top(0)
                 .height(h1);
             
             /* X-axis ticks. */
             focus.add(pv.Rule)
-                .data(function(){return fx.ticks();})
+                .data(function(){return fx.ticks(7);})
                 .left(fx)
                 .strokeStyle("#eee")
                 .anchor("bottom").add(pv.Label)
@@ -327,18 +431,53 @@
                 .text(fy.tickFormat);
             
             /* Focus area chart. */
-            focus.add(pv.Panel)
-                .overflow("hidden")
-            .add(pv.Area)
-                .data(function() focus.init())
-                .left(function(d) fx(d.x))
-                .bottom(1)
-                .height(function(d) fy(d.y))
-                .fillStyle(null)
-            .anchor("top").add(pv.Line)
-                .fillStyle(null)
-                .strokeStyle("steelblue")
-                .lineWidth(2);
+            
+            panel = focus.add(pv.Panel)
+                .overflow("hidden");
+            
+            //var selecteddata = focus.innit();
+            //var selected = (function() focus.init());
+            
+            
+            console.log(plotArray.length);
+            //for(var a=0;a<plotArray.length;a++){
+                panel.add(pv.Line)
+                    .data(function() focus.init()[0])
+                    .left(function(d) fx(d.x))
+                    .bottom(function(d) fy(d.y))
+                    .strokeStyle("orange")
+                    .lineWidth(2);
+            //}
+            //if(plotArray.length = 2){
+            //    panel.add(pv.Line)
+            //        .data([new Date(today),new Date(today)])
+            //        .left(function(d) fx(d.x))
+            //        .bottom(function(d) fy(d.y))
+            //        .strokeStyle("black")
+            //        .lineWidth(2);
+            //}
+            //.add(pv.Line)
+            //    .data(function() focus.init()[1])
+            //    .left(function(d) fx(d.x))
+            //    .bottom(function(d) fy(d.y))
+            //    .strokeStyle("black")
+            //    .lineWidth(2);
+             
+             //context.add(pv.Line)
+             //       .data(data[0])
+             //       .left(function(d) x(d.x))
+             //       .bottom(function(d) y(d.y))
+             //       .lineWidth(2);
+            //.add(pv.Area)
+            //    .data(function() focus.init())
+            //    .left(function(d) fx(d.x))
+            //    .bottom(1)
+            //    .height(function(d) fy(d.y))
+            //    .fillStyle(null)
+            //.anchor("top").add(pv.Line)
+            //    .fillStyle(null)
+            //    .strokeStyle("steelblue")
+            //   .lineWidth(2);
             
             //debugger;
             
@@ -349,7 +488,7 @@
             
             /* X-axis ticks. */
             context.add(pv.Rule)
-                .data(x.ticks())
+                .data(x.ticks(7))
                 .left(x)
                 .strokeStyle("#eee")
             .anchor("bottom").add(pv.Label)
@@ -369,11 +508,20 @@
             //.anchor("top").add(pv.Line)
             //    .strokeStyle("steelblue")
             //.lineWidth(2);
-            context.add(pv.Line)
+            
+            //for(var i=0; i<data.length; i++){
+                context.add(pv.Line)
                     .data(data[0])
                     .left(function(d) x(d.x))
                     .bottom(function(d) y(d.y))
                     .lineWidth(2);
+            //}
+            
+            //context.add(pv.Line)
+            //        .data(data[1])
+            //        .left(function(d) x(d.x))
+            //        .bottom(function(d) y(d.y))
+            //        .lineWidth(2);
             
             
             /* The selectable, draggable focus region. */
