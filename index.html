@@ -145,16 +145,16 @@
         
         function tree(sensortree){
             
-            var treeURL = "rooms.json";
-            if (treegeo.checked){treeURL = "rooms.json";}
-            else {treeURL = "uses.json";}
+            //var treeURL = "rooms.json";
+            //if (treegeo.checked){treeURL = "rooms.json";}
+            //else {treeURL = "uses.json";}
             
             
             //compare teh two paths being cretaed here with a console.log of both.
             
-            var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
-            var rooms = jQuery.parseJSON(JSONdata);
-            var root = pv.dom(rooms)
+            //var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
+            //var rooms = jQuery.parseJSON(JSONdata);
+            var root = pv.dom(sensortree)
                 .root("Sensors");
             
             var treevis = new pv.Panel()
@@ -214,6 +214,13 @@
             function toggle(n) {
                 n.toggle(pv.event.altKey);
                 if(typeof n.nodeValue != "undefined"){
+                    var todaydate = new Date();
+                    var year = todaydate.getFullYear();
+                    var month = (todaydate.getMonth()+1);
+                    if (month<10){
+                        month = "0"+month;
+                    }
+                    //console.log(year+"-"+month+".json");
                     var plot = {"id":0,"url":new Array(),"description":"",
                         "startmonth":"Feb", "endmonth":"Nov",
                         "colour":"Colour", "room":"Room",
@@ -223,10 +230,10 @@
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
                     //console.log(n.nodeValue);
-                    plot.url[0] = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
+                    plot.url[0] = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+year+"-"+month+".json";
                     plot.id = n.index;
-                    //chart(plot);
-                    console.log(plot.url);
+                    chart(plot);
+                    //console.log(plot.url);
                 }
                 return layout.reset().root;
             }
@@ -260,20 +267,40 @@
                 return 0;
             }
             
+            var jsonArray = new Array([],[],[],[],[]);
+            
             for(var i=0;i<plotArray.length;i++){
-                var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url,async: false }).responseText;
-                var readjson = jQuery.parseJSON(JSONdata);
+                for(var x=0;x<plotArray[i].url.length;x++){
+                    var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url[x],async: false }).responseText;
+                     jsonArray[i][x] = jQuery.parseJSON(JSONdata);
+                }
                 var tmptotal = 0;
                 var tmpdata = new Array();
                 
-                plotArray[i].description = readjson.description;
-                $('#charttitletext').text(readjson.description+" in "+readjson.room);
+                plotArray[i].description = jsonArray[i][0].description;
+                plotArray[i].room = jsonArray[i][0].room;
                 plotArray[i].colour = plotColours[i];
-                plotArray[i].room = readjson.room;
                 
-                for (var j=0; j<readjson.data.length; j++){
-                    var tmpx = readjson.data[j][0];
-                    var tmpy = readjson.data[j][1];
+                //if(plotArray.length > 1){
+                //    var roomstring = "";
+                //    for(var i=0;i<plotArray.length;i++){
+                //        if (i=0){
+                //            roomstring += plotArray[i].room;
+                //        }
+                //        else{
+                //            roomstring += "; "+plotArray[i].room;
+                //        }
+                //    }
+                //$('#charttitletext').text("Data from: "+roomstring);
+                //}
+                //else{
+                //    $('#charttitletext').text(readjson.description+" in "+readjson.room);
+                //}
+                
+                
+                for (var j=0; j<jsonArray[i][0].data.length; j++){
+                    var tmpx = jsonArray[i][0].data[j][0];
+                    var tmpy = jsonArray[i][0].data[j][1];
                     //plotArray[i].totalenergy = plotArray[i].totalenergy + tmpy;
                     //plotArray[i].totalenergy += tmpy;
                     tmptotal += tmpy;
