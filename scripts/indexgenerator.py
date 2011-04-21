@@ -52,7 +52,7 @@ else:
                     #if this is a new sensor, add its readings to elec.
                     tempsensor = {}
                     tempsensor['sensor'] = 'S-m' + jsonfile['label'].split(' ', 1)[0]
-                    tempsensor['path'] = jsonfile['path']
+                    tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")
                     tempsensor['room'] = jsonfile['room']           
                     tempsensor['description'] = jsonfile['description']
                     tempsensor['readings'] = [filename]

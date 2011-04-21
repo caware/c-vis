@@ -223,10 +223,10 @@
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
                     //console.log(n.nodeValue);
-                    plot.url = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
+                    plot.url[0] = "http://www.cl.cam.ac.uk/meters/"+n.nodeValue+"2011-04.json";
                     plot.id = n.index;
-                    chart(plot);
-                    //console.log(plot.url);
+                    //chart(plot);
+                    console.log(plot.url);
                 }
                 return layout.reset().root;
             }
