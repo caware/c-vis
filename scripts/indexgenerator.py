@@ -51,7 +51,7 @@ else:
                 temptotal = 0.0
                 mostrecentreading = False
                 
-                if labelsplit == recentsensor:
+                if labelsplit[1] == recentsensor:
                     mostrecentreading = True
                     for i in jsonfile['data']:
                         temptotal += jsonfile['data'][i][1]
