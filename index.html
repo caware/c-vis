@@ -24,7 +24,7 @@
         </div>
     </noscript>
     <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
-    <div style="float:right; width:300px; text-align:right;padding-right:20;">
+    <div style="float:right; width:350px; text-align:right;padding-right:20;">
         <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
         <label for="scalefit">Scale to fit</label>
         <input name="scale" id="scalezoomed" type="radio" onchange="vis.render()">
@@ -32,7 +32,7 @@
         <input checked name="scale" id="scaleoriginal" type="radio" onchange="vis.render()">
         <label for="scaleoriginal">Original scale</label>
     </div>
-    <div style="float:left; width:300px; text-align:left;padding-left:20;">
+    <div style="float:left; width:350px; text-align:left;padding-left:20;">
         <label for="treegeo">Explore tree by: Geography</label>
         <input checked name="treetype" id="treegeo" type="radio" onchange="tree()">
         <label for="treeuse"> Function</label>
@@ -112,15 +112,15 @@
                     }
                     
                     if(!(floor in objfloor)){
-                        objfloor[floor] = {};
+                        objfloor[floor] = {"Total: ":0.0};
                     }
                     
                     if(!(corridor in objfloor[floor])){
-                        objfloor[floor][corridor] = {};
+                        objfloor[floor][corridor] = {"Total":0.0};
                     }
                     
                     if(!(room in objfloor[floor][corridor])){
-                        objfloor[floor][corridor][room] = {};
+                        objfloor[floor][corridor][room] = {"Total":0.0};
                         objsensor = {};
                         objsensor[description] = path;
                         objfloor[floor][corridor][room] = objsensor;
@@ -213,7 +213,8 @@
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
-                if(typeof n.nodeValue != "undefined"){
+                if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 5) != "Total")){
+                //if(typeof n.nodeValue == String){
                     var todaydate = new Date();
                     var year = todaydate.getFullYear();
                     var month = (todaydate.getMonth()+1);

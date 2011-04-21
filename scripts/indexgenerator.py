@@ -7,9 +7,20 @@
 # Usage: indexgenerator.py root/of/json/file/tree/ path/to/output/json/file
 #
 
-import os, sys, json
+import os, sys, datetime, json
 
 debug = False
+
+now = datetime.datetime.now()
+
+if now.month < 10:
+    currentmonth = "0"+str(now.month)
+else:
+    currentmonth = str(now.month)
+    
+recentsensor = str(now.year)+"-"+currentmonth
+
+
 
 if len(sys.argv) != 3 or sys.argv[1] == "help":
     print "Usage: indexgenerator.py root/of/json/file/tree/ path/to/output/json/file"
@@ -35,12 +46,20 @@ else:
                 
                 alreadyfound = False
                 #if we know about this sensor, add its readings only.
+                labelsplit = jsonfile['label'].split(' ', 1)
+                
+                temptotal = 0.0
+                if labelsplit == recentsensor:
+                    mostrecentreading = True
+                    for i in jsonfile['data']:
+                        temptotal += jsonfile['data'][i][1]
                 
                 for sensor in elec:
                     if debug:
                         print 'trying sensor ID:'+sensor['sensor']
-                    if sensor['sensor'] == 'S-m' + jsonfile['label'].split(' ', 1)[0]:
+                    if sensor['sensor'] == 'S-m' + labelsplit[0]:
                         sensor['readings'].append(filename)
+                        sensor['recenttotal'] = temptotal
                         if debug:
                             print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
                         alreadyfound = True
@@ -51,12 +70,13 @@ else:
                         print 'sensor '+'S-m' + str(jsonfile['label'].split(' ', 1)[0])+' not found, adding' 
                     #if this is a new sensor, add its readings to elec.
                     tempsensor = {}
-                    sensorlabel = 'S-m' + jsonfile['label'].split(' ', 1)[0]
+                    sensorlabel = 'S-m' + labelsplit[0]
                     tempsensor['sensor'] = sensorlabel
                     tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
                     tempsensor['room'] = jsonfile['room']           
                     tempsensor['description'] = jsonfile['description']
                     tempsensor['readings'] = [filename]
+                    tempsensor['recenttotal'] = temptotal
                     #tempsensor['readings'].append(filename)
                     elec.append(tempsensor)
                     if debug:
@@ -64,6 +84,7 @@ else:
                     tempsensor = {}
                 
                 
+                        
                 #for sensor in elec:
                 #        print sensor['sensor']
                 
