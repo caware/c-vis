@@ -49,6 +49,8 @@ else:
                 labelsplit = jsonfile['label'].split(' ', 1)
                 
                 temptotal = 0.0
+                mostrecentreading = False
+                
                 if labelsplit == recentsensor:
                     mostrecentreading = True
                     for i in jsonfile['data']:
