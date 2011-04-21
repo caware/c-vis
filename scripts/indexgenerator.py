@@ -54,7 +54,7 @@ else:
                 if labelsplit[1] == recentsensor:
                     mostrecentreading = True
                     for i in jsonfile['data']:
-                        temptotal += jsonfile['data'][i][1]
+                        temptotal += i[1]
                 
                 for sensor in elec:
                     if debug:
