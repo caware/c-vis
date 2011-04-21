@@ -59,7 +59,8 @@ else:
                         print 'trying sensor ID:'+sensor['sensor']
                     if sensor['sensor'] == 'S-m' + labelsplit[0]:
                         sensor['readings'].append(filename)
-                        sensor['recenttotal'] = temptotal
+                        if mostrecentreading:
+                            sensor['recenttotal'] = temptotal
                         if debug:
                             print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
                         alreadyfound = True
@@ -76,7 +77,8 @@ else:
                     tempsensor['room'] = jsonfile['room']           
                     tempsensor['description'] = jsonfile['description']
                     tempsensor['readings'] = [filename]
-                    tempsensor['recenttotal'] = temptotal
+                    if mostrecentreading:
+                        tempsensor['recenttotal'] = temptotal
                     #tempsensor['readings'].append(filename)
                     elec.append(tempsensor)
                     if debug:
