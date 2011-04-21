@@ -1,6 +1,5 @@
 {
-    "Elec": {
-        "Floor": {
+    "Electricity": {
             "Ground":{
                 "North":{
                     "GN09":{
@@ -104,6 +103,5 @@
                     }
                 }
             }
-        }
     }
 }

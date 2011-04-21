@@ -13,29 +13,34 @@
     <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.5.custom.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" charset="utf-8"/>
 </head>
 <body>
     <div id="content">
+    <div id="top">
     <noscript>
         <div id="topbar">
             <p class="alert">Your browser either does not support Javascript or it is not enabled. Please enable JavaScript for full functionality.</p>
         </div>
     </noscript>
     <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
-    <div style="text-align:right;padding-right:20;">
+    <div style="float:right; width:300px; text-align:right;padding-right:20;">
         <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
         <label for="scalefit">Scale to fit</label>
         <input name="scale" id="scalezoomed" type="radio" onchange="vis.render()">
         <label for="scalezoomed">Zoom Y values</label>
         <input checked name="scale" id="scaleoriginal" type="radio" onchange="vis.render()">
         <label for="scaleoriginal">Original scale</label>
-    <div style="text-align:left;padding-left:20;">
+    </div>
+    <div style="float:left; width:300px; text-align:left;padding-left:20;">
         <label for="treegeo">Explore tree by: Geography</label>
         <input checked name="treetype" id="treegeo" type="radio" onchange="tree()">
         <label for="treeuse"> Function</label>
         <input name="treetype" id="treeuse" type="radio" onchange="tree()">
     </div>
     </div>
+    <div id="diacontainer">
+    <div id="treecontainer">
     <div id="treediv">
     <script type="text/javascript+protovis">
         
@@ -129,9 +134,8 @@
                     
                 }
                 //console.log(objfloor);
-                treedata.Elec = new Object();
-                treedata.Elec.Floor = new Object();
-                treedata.Elec.Floor = objfloor;
+                treedata.Electricity = new Object();
+                treedata.Electricity = objfloor;
                 return treedata;
             }
             else {
@@ -203,14 +207,14 @@
                 .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
                 .anchor("right").add(pv.Label)
                 .text(function(n){return n.nodeName;})
-                .font("12px/14px helvetica, Arial, Sans-serif");
+                .font("12px/14px Helvetica, Arial, Sans-serif");
             
             treevis.render();
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
                 if(typeof n.nodeValue != "undefined"){
-                    var plot = {"id":0,"url":"","description":"",
+                    var plot = {"id":0,"url":new Array(),"description":"",
                         "startmonth":"Feb", "endmonth":"Nov",
                         "colour":"Colour", "room":"Room",
                         "circuit":"Circuit", "avgselected":10.0,
@@ -288,7 +292,7 @@
                     //plotArray[i].data = plotArray[i].data.concat({x:new Date(tmpx),y: tmpy});
                     
                     tmpdata.push({x:new Date(tmpx),y: tmpy});
-                    console.log("plotArray["+i+"].data.length ="+tmpdata.length);
+                    //console.log("plotArray["+i+"].data.length ="+tmpdata.length);
                 }
                 plotArray[i].avgtotal = Math.round((tmptotal / tmpdata.length)*1000)/1000;
                 plotArray[i].totalenergy = Math.round(tmptotal*1000)/1000;
@@ -546,14 +550,14 @@
         var grid;
         
         var columns = [
-            {id:"PlotColour", name:"Colour", field:"colour"},
-            {id:"Room", name:"Room", field:"room"},
-            {id:"Description", name:"Description", field:"description"},
-            {id:"StartMonth", name:"StartMonth", field:"startmonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor},
-            {id:"EndMonth", name:"EndMonth", field:"endmonth"},
-            {id:"kWSelected", name:"Avg Power Selected (kW)", field:"avgselected"},
-            {id:"kWTotal", name:"Avg Power Total (kW)", field:"avgtotal"},
-            {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy"},
+            {id:"PlotColour", name:"Colour", field:"colour", width:50},
+            {id:"Room", name:"Room", field:"room", width:45},
+            {id:"Description", name:"Description", field:"description", width:240},
+            {id:"StartMonth", name:"Start", field:"startmonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:40},
+            {id:"EndMonth", name:"End", field:"endmonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:40},
+            {id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
+            {id:"kWTotal", name:"Avg kW Total", field:"avgtotal", width:95},
+            {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126},
         ];
         
         var options = {
@@ -639,6 +643,7 @@
         }
     </script>
     </div>
+    </div>
     <div id="charttitle">
         <p id="charttitletext"></p>
     </div>
@@ -651,7 +656,7 @@
         <p class="chartinformation" id="overallavgkwh"></p>
         <p class="chartinformation" id="overalltotkwh"></p>
     <div id="myGrid">
-        </div>
+    </div>
     </div>
     </div>
 </body>

@@ -4,8 +4,22 @@ div#chartcontainer {
     height: 370px;
 }
 
-div#treediv {
+div#treecontainer {
     float: left;
+    width: 320px;
+    height:500px;
+}
+
+div#diacontainer{
+    width: 1100px;
+    height: 500px;
+    display: inline-block;
+}
+
+div#top{
+    width: 1100px;
+    height: 100px;
+    display: inline-block;
 }
 
 div#charttitle {
