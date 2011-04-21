@@ -51,7 +51,7 @@ else:
                         print 'sensor '+'S-m' + str(jsonfile['label'].split(' ', 1)[0])+' not found, adding' 
                     #if this is a new sensor, add its readings to elec.
                     tempsensor = {}
-                    var sensorlabel = 'S-m' + jsonfile['label'].split(' ', 1)[0]
+                    sensorlabel = 'S-m' + jsonfile['label'].split(' ', 1)[0]
                     tempsensor['sensor'] = sensorlabel
                     tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
                     tempsensor['room'] = jsonfile['room']           
