@@ -34,9 +34,9 @@
     </div>
     <div style="float:left; width:350px; text-align:left;padding-left:20;">
         <label for="treegeo">Explore tree by: Geography</label>
-        <input checked name="treetype" id="treegeo" type="radio" onchange="tree()">
+        <input name="treetype" id="treegeo" type="radio" onchange="buildTree()">
         <label for="treeuse"> Function</label>
-        <input name="treetype" id="treeuse" type="radio" onchange="tree()">
+        <input checked name="treetype" id="treeuse" type="radio" onchange="buildTree()">
     </div>
     </div>
     <div id="diacontainer">
@@ -44,23 +44,32 @@
     <div id="treediv">
     <script type="text/javascript+protovis">
         
-        var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
-        var plotArray = new Array();
+        var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
         
+        //Set plot colours
+        var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
+        
+        //Vars for array of plots, and char visulisation
+        var plotArray = new Array();
         var vis;
+        var dd;
+        
+        //Date formats for chart tick labels
         var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
         var overallDateFormat = pv.Format.date("%d-%b '%y");
+
         
-        var sensors = getSensors();
+        buildTree(); 
         
-        console.log(sensors);
         
-        //getSensors();
+        function buildTree(){
+        //get the sensor index file and build and display the sensor tree.
+            tree(getSensors(indexUrl));
+        }
         
-        tree(sensors);
-        
-        function getSensors(){
-            var jsonData = $.ajax({ type: "GET", url: "http://www.cl.cam.ac.uk/~cce25/sensorindex.json",async: false }).responseText;
+        function getSensors(indexfile){
+        //Get the sensor index file and build the JS object tree from it.
+            var jsonData = $.ajax({ type: "GET", url: indexfile ,async: false }).responseText;
             var sensorindex = jQuery.parseJSON(jsonData);
             
             var elecsensors = sensorindex.sensors.elec;
@@ -69,12 +78,17 @@
             //console.log(elecsensors);
             
             if (treegeo.checked){
-                var objfloor = new Object();
+                var objfloor = {"Total":0.0};
+                //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
+                    if (elecsensors[i].sensor == "S-m257"){
+                        objfloor.Total = elecsensors[i].recenttotal;
+                    }
                     var roomArray = elecsensors[i].room.split("");
                     var description = elecsensors[i].description;
                     var room = elecsensors[i].room;
                     var path = elecsensors[i].path;
+                    var recenttotal = elecsensors[i].recenttotal;
                     var floor="";
                     var corridor="";
                     
@@ -112,23 +126,33 @@
                     }
                     
                     if(!(floor in objfloor)){
-                        objfloor[floor] = {"Total: ":0.0};
+                        objfloor[floor] = {"Total":recenttotal};
+                    }
+                    else{
+                        objfloor[floor].Total += recenttotal;
                     }
                     
                     if(!(corridor in objfloor[floor])){
-                        objfloor[floor][corridor] = {"Total":0.0};
+                        objfloor[floor][corridor] = {"Total":recenttotal};
+                    }
+                    else{
+                        objfloor[floor][corridor].Total += recenttotal;
                     }
                     
                     if(!(room in objfloor[floor][corridor])){
-                        objfloor[floor][corridor][room] = {"Total":0.0};
-                        objsensor = {};
+                        //objfloor[floor][corridor][room] = {"Total":0.0};
+                        objsensor = {"Total":recenttotal};
                         objsensor[description] = path;
                         objfloor[floor][corridor][room] = objsensor;
+                        //console.log("is"+objsensor.Total);
                     }
                     else{
                         objsensor = {};
                         objsensor = objfloor[floor][corridor][room];
                         objsensor[description] = path;
+                        //console.log("was:"+objsensor.Total);
+                        objsensor.Total += recenttotal;
+                        //console.log("is now:"+objsensor.Total);
                         objfloor[floor][corridor][room] = objsensor;
                     }
                     
@@ -138,8 +162,90 @@
                 treedata.Electricity = objfloor;
                 return treedata;
             }
-            else {
-                console.log("no");
+            else if (treeuse.checked){
+                var objcircuit = {"Total":0.0};
+                //var objfloor = {};
+                for(var i=0;i<elecsensors.length;i++){
+                    if (elecsensors[i].sensor == "S-m257"){
+                        objcircuit.Total = elecsensors[i].recenttotal;
+                    }
+                    var roomArray = elecsensors[i].room.split("");
+                    var description = elecsensors[i].description;
+                    var room = elecsensors[i].room;
+                    var path = elecsensors[i].path;
+                    var recenttotal = elecsensors[i].recenttotal;
+                    var floor="";
+                    var corridor="";
+                    
+                    var objroom = new Object();
+                    var objcorridor = new Object();
+                    //console.log(roomArray);
+                    switch (roomArray[0]){
+                        case "G":
+                            floor="Ground";
+                            break;
+                        case "F":
+                            floor="First";
+                            break;
+                        case "S":
+                            floor="Second";
+                            break;
+                    }
+                    
+                    switch (roomArray[1]){
+                        case "N":
+                            corridor="North";
+                            break;
+                        case "E":
+                            corridor="East";
+                            break;
+                        case "S":
+                            corridor="South";
+                            break;
+                        case "W":
+                            corridor="West";
+                            break;
+                        case "C":
+                            corridor="Centre";
+                            break;
+                    }
+                    
+                    if(!(floor in objcircuit)){
+                        objcircuit[floor] = {"Total":recenttotal};
+                    }
+                    else{
+                        objcircuit[floor].Total += recenttotal;
+                    }
+                    
+                    if(!(corridor in objcircuit[floor])){
+                        objcircuit[floor][corridor] = {"Total":recenttotal};
+                    }
+                    else{
+                        objcircuit[floor][corridor].Total += recenttotal;
+                    }
+                    
+                    if(!(room in objcircuit[floor][corridor])){
+                        //objfloor[floor][corridor][room] = {"Total":0.0};
+                        objsensor = {"Total":recenttotal};
+                        objsensor[description] = path;
+                        objcircuit[floor][corridor][room] = objsensor;
+                        //console.log("is"+objsensor.Total);
+                    }
+                    else{
+                        objsensor = {};
+                        objsensor = objcircuit[floor][corridor][room];
+                        objsensor[description] = path;
+                        //console.log("was:"+objsensor.Total);
+                        objsensor.Total += recenttotal;
+                        //console.log("is now:"+objsensor.Total);
+                        objcircuit[floor][corridor][room] = objsensor;
+                    }
+                    
+                }
+                //console.log(objfloor);
+                treedata.Electricity = new Object();
+                treedata.Electricity = objcircuit;
+                return treedata;
             }
         }
         
@@ -188,6 +294,11 @@
                 else if (nm=="Lighting & Power"){nodes[i].toggle();}
                 else if (nm=="Lighting"){nodes[i].toggle();}
                 else if (nm=="Sockets"){nodes[i].toggle();}
+                
+                if (nm == "Total"){
+                    nodes[i].nodeName = "Total: "+Math.round(nodes[i].nodeValue*100)/100+" kWh";
+                    //console.log(nm);
+                }
             }
             
             layout.link.add(pv.Line);
@@ -330,8 +441,8 @@
             }
             //debugger;
             
-            $('#overallavgkwh').text('Average power for entire data set: '+plotArray[0].avgtotal+" kW.");
-            $('#overalltotkwh').text('Total energy in data set: '+plotArray[0].totalenergy+" kWh.");
+            //$('#overallavgkwh').text('Average power for entire data set: '+plotArray[0].avgtotal+" kW.");
+            //$('#overalltotkwh').text('Total energy in data set: '+plotArray[0].totalenergy+" kWh.");
             
             //look through all data arrays to find earliest TS, latest TS.
             //combine data arrays to one 3D array for plotting.
@@ -393,7 +504,7 @@
                 .right(20)
                 .top(5);
             
-            var dd;
+            
             
             /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
@@ -401,7 +512,7 @@
                     var d1 = x.invert(i.x),
                         d2 = x.invert(i.x + i.dx);
                     dd = new Array();
-                    for(var j=0; j<data.length; j++){
+                    for(var j=0; j<data.length; j++){ //for each line in the data array
                         dd.push(data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
                             pv.search.index(data[j], d2, function(d) d.x) + 1));
                     }
@@ -468,17 +579,61 @@
                 .overflow("hidden");
             
             //var selecteddata = focus.innit();
-            //var selected = (function() focus.init());
+            //var selected = focus.init();
+            //console.log(selected);
+            //ddobj = {};
+            //for(var x=0;x<plotArray.length;x++){
+            //    ddobj[x] = dd[x];
+            //}
             
-            
-            console.log(plotArray.length);
+            //console.log(plotArray.length);
             //for(var a=0;a<plotArray.length;a++){
+            //debugger;
+            if(plotArray.length == 1){
                 panel.add(pv.Line)
-                    .data(function() focus.init()[0])
-                    .left(function(d) fx(d.x))
-                    .bottom(function(d) fy(d.y))
-                    .strokeStyle("orange")
+                    .data(function() {return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
                     .lineWidth(2);
+            }
+            else if(plotArray.length == 2){
+                panel.add(pv.Line)
+                    .data(function() {return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function() {return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+            }
+            else if(plotArray.length == 3){
+                panel.add(pv.Line)
+                    .data(function() {return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function() {return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function() {return focus.init()[2];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[2])
+                    .lineWidth(2);
+            }
+            
+            //debugger;
+                //console.log(a);
             //}
             //if(plotArray.length = 2){
             //    panel.add(pv.Line)
