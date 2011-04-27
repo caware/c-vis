@@ -172,83 +172,85 @@
             else if (treeuse.checked){
                 //If tree is displayed by use:
                 var objcircuit = {"Total":0.0};
-                //var objfloor = {};
+                //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     if (elecsensors[i].sensor == "S-m257"){
                         objcircuit.Total = elecsensors[i].recenttotal;
                     }
-                    var roomArray = elecsensors[i].room.split("");
-                    var description = elecsensors[i].description;
-                    var room = elecsensors[i].room;
-                    var path = elecsensors[i].path;
-                    var recenttotal = elecsensors[i].recenttotal;
-                    var floor="";
-                    var corridor="";
-                    
-                    var objroom = new Object();
-                    var objcorridor = new Object();
-                    //console.log(roomArray);
-                    switch (roomArray[0]){
-                        case "G":
-                            floor="Ground";
-                            break;
-                        case "F":
-                            floor="First";
-                            break;
-                        case "S":
-                            floor="Second";
-                            break;
+                    else {
+                        var roomArray = elecsensors[i].room.split("");
+                        var description = elecsensors[i].description;
+                        var room = elecsensors[i].room;
+                        var path = elecsensors[i].path;
+                        var recenttotal = elecsensors[i].recenttotal;
+                        var floor="";
+                        //var corridor="";
+                        
+                        var objroom = new Object();
+                        var objfloor = new Object();
+                        //console.log(roomArray);
+                        switch (roomArray[0]){
+                            case "G":
+                                floor="Ground";
+                                break;
+                            case "F":
+                                floor="First";
+                                break;
+                            case "S":
+                                floor="Second";
+                                break;
+                        }
+                        
+                        //switch (roomArray[1]){
+                        //    case "N":
+                        //        corridor="North";
+                        //        break;
+                        //    case "E":
+                        //        corridor="East";
+                        //        break;
+                        //    case "S":
+                        //        corridor="South";
+                        //        break;
+                        //    case "W":
+                        //        corridor="West";
+                        //        break;
+                        //    case "C":
+                        //        corridor="Centre";
+                        //        break;
+                        //}
+                        
+                        if(!(description in objcircuit)){
+                            objcircuit[description] = {"Total":recenttotal};
+                        }
+                        else{
+                            objcircuit[description].Total += recenttotal;
+                        }
+                        
+                        if(!(floor in objcircuit[description])){
+                            objcircuit[description][floor] = {"Total":recenttotal};
+                        }
+                        else{
+                            objcircuit[description][floor].Total += recenttotal;
+                        }
+                        
+                        if(!(room in objcircuit[description][floor])){
+                            objcircuit[description][floor][room] = path;
+                            //objroom = {"Total":recenttotal};
+                            //objsensor[description] = path;
+                            //objcircuit[floor][corridor][room] = objsensor;
+                            //console.log("is"+objsensor.Total);
+                        }
+                        else{
+                            objcircuit[description][floor][room+"?2"] = path;
+                            //objroom = {};
+                            //objroom = objcircuit[floor][corridor][room];
+                            //objsensor[description] = path;
+                            console.log("Sensor "+elecsensors[i].path+" in room "+room+" already in object!");
+                            //objsensor.Total += recenttotal;
+                            //console.log("is now:"+objsensor.Total);
+                            //objcircuit[floor][corridor][room] = objsensor;
+                        }
                     }
-                    
-                    switch (roomArray[1]){
-                        case "N":
-                            corridor="North";
-                            break;
-                        case "E":
-                            corridor="East";
-                            break;
-                        case "S":
-                            corridor="South";
-                            break;
-                        case "W":
-                            corridor="West";
-                            break;
-                        case "C":
-                            corridor="Centre";
-                            break;
-                    }
-                    
-                    if(!(floor in objcircuit)){
-                        objcircuit[floor] = {"Total":recenttotal};
-                    }
-                    else{
-                        objcircuit[floor].Total += recenttotal;
-                    }
-                    
-                    if(!(corridor in objcircuit[floor])){
-                        objcircuit[floor][corridor] = {"Total":recenttotal};
-                    }
-                    else{
-                        objcircuit[floor][corridor].Total += recenttotal;
-                    }
-                    
-                    if(!(room in objcircuit[floor][corridor])){
-                        //objfloor[floor][corridor][room] = {"Total":0.0};
-                        objsensor = {"Total":recenttotal};
-                        objsensor[description] = path;
-                        objcircuit[floor][corridor][room] = objsensor;
-                        //console.log("is"+objsensor.Total);
-                    }
-                    else{
-                        objsensor = {};
-                        objsensor = objcircuit[floor][corridor][room];
-                        objsensor[description] = path;
-                        //console.log("was:"+objsensor.Total);
-                        objsensor.Total += recenttotal;
-                        //console.log("is now:"+objsensor.Total);
-                        objcircuit[floor][corridor][room] = objsensor;
-                    }
-                    
                 }
                 //console.log(objfloor);
                 treedata.Electricity = new Object();
@@ -349,13 +351,12 @@
                     plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue+year+"-"+month+".json";
                     plot.id = n.index;
                     chart(plot);
-                    //console.log(plot.url);
+                    console.log("Clicked: "+plot.url);
                 }
                 return layout.reset().root;
             }
             
         }
-        
         
         
         
@@ -583,7 +584,7 @@
                 .overflow("hidden");
             
             //var selecteddata = focus.innit();
-            //var selected = focus.init();
+            //var selected = focus.init;
             //console.log(selected);
             //ddobj = {};
             //for(var x=0;x<plotArray.length;x++){
@@ -591,57 +592,115 @@
             //}
             
             //console.log(plotArray.length);
-            //for(var a=0;a<plotArray.length;a++){
-            //    panel.add(pv.Line)
-            //        .data(function() {return focus.init()[a];})
-            //        .left(function(d){ return fx(d.x); })
-            //        .bottom(function(d){ return fy(d.y); })
-            //        .strokeStyle(plotColours[0])
-            //        .lineWidth(2);
-            //}
+            for(var a=0;a<plotArray.length;a++){
+                panel.add(pv.Line)
+                    .data(function() {return focus.init();})
+                    .left(function(d){return fx(d[a].x); })
+                    .bottom(function(d){return fy(d[a].y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+            }
             
-            if(plotArray.length == 1){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-            }
-            else if(plotArray.length == 2){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-            }
-            else if(plotArray.length == 3){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-            }
+             //if(plotArray.length == 1){
+             //    panel.add(pv.Line)
+             //        .data(function(){return focus.init();})
+             //        .left(function(d){ return fx(d.x); })
+             //        .bottom(function(d){ return fy(d.y); })
+             //        .strokeStyle(plotColours[0])
+             //        .lineWidth(2);
+             //}
+//             else if(plotArray.length == 2){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//             }
+//             else if(plotArray.length == 3){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//             }
+//             else if(plotArray.length == 4){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//             }
+//             else if(plotArray.length == 5){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//             }
             
             //debugger;
                 //console.log(a);
@@ -747,17 +806,18 @@
             {id:"PlotColour", name:"Colour", field:"colour", width:50},
             {id:"Room", name:"Room", field:"room", width:45},
             {id:"Description", name:"Description", field:"description", width:240},
-            {id:"StartMonth", name:"Start", field:"startmonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:40},
-            {id:"EndMonth", name:"End", field:"endmonth", options:"Jan,Feb.Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:40},
+            {id:"StartMonth", name:"Start", field:"startmonth", options:"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:40},
+            {id:"EndMonth", name:"End", field:"endmonth", options:"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:40},
             {id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
             {id:"kWTotal", name:"Avg kW Total", field:"avgtotal", width:95},
             {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126},
+            //{id:"Data", name:"Raw Data", field:"rawdata", width50},
         ];
         
         var options = {
             enableCellNavigation: true,
             enableColumnReorder: false,
-            asyncEditorLoading: true,
+            //asyncEditorLoading: true,
             editable: true
         };
         
@@ -778,7 +838,7 @@
                     v = opt_values[i];
                     option_str += "<OPTION value='"+v+"'>"+v+"</OPTION>";
                 }
-                $select = $("<SELECT tabIndex='0' class='editor-select'>"+ option_str +"</SELECT>");
+                $select = $("<SELECT class='editor-select'>"+ option_str +"</SELECT>");
                 $select.appendTo(args.container);
                 $select.focus();
             };
