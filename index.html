@@ -63,7 +63,7 @@
         
         
         function buildTree(){
-        //get the sensor index file and build and display the sensor tree.
+        //Get the sensor index file and build and display the sensor tree.
             tree(getSensors(indexUrl));
         }
         
@@ -72,19 +72,22 @@
             var jsonData = $.ajax({ type: "GET", url: indexfile ,async: false }).responseText;
             var sensorindex = jQuery.parseJSON(jsonData);
             
+            //Get array of sensors from index file, and create blank destination object
             var elecsensors = sensorindex.sensors.elec;
             var treedata = new Object();
-            //debugger;
-            //console.log(elecsensors);
             
+            //If tree is displayed geographically
             if (treegeo.checked){
+                //Create object to hold floors
                 var objfloor = {"Total":0.0};
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
-                    if (elecsensors[i].sensor == "S-m257"){
+                    if (elecsensors[i].sensor == "S-m257"){ 
+                        //If sensor = main power, assign its total to the toplevel total
                         objfloor.Total = elecsensors[i].recenttotal;
                     }
-                    var roomArray = elecsensors[i].room.split("");
+                    var roomArray = elecsensors[i].room.split("");//Split the room number into an array
+                    //Get current sensor information
                     var description = elecsensors[i].description;
                     var room = elecsensors[i].room;
                     var path = elecsensors[i].path;
@@ -92,9 +95,10 @@
                     var floor="";
                     var corridor="";
                     
+                    //Create holding objects for rooms and corridors
                     var objroom = new Object();
                     var objcorridor = new Object();
-                    //console.log(roomArray);
+                    //Identify rooms
                     switch (roomArray[0]){
                         case "G":
                             floor="Ground";
@@ -125,6 +129,8 @@
                             break;
                     }
                     
+                    //If floors or corridors do not yet exist in the tree, create them
+                    //If they do, update their totals with the current sensors recenttotal.
                     if(!(floor in objfloor)){
                         objfloor[floor] = {"Total":recenttotal};
                     }
@@ -140,13 +146,14 @@
                     }
                     
                     if(!(room in objfloor[floor][corridor])){
-                        //objfloor[floor][corridor][room] = {"Total":0.0};
+                        //If room does not exist, create it and add a sensor into it.
                         objsensor = {"Total":recenttotal};
                         objsensor[description] = path;
                         objfloor[floor][corridor][room] = objsensor;
                         //console.log("is"+objsensor.Total);
                     }
                     else{
+                        //If the room does exist, add the current sensor to it, and update it's total
                         objsensor = {};
                         objsensor = objfloor[floor][corridor][room];
                         objsensor[description] = path;
@@ -163,6 +170,7 @@
                 return treedata;
             }
             else if (treeuse.checked){
+                //If tree is displayed by use:
                 var objcircuit = {"Total":0.0};
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
@@ -250,16 +258,12 @@
         }
         
         function tree(sensortree){
+            //Create tree from sensor index file.
             
             //var treeURL = "rooms.json";
             //if (treegeo.checked){treeURL = "rooms.json";}
             //else {treeURL = "uses.json";}
             
-            
-            //compare teh two paths being cretaed here with a console.log of both.
-            
-            //var JSONdata = $.ajax({ type: "GET", url: treeURL,async: false }).responseText;
-            //var rooms = jQuery.parseJSON(JSONdata);
             var root = pv.dom(sensortree)
                 .root("Sensors");
             
@@ -588,10 +592,17 @@
             
             //console.log(plotArray.length);
             //for(var a=0;a<plotArray.length;a++){
-            //debugger;
+            //    panel.add(pv.Line)
+            //        .data(function() {return focus.init()[a];})
+            //        .left(function(d){ return fx(d.x); })
+            //        .bottom(function(d){ return fy(d.y); })
+            //        .strokeStyle(plotColours[0])
+            //        .lineWidth(2);
+            //}
+            
             if(plotArray.length == 1){
                 panel.add(pv.Line)
-                    .data(function() {return focus.init()[0];})
+                    .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[0])
@@ -599,13 +610,13 @@
             }
             else if(plotArray.length == 2){
                 panel.add(pv.Line)
-                    .data(function() {return focus.init()[0];})
+                    .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[0])
                     .lineWidth(2);
                 panel.add(pv.Line)
-                    .data(function() {return focus.init()[1];})
+                    .data(function(){return focus.init()[1];})
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[1])
@@ -613,19 +624,19 @@
             }
             else if(plotArray.length == 3){
                 panel.add(pv.Line)
-                    .data(function() {return focus.init()[0];})
+                    .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[0])
                     .lineWidth(2);
                 panel.add(pv.Line)
-                    .data(function() {return focus.init()[1];})
+                    .data(function(){return focus.init()[1];})
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[1])
                     .lineWidth(2);
                 panel.add(pv.Line)
-                    .data(function() {return focus.init()[2];})
+                    .data(function(){return focus.init()[2];})
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[2])
