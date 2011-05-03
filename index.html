@@ -67,14 +67,26 @@
         //Date formats for chart tick labels
         var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
         var overallDateFormat = pv.Format.date("%d-%b '%y");
-
+        
+        var sensors;
+        
         
         buildTree(); 
         
         
         function buildTree(){
         //Get the sensor index file and build and display the sensor tree.
-            tree(getSensors(indexUrl));
+            sensors = getSensors(indexUrl);
+            tree(sensors);
+        }
+        
+        function refreshTree(){
+            if (typeof sensors != "underfined"){  
+                tree(sensors);
+            }
+            else{
+                console.log("getSensors not yet called!");
+            }
         }
         
         function getSensors(indexfile){
@@ -270,7 +282,7 @@
         }
         
         function tree(sensortree){
-            //Create tree from sensor index file.
+            //Create tree from sensor index object.
             
             //var treeURL = "rooms.json";
             //if (treegeo.checked){treeURL = "rooms.json";}
@@ -290,6 +302,68 @@
                 .nodes(function() {return root.nodes();})
                 .depth(24)
                 .breadth(24);
+            
+            
+            //layout.link.add(pv.Line);
+            
+            var node = layout.node.add(pv.Panel)
+               .top(function(n){return(n.y-6);})
+               .height(12)
+               .right(6)
+               .strokeStyle(null)
+               .events("all")
+               .event("mousedown", toggle);
+            
+            var searchColours = false;
+            if (plotArray.length > 0){
+                searchColours = true;
+                
+            }
+            
+            node.anchor("left").add(pv.Dot)
+                .radius("7")
+                //.shape("triangle")
+                .shape(function(n){
+                    if (n.nodeName.split(":",1)[0] == "Total"){return "circle";}
+                    //else if  == "Ground" || n.nodeName == "First" || n.nodeName == "Second" || n.nodeName == "Sensors" || n.nodeName == "Electricity"){
+                    //    return "triangle";
+                    //}
+                    else {return "triangle";}
+                    })
+                .top(15)
+                //.angle(Math.PI*2)
+                .angle(function(n){
+                    if (n.toggled){return (Math.PI*1.5); }
+                    else {return (Math.PI*2); }
+                    })
+                .strokeStyle("#999")
+                //.fillStyle(function(n) n.toggled ? "#1f77b4" : n.firstChild ? "#aec7e8" : "#ff7f0e")
+                //.fillStyle(function(n){
+                //    if (n.toggled){ return "#AAAAAA"; }
+                //    else if (n.firstChild){ return "#000000"; }
+                //    else{return "#FFFFFF";}
+                //    })
+                .fillStyle(function(n){
+                    //if (searchColours){
+                        for(x=0; x<plotArray.length; x++){
+                            if(plotArray[x].id == n.index){
+                                console.log(n.index+" found");
+                                console.log("used "+plotArray[x].colour);
+                                return plotArray[x].colour;
+                            }
+                        }
+                    //}
+                    //else{
+                        if (n.nodeName.split(":",1)[0] == "Total"){return "#FFFFFF";}
+                        if (n.firstChild){ return "#AAAAAA"; }
+                        else {return "#FFFFFF";}
+                    //}
+                    return "#FF0000";
+                    })
+                .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
+                .anchor("right").add(pv.Label)
+                    .text(function(n){return n.nodeName;})
+                    
             
             var nodes = root.nodes();
             for(var i=0; i<nodes.length;i++){
@@ -317,25 +391,6 @@
                 }
             }
             
-            layout.link.add(pv.Line);
-            
-            var node = layout.node.add(pv.Panel)
-               .top(function(n){return(n.y-6);})
-               .height(12)
-               .right(6)
-               .strokeStyle(null)
-               .events("all")
-               .event("mousedown", toggle);
-            
-            node.anchor("left").add(pv.Dot)
-                .radius("7")
-                .strokeStyle("#1f77b4")
-                .fillStyle(function(n) n.toggled ? "#1f77b4" : n.firstChild ? "#aec7e8" : "#ff7f0e")
-                .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
-                .anchor("right").add(pv.Label)
-                .text(function(n){return n.nodeName;})
-                .font("12px/14px Helvetica, Arial, Sans-serif");
-            
             treevis.render();
             
             function toggle(n) {
@@ -344,7 +399,7 @@
                 //if(typeof n.nodeValue == String){
                     var todaydate = new Date();
                     var year = todaydate.getFullYear();
-                    var month = (todaydate.getMonth()+1);
+                    var month = (todaydate.getMonth());//+1);
                     if (month<10){
                         month = "0"+month;
                     }
@@ -362,6 +417,8 @@
                     plot.id = n.index;
                     chart(plot);
                     console.log("Clicked: "+plot.url);
+                    console.log("Clicked ID: "+plot.id);
+                    refreshTree();
                 }
                 return layout.reset().root;
             }
@@ -460,7 +517,7 @@
             //$('#overalltotkwh').text('Total energy in data set: '+plotArray[0].totalenergy+" kWh.");
             
             //look through all data arrays to find earliest TS, latest TS.
-            //combine data arrays to one 3D array for plotting.
+            //combine data arrays to one 2D array for plotting.
             
             var dataArray = new Array();
             var start = null;
@@ -570,7 +627,7 @@
                     //else if (scaleoriginal.checked){
                     fy.domain(y.domain());//}
                     //debugger;
-                    console.log("dd.length:"+dd.length);
+                    //console.log("dd.length:"+dd.length);
                     return dd;
                 })
                 .top(0)
@@ -868,6 +925,7 @@
             this.loadValue = function(item) {
                 defaultValue = item[args.column.field];
                 $select.val(defaultValue);
+                console.log(defaultValue);
             };
             
             this.serializeValue = function() {
@@ -880,6 +938,7 @@
             
             this.applyValue = function(item,state) {
                 item[args.column.field] = state;
+                //console.log(item+"=>"+state);
             };
             
             this.isValueChanged = function() {
