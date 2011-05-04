@@ -35,6 +35,7 @@
         </div>
     </noscript>
     <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
+    <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory. More...</p></div>
     <div style="float:right; width:350px; text-align:right;padding-right:20;">
         <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
         <label for="scalefit">Scale to fit</label>
@@ -60,19 +61,26 @@
         //Set plot colours
         var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
         
-        //Vars for array of plots, and char visulisation
-        var plotArray = new Array();
-        var vis;
-        
         //Date formats for chart tick labels
         var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
         var overallDateFormat = pv.Format.date("%d-%b '%y");
         
+        
+        
+        //Vars for array of plots, and chart visulisation
+        var plotArray = new Array();
+        var vis;
+        
         var sensors;
         
+        //var sensorTree; //Variable to store current sensor tree
+        //var foundSensors; //Variable to store all availible sensors
+        //var cachedReadings = {}; //Object to store previously fetched sensor data
+        
+        
+        //loadSensors();
         
         buildTree(); 
-        
         
         function buildTree(){
         //Get the sensor index file and build and display the sensor tree.
@@ -81,6 +89,7 @@
         }
         
         function refreshTree(){
+        //Check that the sensors index file has been run at least once to collect data, and refresh the tree
             if (typeof sensors != "underfined"){  
                 tree(sensors);
             }
@@ -327,14 +336,13 @@
                     if (n.nodeName.split(":",1)[0] == "Total"){return "circle";}
                     //else if  == "Ground" || n.nodeName == "First" || n.nodeName == "Second" || n.nodeName == "Sensors" || n.nodeName == "Electricity"){
                     //    return "triangle";
-                    //}
+                    if (!n.toggled && !n.firstChild){return "square";}
                     else {return "triangle";}
                     })
                 .top(15)
-                //.angle(Math.PI*2)
                 .angle(function(n){
                     if (n.toggled){return (Math.PI*1.5); }
-                    else {return (Math.PI*2); }
+                    //else {return (Math.PI*2); }
                     })
                 .strokeStyle("#999")
                 //.fillStyle(function(n) n.toggled ? "#1f77b4" : n.firstChild ? "#aec7e8" : "#ff7f0e")
@@ -344,7 +352,6 @@
                 //    else{return "#FFFFFF";}
                 //    })
                 .fillStyle(function(n){
-                    //if (searchColours){
                         for(x=0; x<plotArray.length; x++){
                             if(plotArray[x].id == n.index){
                                 console.log(n.index+" found");
@@ -352,17 +359,15 @@
                                 return plotArray[x].colour;
                             }
                         }
-                    //}
-                    //else{
                         if (n.nodeName.split(":",1)[0] == "Total"){return "#FFFFFF";}
                         if (n.firstChild){ return "#AAAAAA"; }
                         else {return "#FFFFFF";}
-                    //}
                     return "#FF0000";
                     })
                 .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
                 .anchor("right").add(pv.Label)
                     .text(function(n){return n.nodeName;})
+                    .font("12px/14px Helvetica, Arial, Sans-serif");
                     
             
             var nodes = root.nodes();
@@ -384,7 +389,12 @@
                 else if (nm=="Lighting & Power"){nodes[i].toggle();}
                 else if (nm=="Lighting"){nodes[i].toggle();}
                 else if (nm=="Sockets"){nodes[i].toggle();}
-                
+                else if (nm=="Power"){nodes[i].toggle();}
+                else if (nm=="computers and A/C"){nodes[i].toggle();}
+                else if (nm=="Lighting and Power"){nodes[i].toggle();}
+                else if (nm=="kitchen plant"){nodes[i].toggle();}
+                else if (nm=="Machine room power"){nodes[i].toggle();}
+                else if (nm=="Lighting and roof A/C"){nodes[i].toggle();}
                 if (nm == "Total"){
                     nodes[i].nodeName = "Total: "+Math.round(nodes[i].nodeValue*100)/100+" kWh";
                     //console.log(nm);
