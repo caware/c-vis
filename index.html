@@ -10,17 +10,6 @@
     <script src="libs/slick.editors.js"></script>
     <script src="libs/slick.dataview.js"></script>
     
-    <script type="text/javascript">
-    //if (navigator.userAgent.indexOf("Firefox") != -1) {
-    //    try {
-    //        netscape.security.PrivilegeManager.enablePrivilege("UniversalBrowserRead");
-    //    } 
-    //    catch (e) {
-    //        alert("Permission UniversalBrowserRead denied -- not running Mozilla?");
-    //    }
-    //}
-    </script>
-    
     <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.5.custom.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>
@@ -238,24 +227,6 @@
                                 break;
                         }
                         
-                        //switch (roomArray[1]){
-                        //    case "N":
-                        //        corridor="North";
-                        //        break;
-                        //    case "E":
-                        //        corridor="East";
-                        //        break;
-                        //    case "S":
-                        //        corridor="South";
-                        //        break;
-                        //    case "W":
-                        //        corridor="West";
-                        //        break;
-                        //    case "C":
-                        //        corridor="Centre";
-                        //        break;
-                        //}
-                        
                         if(!(description in objcircuit)){
                             objcircuit[description] = {"Total":recenttotal};
                         }
@@ -305,10 +276,6 @@
         function tree(sensortree){
             //Create tree from sensor index object.
             
-            //var treeURL = "rooms.json";
-            //if (treegeo.checked){treeURL = "rooms.json";}
-            //else {treeURL = "uses.json";}
-            
             var root = pv.dom(sensortree)
                 .root("Sensors");
             
@@ -331,7 +298,7 @@
                .top(function(n){return(n.y-6);})
                .height(12)
                .right(6)
-               .strokeStyle(null)
+               .strokeStyle("none")
                .events("all")
                .event("mousedown", toggle);
             
@@ -351,26 +318,20 @@
                     if (!n.toggled && !n.firstChild){return "square";}
                     else {return "triangle";}
                     })
-                .top(15)
+                //.top(5)
+                .left(10)
                 .angle(function(n){
                     if (n.toggled){return (Math.PI*1.5); }
-                    //else {return (Math.PI*2); }
                     })
                 .strokeStyle("#999")
-                //.fillStyle(function(n) n.toggled ? "#1f77b4" : n.firstChild ? "#aec7e8" : "#ff7f0e")
-                //.fillStyle(function(n){
-                //    if (n.toggled){ return "#AAAAAA"; }
-                //    else if (n.firstChild){ return "#000000"; }
-                //    else{return "#FFFFFF";}
-                //    })
                 .fillStyle(function(n){
-                        for(x=0; x<plotArray.length; x++){
-                            if(plotArray[x].id == n.index){
-                                console.log(n.index+" found");
-                                console.log("used "+plotArray[x].colour);
-                                return plotArray[x].colour;
-                            }
-                        }
+                        //for(x=0; x<plotArray.length; x++){
+                        //    if(plotArray[x].id == n.index){
+                        //        console.log(n.index+" found");
+                        //        console.log("used "+plotArray[x].colour);
+                        //        return plotArray[x].colour;
+                        //    }
+                        //}
                         if (n.nodeName.split(":",1)[0] == "Total"){return "#FFFFFF";}
                         if (n.firstChild){ return "#AAAAAA"; }
                         else {return "#FFFFFF";}
@@ -409,7 +370,6 @@
                 else if (nm=="Lighting and roof A/C"){nodes[i].toggle();}
                 if (nm == "Total"){
                     nodes[i].nodeName = "Total: "+Math.round(nodes[i].nodeValue*100)/100+" kWh";
-                    //console.log(nm);
                 }
             }
             
@@ -425,7 +385,6 @@
                     if (month<10){
                         month = "0"+month;
                     }
-                    //console.log(year+"-"+month+".json");
                     var plot = {"id":0,"url":new Array(),"description":"",
                         "startmonth":"Feb", "endmonth":"Nov",
                         "colour":"Colour", "room":"Room",
@@ -434,7 +393,6 @@
                         "maxtime":0, "mintime":0,
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
-                    //console.log(n.nodeValue);
                     plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue+year+"-"+month+".json";
                     plot.id = n.index;
                     chart(plot);
@@ -451,6 +409,7 @@
         
         
         function chart(plotline) {
+        //Add plotline to plotArray and chart the graphs.
             
             var found = false;
             for(var i=0; i<plotArray.length; i++){
@@ -477,8 +436,9 @@
             
             for(var i=0;i<plotArray.length;i++){
                 for(var x=0;x<plotArray[i].url.length;x++){
-                    var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url[x],async: false }).responseText;
-                     jsonArray[i][x] = jQuery.parseJSON(JSONdata);
+                    
+                    //var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url[x],async: false }).responseText;
+                     jsonArray[i][x] = getJson(plotArray[i].url[x]);//jQuery.parseJSON(JSONdata);
                 }
                 var tmptotal = 0;
                 var tmpdata = new Array();
@@ -693,6 +653,18 @@
             //        .strokeStyle(plotColours[0])
             //        .lineWidth(2);
             //}
+            //console.log("plotArray len: "+plotArray.length);
+            //for (var i=0; i < plotArray.length; i++) {
+            //    console.log("called!:"+focus.init()[0]);
+            //    var count = i;
+            //    panel.add(pv.Line)
+            //        .data(function(){return focus.init()[0];})
+            //        .left(function(d){ return fx(d.x); })
+            //        .bottom(function(d){ return fy(d.y); })
+            //        .strokeStyle(plotColours[0])
+            //        .lineWidth(2);
+            //};
+            
             
             if(plotArray.length == 1){
                 panel.add(pv.Line)
