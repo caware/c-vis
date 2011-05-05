@@ -98,10 +98,16 @@
             }
         }
         
+        function getJson(url){
+        //Fetches a json file and returns the parsed object
+            var jsonData = $.ajax({ type: "GET", url: url,async: false }).responseText;
+            return jQuery.parseJSON(jsonData);
+        }
+        
         function getSensors(indexfile){
         //Get the sensor index file and build the JS object tree from it.
-            var jsonData = $.ajax({ type: "GET", url: indexfile ,async: false }).responseText;
-            var sensorindex = jQuery.parseJSON(jsonData);
+            //var jsonData = $.ajax({ type: "GET", url: indexfile ,async: false }).responseText;
+            var sensorindex = getJson(indexfile)
             
             //Get array of sensors from index file, and create blank destination object
             var elecsensors = sensorindex.sensors.elec;
@@ -132,31 +138,31 @@
                     //Identify rooms
                     switch (roomArray[0]){
                         case "G":
-                            floor="Ground";
+                            floor="Ground Floor";
                             break;
                         case "F":
-                            floor="First";
+                            floor="First Floor";
                             break;
                         case "S":
-                            floor="Second";
+                            floor="Second Floor";
                             break;
                     }
                     
                     switch (roomArray[1]){
                         case "N":
-                            corridor="North";
+                            corridor="North Corridor";
                             break;
                         case "E":
-                            corridor="East";
+                            corridor="East Corridor";
                             break;
                         case "S":
-                            corridor="South";
+                            corridor="South Corridor";
                             break;
                         case "W":
-                            corridor="West";
+                            corridor="West Corridor";
                             break;
                         case "C":
-                            corridor="Centre";
+                            corridor="Centre Corridor";
                             break;
                     }
                     
@@ -222,13 +228,13 @@
                         //console.log(roomArray);
                         switch (roomArray[0]){
                             case "G":
-                                floor="Ground";
+                                floor="Ground Floor";
                                 break;
                             case "F":
-                                floor="First";
+                                floor="First Floor";
                                 break;
                             case "S":
-                                floor="Second";
+                                floor="Second Floor";
                                 break;
                         }
                         
@@ -258,6 +264,12 @@
                         }
                         
                         if(!(floor in objcircuit[description])){
+                            //var tmpfloor = "Ground Floor";
+                            //var tmpfloor2 = "First Floor";
+                            //var tmpfloor3 = "Second Floor";
+                            //objcircuit[description][tmpfloor] = {};
+                            //objcircuit[description].[tmpfloor[1]] = {};
+                            //objcircuit[description].[tmpfloor[2]] = {};
                             objcircuit[description][floor] = {"Total":recenttotal};
                         }
                         else{
@@ -373,14 +385,14 @@
             var nodes = root.nodes();
             for(var i=0; i<nodes.length;i++){
                 var nm = nodes[i].nodeName
-                if (nm=="Ground"){nodes[i].toggle();}
-                else if (nm=="First"){nodes[i].toggle();}
-                else if (nm=="Second"){nodes[i].toggle();}
-                else if (nm=="North"){nodes[i].toggle();}
-                else if (nm=="South"){nodes[i].toggle();}
-                else if (nm=="East"){nodes[i].toggle();}
-                else if (nm=="West"){nodes[i].toggle();}
-                else if (nm=="Centre"){nodes[i].toggle();}
+                if (nm=="Ground Floor"){nodes[i].toggle();}
+                else if (nm=="First Floor"){nodes[i].toggle();}
+                else if (nm=="Second Floor"){nodes[i].toggle();}
+                else if (nm=="North Corridor"){nodes[i].toggle();}
+                else if (nm=="South Corridor"){nodes[i].toggle();}
+                else if (nm=="East Corridor"){nodes[i].toggle();}
+                else if (nm=="West Corridor"){nodes[i].toggle();}
+                else if (nm=="Centre Corridor"){nodes[i].toggle();}
                 else if (nm=="Kitchen"){nodes[i].toggle();}
                 else if (nm=="External"){nodes[i].toggle();}
                 else if (nm=="Computers"){nodes[i].toggle();}
