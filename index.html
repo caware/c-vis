@@ -325,13 +325,21 @@
                     })
                 .strokeStyle("#999")
                 .fillStyle(function(n){
-                        //for(x=0; x<plotArray.length; x++){
-                        //    if(plotArray[x].id == n.index){
-                        //        console.log(n.index+" found");
-                        //        console.log("used "+plotArray[x].colour);
-                        //        return plotArray[x].colour;
-                        //    }
-                        //}
+                    var todaydate = new Date();
+                    var year = todaydate.getFullYear();
+                    var month = (todaydate.getMonth());//+1);
+                    if (month<10){
+                        month = "0"+month;
+                    }
+                        for(x=0; x<plotArray.length; x++){
+                            for(y=0; y<plotArray[x].url.length; y++){
+                                if(plotArray[x].url[y] == "http://www.cl.cam.ac.uk/meters"+n.nodeValue){
+                                //console.log(n.index+" found");
+                                //console.log("used "+plotArray[x].colour);
+                                    return plotArray[x].colour;
+                                }
+                            }
+                        }
                         if (n.nodeName.split(":",1)[0] == "Total"){return "#FFFFFF";}
                         if (n.firstChild){ return "#AAAAAA"; }
                         else {return "#FFFFFF";}
@@ -386,14 +394,14 @@
                         month = "0"+month;
                     }
                     var plot = {"id":0,"url":new Array(),"description":"",
-                        "startmonth":"Feb", "endmonth":"Nov",
+                        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
                         "colour":"Colour", "room":"Room",
                         "circuit":"Circuit", "avgselected":10.0,
                         "avgtotal":15.0, "totalenergy":20.0,
                         "maxtime":0, "mintime":0,
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
-                    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue+year+"-"+month+".json";
+                    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;//+year+"-"+month+".json";
                     plot.id = n.index;
                     chart(plot);
                     console.log("Clicked: "+plot.url);
@@ -435,11 +443,12 @@
             var jsonArray = new Array([],[],[],[],[]);
             
             for(var i=0;i<plotArray.length;i++){
-                for(var x=0;x<plotArray[i].url.length;x++){
-                    
-                    //var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url[x],async: false }).responseText;
-                     jsonArray[i][x] = getJson(plotArray[i].url[x]);//jQuery.parseJSON(JSONdata);
-                }
+                //for(var x=0;x<plotArray[i].url.length;x++){
+                //    
+                //    //var JSONdata = $.ajax({ type: "GET", url: plotArray[i].url[x],async: false }).responseText;
+                //     jsonArray[i][x] = getJson(plotArray[i].url[x]);//jQuery.parseJSON(JSONdata);
+                //}
+                jsonArray[i][0] = getJson(plotArray[i].url+plotArray[i].startmonthyear+".json");
                 var tmptotal = 0;
                 var tmpdata = new Array();
                 
