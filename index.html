@@ -386,6 +386,21 @@
                 if (nm == "Total"){
                     nodes[i].nodeName = "Total: "+Math.round(nodes[i].nodeValue*100)/100+" kWh";
                 }
+                //for(var x=0; x<plotArray.length; x++){
+                //    if(!nodes[i].toggled && "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue == plotArray[x].url[0]){// nodes[i].toggle();}
+                //    //console.log("http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue+" : "+plotArray[x].url[0]);
+                //        console.log("!!");
+                //        var tmpnode = nodes[i];
+                //        console.log(tmpnode);
+                //        while (tmpnode.parentNode){
+                //            console.log("!!!");
+                //            
+                //            tmpnode = tmpnode.parentNode;
+                //            console.log(tmpnode);
+                //        }
+                //        if (tmpnode.toggled){tmpnode.toggle();}
+                //    }
+                //}
             }
             
             treevis.render();
@@ -428,9 +443,10 @@
             
             var found = false;
             for(var i=0; i<plotArray.length; i++){
-                if(plotArray[i].id === plotline.id){
+                if(plotArray[i].url[0] == plotline.url[0]){
                     found = true;
-                    var rem = plotArray.splice(i,1)[0].id;
+                    var rem = plotArray.splice(i,1);
+                    //console.log("!? rem: "+rem);
                     break;
                 }
             }
