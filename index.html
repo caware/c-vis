@@ -111,6 +111,7 @@
                     if (elecsensors[i].sensor == "S-m257"){ 
                         //If sensor = main power, assign its total to the toplevel total
                         objfloor.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
+                        //objcircuit.Overall = elecsensors[i].path;
                     }
                     var roomArray = elecsensors[i].room.split("");//Split the room number into an array
                     //Get current sensor information
@@ -205,6 +206,7 @@
                 for(var i=0;i<elecsensors.length;i++){
                     if (elecsensors[i].sensor == "S-m257"){
                         objcircuit.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
+                        objcircuit.Overall = elecsensors[i].path;
                     }
                     else {
                         var roomArray = elecsensors[i].room.split("");
@@ -253,6 +255,7 @@
                             objcircuit[description][floor].Average += recentaverage;
                         }
                         
+                        //if (recenttotal = 0){
                         if(!(room in objcircuit[description][floor])){
                             objcircuit[description][floor][room] = path;
                             //objroom = {"Total":recenttotal};
@@ -372,16 +375,16 @@
                 else if (nm=="External"){nodes[i].toggle();}
                 else if (nm=="Computers"){nodes[i].toggle();}
                 else if (nm=="A/C"){nodes[i].toggle();}
-                else if (nm=="Computers & A/C"){nodes[i].toggle();}
+                else if (nm=="Server Power and Server A/C"){nodes[i].toggle();}
                 else if (nm=="Lighting & Power"){nodes[i].toggle();}
                 else if (nm=="Lighting"){nodes[i].toggle();}
                 else if (nm=="Sockets"){nodes[i].toggle();}
                 else if (nm=="Power"){nodes[i].toggle();}
                 else if (nm=="computers and A/C"){nodes[i].toggle();}
-                else if (nm=="Lighting and Power"){nodes[i].toggle();}
+                else if (nm=="Lighting and Sockets"){nodes[i].toggle();}
                 else if (nm=="kitchen plant"){nodes[i].toggle();}
                 else if (nm=="Machine room power"){nodes[i].toggle();}
-                else if (nm=="Lighting and roof A/C"){nodes[i].toggle();}
+                else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
                 if (nm == "Average"){
                     nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue*100)/100+" kW";
                 }
