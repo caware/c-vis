@@ -55,6 +55,7 @@ else:
                     mostrecentreading = True
                     for i in jsonfile['data']:
                         temptotal += i[1]
+                    datasize = len(jsonfile['data'])
                 
                 for sensor in elec:
                     if debug:
@@ -63,6 +64,7 @@ else:
                         sensor['readings'].append(filename)
                         if mostrecentreading:
                             sensor['recenttotal'] = temptotal
+                            sensor['datasize'] = datasize
                         if debug:
                             print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
                         alreadyfound = True
@@ -81,6 +83,7 @@ else:
                     tempsensor['readings'] = [filename]
                     if mostrecentreading:
                         tempsensor['recenttotal'] = temptotal
+                        tempsensor['datasize'] = datasize
                     #tempsensor['readings'].append(filename)
                     elec.append(tempsensor)
                     if debug:
