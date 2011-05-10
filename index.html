@@ -112,12 +112,12 @@
             //If tree is displayed geographically
             if (treegeo.checked){
                 //Create object to hold floors
-                var objfloor = {"Total":0.0};
+                var objfloor = {"Average":0.0};
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     if (elecsensors[i].sensor == "S-m257"){ 
                         //If sensor = main power, assign its total to the toplevel total
-                        objfloor.Total = elecsensors[i].recenttotal;
+                        objfloor.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
                     }
                     var roomArray = elecsensors[i].room.split("");//Split the room number into an array
                     //Get current sensor information
@@ -125,6 +125,9 @@
                     var room = elecsensors[i].room;
                     var path = elecsensors[i].path;
                     var recenttotal = elecsensors[i].recenttotal;
+                    var datasize = elecsensors[i].datasize;
+                    if (datasize > 0){ var recentaverage = recenttotal / datasize; }
+                    else { var recentaverage = 0; }
                     var floor="";
                     var corridor="";
                     
@@ -165,22 +168,22 @@
                     //If floors or corridors do not yet exist in the tree, create them
                     //If they do, update their totals with the current sensors recenttotal.
                     if(!(floor in objfloor)){
-                        objfloor[floor] = {"Total":recenttotal};
+                        objfloor[floor] = {"Average":recentaverage};
                     }
                     else{
-                        objfloor[floor].Total += recenttotal;
+                        objfloor[floor].Average += recentaverage;
                     }
                     
                     if(!(corridor in objfloor[floor])){
-                        objfloor[floor][corridor] = {"Total":recenttotal};
+                        objfloor[floor][corridor] = {"Average":recentaverage};
                     }
                     else{
-                        objfloor[floor][corridor].Total += recenttotal;
+                        objfloor[floor][corridor].Average += recentaverage;
                     }
                     
                     if(!(room in objfloor[floor][corridor])){
                         //If room does not exist, create it and add a sensor into it.
-                        objsensor = {"Total":recenttotal};
+                        objsensor = {"Average":recentaverage};
                         objsensor[description] = path;
                         objfloor[floor][corridor][room] = objsensor;
                         //console.log("is"+objsensor.Total);
@@ -191,7 +194,7 @@
                         objsensor = objfloor[floor][corridor][room];
                         objsensor[description] = path;
                         //console.log("was:"+objsensor.Total);
-                        objsensor.Total += recenttotal;
+                        objsensor.Average += recentaverage;
                         //console.log("is now:"+objsensor.Total);
                         objfloor[floor][corridor][room] = objsensor;
                     }
@@ -204,11 +207,11 @@
             }
             else if (treeuse.checked){
                 //If tree is displayed by use:
-                var objcircuit = {"Total":0.0};
+                var objcircuit = {"Average":0.0};
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     if (elecsensors[i].sensor == "S-m257"){
-                        objcircuit.Total = elecsensors[i].recenttotal;
+                        objcircuit.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
                     }
                     else {
                         var roomArray = elecsensors[i].room.split("");
@@ -216,6 +219,9 @@
                         var room = elecsensors[i].room;
                         var path = elecsensors[i].path;
                         var recenttotal = elecsensors[i].recenttotal;
+                        var datasize = elecsensors[i].datasize;
+                        if (datasize > 0){ var recentaverage = recenttotal / datasize; }
+                        else { var recentaverage = 0; }
                         var floor="";
                         //var corridor="";
                         
@@ -235,10 +241,10 @@
                         }
                         
                         if(!(description in objcircuit)){
-                            objcircuit[description] = {"Total":recenttotal};
+                            objcircuit[description] = {"Average":recentaverage};
                         }
                         else{
-                            objcircuit[description].Total += recenttotal;
+                            objcircuit[description].Average += recentaverage;
                         }
                         
                         if(!(floor in objcircuit[description])){
@@ -248,10 +254,10 @@
                             //objcircuit[description][tmpfloor] = {};
                             //objcircuit[description].[tmpfloor[1]] = {};
                             //objcircuit[description].[tmpfloor[2]] = {};
-                            objcircuit[description][floor] = {"Total":recenttotal};
+                            objcircuit[description][floor] = {"Average":recentaverage};
                         }
                         else{
-                            objcircuit[description][floor].Total += recenttotal;
+                            objcircuit[description][floor].Average += recentaverage;
                         }
                         
                         if(!(room in objcircuit[description][floor])){
@@ -319,7 +325,7 @@
                 .radius("7")
                 //.shape("triangle")
                 .shape(function(n){
-                    if (n.nodeName.split(":",1)[0] == "Total"){return "circle";}
+                    if (n.nodeName.split(" ",1)[0] == "Average"){return "circle";}
                     //else if  == "Ground" || n.nodeName == "First" || n.nodeName == "Second" || n.nodeName == "Sensors" || n.nodeName == "Electricity"){
                     //    return "triangle";
                     if (!n.toggled && !n.firstChild){return "square";}
@@ -347,7 +353,7 @@
                                 }
                             }
                         }
-                        if (n.nodeName.split(":",1)[0] == "Total"){return "#FFFFFF";}
+                        if (n.nodeName.split(" ",1)[0] == "Average"){return "#FFFFFF";}
                         if (n.firstChild){ return "#AAAAAA"; }
                         else {return "#FFFFFF";}
                     return "#FF0000";
@@ -383,8 +389,8 @@
                 else if (nm=="kitchen plant"){nodes[i].toggle();}
                 else if (nm=="Machine room power"){nodes[i].toggle();}
                 else if (nm=="Lighting and roof A/C"){nodes[i].toggle();}
-                if (nm == "Total"){
-                    nodes[i].nodeName = "Total: "+Math.round(nodes[i].nodeValue*100)/100+" kWh";
+                if (nm == "Average"){
+                    nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue*100)/100+" kW";
                 }
                 //for(var x=0; x<plotArray.length; x++){
                 //    if(!nodes[i].toggled && "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue == plotArray[x].url[0]){// nodes[i].toggle();}
@@ -407,7 +413,7 @@
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
-                if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 5) != "Total")){
+                if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 5) != "Average")){
                 //if(typeof n.nodeValue == String){
                     var todaydate = new Date();
                     var year = todaydate.getFullYear();
