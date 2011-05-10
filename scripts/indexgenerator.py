@@ -65,6 +65,11 @@ else:
                         if mostrecentreading:
                             sensor['recenttotal'] = temptotal
                             sensor['datasize'] = datasize
+                            sensorlabel = 'S-m' + labelsplit[0]
+                            sensor['sensor'] = sensorlabel
+                            sensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
+                            sensor['room'] = jsonfile['room']           
+                            sensor['description'] = jsonfile['description']
                         if debug:
                             print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
                         alreadyfound = True
@@ -75,16 +80,15 @@ else:
                         print 'sensor '+'S-m' + str(jsonfile['label'].split(' ', 1)[0])+' not found, adding' 
                     #if this is a new sensor, add its readings to elec.
                     tempsensor = {}
-                    sensorlabel = 'S-m' + labelsplit[0]
-                    tempsensor['sensor'] = sensorlabel
-                    tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
-                    tempsensor['room'] = jsonfile['room']           
-                    tempsensor['description'] = jsonfile['description']
                     tempsensor['readings'] = [filename]
                     if mostrecentreading:
                         tempsensor['recenttotal'] = temptotal
                         tempsensor['datasize'] = datasize
-                    #tempsensor['readings'].append(filename)
+                        sensorlabel = 'S-m' + labelsplit[0]
+                        tempsensor['sensor'] = sensorlabel
+                        tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
+                        tempsensor['room'] = jsonfile['room']           
+                        tempsensor['description'] = jsonfile['description']
                     elec.append(tempsensor)
                     if debug:
                         print 'New sensor found: '+str(tempsensor)

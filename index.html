@@ -385,6 +385,18 @@
                 if (nm == "Average"){
                     nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue*100)/100+" kW";
                 }
+                //for(x=0; x<plotArray.length; x++){
+                //    for(y=0; y<plotArray[x].url.length; y++){
+                //        if(plotArray[x].url[y] == "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue){
+                //            var tmpnode = nodes[i];
+                //            while (tmpnode.parentNode){
+                //                console.log(tmpnode);
+                //                tmpnode = tmpnode.parentNode;
+                //            }
+                //            console.log(tmpnode.nodeName);
+                //        }
+                //    }
+                //}
                 //for(var x=0; x<plotArray.length; x++){
                 //    if(!nodes[i].toggled && "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue == plotArray[x].url[0]){// nodes[i].toggle();}
                 //    //console.log("http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue+" : "+plotArray[x].url[0]);
@@ -410,7 +422,7 @@
                 //if(typeof n.nodeValue == String){
                     var todaydate = new Date();
                     var year = todaydate.getFullYear();
-                    var month = (todaydate.getMonth());//+1);
+                    var month = (todaydate.getMonth()+1);
                     if (month<10){
                         month = "0"+month;
                     }
@@ -423,7 +435,7 @@
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
                     plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;//+year+"-"+month+".json";
-                    plot.id = n.index;
+                    //plot.id = n.index;
                     chart(plot);
                     //console.log("Clicked: "+plot.url);
                     //console.log("Clicked ID: "+plot.id);
@@ -462,6 +474,11 @@
                 $('#chartdiv').empty();
                 drawgrid();
                 return 0;
+            }
+            else{
+                for(var i=0; i<plotArray.length; i++){
+                    plotArray[i].id = i;
+                }
             }
             
             var jsonArray = new Array([],[],[],[],[]);
