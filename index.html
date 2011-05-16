@@ -173,6 +173,7 @@
                     //If they do, update their totals with the current sensors recenttotal.
                     if(!(floor in objfloor)){
                         objfloor[floor] = {"Average":recentaverage};
+                        
                     }
                     else{
                         objfloor[floor].Average += recentaverage;
@@ -429,18 +430,23 @@
                 //}
             }
             
+            
             treevis.render();
+            
+            function nodeSort(one, two) {
+            
+            }
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
+                var todaydate = new Date();
+                var year = todaydate.getFullYear();
+                var month = (todaydate.getMonth()+1);
+                if (month<10){
+                    month = "0"+month;
+                }
+                
                 if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 7) != "Average")){
-                //if(typeof n.nodeValue == String){
-                    var todaydate = new Date();
-                    var year = todaydate.getFullYear();
-                    var month = (todaydate.getMonth()+1);
-                    if (month<10){
-                        month = "0"+month;
-                    }
                     var plot = {"id":0,"url":new Array(),"description":"",
                         "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
                         "colour":"Colour", "room":"Room",
@@ -449,38 +455,53 @@
                         "maxtime":0, "mintime":0,
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
-                    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;//+year+"-"+month+".json";
-                    //plot.id = n.index;
-                    chart(plot);
+                    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;
+                    chart(plot, "single");
                     console.log("Clicked: "+plot.url);
-                    //console.log(n.nodes())
-                    
-                    //var found = false;
-                    //for(var i=0;i<toggledNodes.length;i++){
-                    //    if(toggledNodes[i].url == plot.url[0]){
-                    //        var rem = toggledNodes.splice(i,1);
-                    //        break;
-                    //    }
-                    //}
-                    //if (!found) {
-                    //        toggledNodes.push(n);
-                    //}
-                    //
-                    //for(var i=0;i<toggledNodes.length;i++){
-                    //    var tmpnode = toggledNodes[i];
-                    //        while (tmpnode.parentNode != null){//(typeof(tmpnode.parentNode) != "undefined" or ){
-                    //            console.log("looped!");
-                    //            console.log(tmpnode);
-                    //            if (tmpnode.toggled){
-                    //                tmpnode.toggle();
-                    //            }
-                    //            tmpnode = tmpnode.parentNode;
-                    //        }
-                    //    //console.log(nodes[i].nodes());
-                    //}
-                    //console.log("toggnodes:"+toggledNodes);
-                    refreshTree();
                 }
+                else if (n.nodeName.substring(0, 7) == "Average"){
+                    var plot = {"id":0,"url":new Array(),"description":"",
+                        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
+                        "colour":"Colour", "room":"Room",
+                        "circuit":"Circuit", "avgselected":10.0,
+                        "avgtotal":15.0, "totalenergy":20.0,
+                        "maxtime":0, "mintime":0,
+                        "maxenergy":0.0, "minenergy":0.0,
+                        "data":new Array()}
+                    //var tmpnode = n, traversed = false;
+                    //while (!traversed){
+                    
+                    var nodes = n.parentNode.nodes();
+                    for (var i=0;i<nodes.length;i++){
+                        //if ((typeof siblingnode.nodeValue != "undefined") && (nodes[i].nodeName.substring(0, 7) != "Average")){
+                        //    plot.url.push("http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue);
+                        //}
+                        if (typeof nodes[i].nodeValue != "undefined"){
+                            var siblingnode = nodes[i].nextSibling;
+                            while (siblingnode != null) {
+                                //var siblingnode = nodes[i].nextSibling
+                                if (typeof siblingnode.nodeValue != "undefined"){// && (siblingnode.nodeName.substring(0, 7) == "Average")){
+                                    var found = false;
+                                    for (var x=0; x<plot.url.length; x++){
+                                        if(plot.url[x] == "http://www.cl.cam.ac.uk/meters"+siblingnode.nodeValue){ found=true; break; }
+                                    }
+                                    if(!found){ 
+                                        plot.url.push("http://www.cl.cam.ac.uk/meters"+siblingnode.nodeValue);
+                                        console.log("val: "+siblingnode.nodeValue+", name: "+siblingnode.nodeName);
+                                    }
+                                }
+                                else if ((typeof siblingnode.nodeValue == "undefined") && (siblingnode.nodeName.substring(0, 7) != "Average")){
+                                    console.log("extra: "+siblingnode.nodeName+", "+siblingnode.nodeValue);
+                                    //Get children here, and add plots to url.
+                                }
+                                siblingnode = siblingnode.nextSibling;
+                            }
+                        }
+                    }
+                    console.log(plot);
+                    //chart(plot, "multiple");
+                }
+                refreshTree();
                 return layout.reset().root;
             }
             
@@ -489,7 +510,7 @@
         
         
         
-        function chart(plotline) {
+        function chart(plotline, type) {
         //Add plotline to plotArray and chart the graphs.
             
             var found = false;
