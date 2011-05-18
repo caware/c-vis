@@ -1,44 +1,4 @@
-<html>
-<head>
-    <title>WGB Energy Usage</title>
-    
-    <script type="text/javascript" src="libs/jquery-1.5.1.min.js"></script>
-    <script src="libs/jquery.event.drag-2.0.min.js"></script>
-    <script type="text/javascript" src="libs/protovis-d3.2.js"></script>
-    <script src="libs/slick.core.js"></script>
-    <script src="libs/slick.grid.js"></script>
-    <script src="libs/slick.editors.js"></script>
-    <script src="libs/slick.dataview.js"></script>
-    <script type="text/javascript" src="libs/caware.util.js"></script>
-    <script type="text/javascript" src="libs/caware.core.js"></script>
-    
-    <script type="text/javascript+protovis">
-    var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
-    
-    //Set plot colours
-    var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
-    
-    //Date formats for chart tick labels
-    var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
-    var overallDateFormat = pv.Format.date("%d-%b '%y");
-    
-    //Vars for array of plots, and chart visulisation
-    var plotArray = new Array();
-    var toggledNodes = new Array();
-    var vis;
-    
-    var sensors;
-    
-    //var sensorTree; //Variable to store current sensor tree
-    //var foundSensors; //Variable to store all availible sensors
-    //var cachedReadings = {}; //Object to store previously fetched sensor data
-    
-    
-    //loadSensors();
-    
-    buildTree("treeuse");
-    
-    function tree(sensortree){
+function tree(sensortree){
             //Create tree from sensor index object.
             
             var root = pv.dom(sensortree)
@@ -90,20 +50,20 @@
                     })
                 .strokeStyle("#999")
                 .fillStyle(function(n){
-                    //var todaydate = new Date();
-                    //var year = todaydate.getFullYear();
-                    //var month = (todaydate.getMonth());//+1);
-                    //if (month<10){
-                    //    month = "0"+month;
-                    //}
+                    var todaydate = new Date();
+                    var year = todaydate.getFullYear();
+                    var month = (todaydate.getMonth());//+1);
+                    if (month<10){
+                        month = "0"+month;
+                    }
                         for(x=0; x<plotArray.length; x++){
-                            //for(y=0; y<plotArray[x].url.length; y++){
-                                if(plotArray[x].url == "http://www.cl.cam.ac.uk/meters"+n.nodeValue){
+                            for(y=0; y<plotArray[x].url.length; y++){
+                                if(plotArray[x].url[y] == "http://www.cl.cam.ac.uk/meters"+n.nodeValue){
                                 //console.log(n.index+" found");
                                 //console.log("used "+plotArray[x].colour);
                                     return plotArray[x].colour;
                                 }
-                            //}
+                            }
                         }
                         if (n.nodeName.split(" ",1)[0] == "Average"){return "#FFFFFF";}
                         if (n.firstChild){ return "#AAAAAA"; }
@@ -261,8 +221,8 @@
                             }
                         }
                     }
-                    console.log(plot);
-                    chart(plot, "multiple");
+                    //console.log(plot);
+                    //chart(plot, "multiple");
                 }
                 refreshTree();
                 return layout.reset().root;
@@ -274,19 +234,7 @@
             //if (type == "single") {
                 var found = false;
                 for (var i=0; i<plotArray.length; i++) {
-                    if(plotArray[i].url.length > 1){
-                        console.log(plotArray[i].url.length);
-                        //var all = false;
-                        //for (var x=0; x<plotArray[i]url.length; x++){
-                        //    if(
-                        //}
-                        if (plotArray[i].url.toString() == plotline.url.toString()){ //Hacky, is there a better way??
-                            found = true;
-                            var rem = plotArray.splice(i,1); //Removed var = rem
-                            break;
-                        }
-                    }
-                    else if(plotArray[i].url[0] == plotline.url){
+                    if(plotArray[i].url[0] == plotline.url[0]){
                         found = true;
                         var rem = plotArray.splice(i,1); //Removed var = rem
                         break;
@@ -314,38 +262,8 @@
                 
                 var jsonArray = new Array([],[],[],[],[]);
                 
-                
-                
                 for(var i=0;i<plotArray.length;i++){
-                    if (plotArray[i].url.length > 1){
-                    var totaldata = new Array();
-                        for (var k=0; k<plotArray[i].url.length; k++){
-                            jsonArray[i][k] = getJson(plotArray[i].url[k]+plotArray[i].startmonthyear+".json");
-                            jsonArray[i][0].description += jsonArray[i][k].room;
-                            
-                            
-                            for(var m=0; m<jsonArray[i][k].data.length; m++){
-                                if(k == 0){
-                                    totaldata[m] = 0.0;
-                                }
-                                //jsonArray[i][0].data[m][1] += jsonArray[i][k].data[m][1];
-                                totaldata[m] += jsonArray[i][k].data[m][1];
-                            }
-                            //console.log(totaldata);
-                            console.log("i:"+i+", k:"+k+", m:"+m+",  : "+jsonArray[0][0].data[10][1])
-                            console.log(totaldata[5]);
-                            
-                            for(var m=0; m<totaldata.length; m++){
-                                jsonArray[i][0].data[m][1] = totaldata[m];
-                            }
-                        }
-                        jsonArray[i][0].room = "--";
-                        
-                    }
-                    else{
-                        jsonArray[i][0] = getJson(plotArray[i].url+plotArray[i].startmonthyear+".json");
-                    }
-                    
+                    jsonArray[i][0] = getJson(plotArray[i].url+plotArray[i].startmonthyear+".json");
                     var tmptotal = 0;
                     var tmpdata = new Array();
                     
@@ -734,11 +652,6 @@
             
             vis.render();
             drawgrid();
-            
-            //}
-            //else if (type="multiple"){
-            //    console.log("multiple!");
-            //}
         }
         
         var grid;
@@ -838,60 +751,3 @@
             
             $("#myGrid").show();
         }
-        
-    </script>
-    
-    
-    <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.5.custom.css" media="screen" charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" charset="utf-8"/>
-</head>
-<body>
-    <div id="content">
-    <div id="top">
-    <noscript>
-        <div id="topbar">
-            <p class="alert">Your browser either does not support Javascript or it is not enabled. Please enable JavaScript for full functionality.</p>
-        </div>
-    </noscript>
-    <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
-    <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory. More...</p></div>
-    <div style="float:right; width:400px; text-align:right;padding-right:20;">
-        <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
-        <label for="scalefit"> Scale to fit</label>
-        <input name="scale" id="scalezoomed" type="radio" onchange="vis.render()">
-        <label for="scalezoomed">Zoom Y values</label>
-        <input checked name="scale" id="scaleoriginal" type="radio" onchange="vis.render()">
-        <label for="scaleoriginal">Original scale</label>
-    </div>
-    <div style="float:left; width:350px; text-align:left;padding-left:20;">
-        <label for="treegeo">Explore tree by: Geography</label>
-        <input name="treetype" id="treegeo" type="radio" onchange="buildTree('treegeo')">
-        <label for="treeuse"> Function</label>
-        <input checked name="treetype" id="treeuse" type="radio" onchange="buildTree('treeuse')">
-    </div>
-    </div>
-    <div id="diacontainer">
-    <div id="treecontainer">
-    <div id="treediv">
-    
-    </div>
-    </div>
-    <div id="charttitle">
-        <p id="charttitletext"></p>
-    </div>
-    <div id="chartcontainer">
-        <div id="chartdiv">
-        </div>
-    </div>
-    <div id="chartinfo">
-        <p class="chartinformation" id="averagekwh"></p>
-        <p class="chartinformation" id="overallavgkwh"></p>
-        <p class="chartinformation" id="overalltotkwh"></p>
-    <div id="myGrid">
-    </div>
-    </div>
-    </div>
-</body>
-</html>
