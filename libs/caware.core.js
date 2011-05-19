@@ -26,22 +26,25 @@
             
             //If tree is displayed geographically
             if (checked == "treegeo"){
+                treeIndex.clearStore();
                 //Create object to hold floors
-                var objfloor = {"Average":0.0};
+                var objfloor = {"Average":treeIndex.addNewItem(0)};
                 var objmain = {};
                 //objmain.Main = objfloor;
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     if (elecsensors[i].sensor == "S-m36"){ 
                         //If sensor = main power, assign its total to the toplevel total
-                        objfloor.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
-                        objfloor.Overall = elecsensors[i].path;
+                        var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
+                        objfloor.Average = treeIndex.addNewItem(av);
+                        objfloor.Overall = treeIndex.addNewItem(elecsensors[i].path);
                         objmain.Main = objfloor;
                         //objcircuit.Overall = elecsensors[i].path;
                     }
                     else if (elecsensors[i].sensor == "S-m257"){
-                        objmain.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
-                        objmain.Overall = elecsensors[i].path;
+                        var av = elecsensors[i].recenttotal / elecsensors[i].datasize;
+                        objmain.Average = treeIndex.addNewItem(av);
+                        objmain.Overall = treeIndex.addNewItem(elecsensors[i].path);
                         //objmain.Main = objfloor;
                     }
                     var roomArray = elecsensors[i].room.split("");//Split the room number into an array
@@ -93,23 +96,27 @@
                     //If floors or corridors do not yet exist in the tree, create them
                     //If they do, update their totals with the current sensors recenttotal.
                     if(!(floor in objfloor)){
-                        objfloor[floor] = {"Average":recentaverage};
+                        //var array = new Array(recentaverage, "");
+                        objfloor[floor] = {"Average":treeIndex.addNewItem(recentaverage)};
                         
                     }
                     else{
-                        objfloor[floor].Average += recentaverage;
+                        //var oldaverage = treeIndex.getValue(objfloor[floor].Average);
+                        treeIndex.sumItemAverage(recentaverage,objfloor[floor].Average);
                     }
                     
                     if(!(corridor in objfloor[floor])){
-                        objfloor[floor][corridor] = {"Average":recentaverage};
+                        //var array = new Array(recentaverage, "");
+                        objfloor[floor][corridor] = {"Average":treeIndex.addNewItem(recentaverage)};
                     }
                     else{
-                        objfloor[floor][corridor].Average += recentaverage;
+                        treeIndex.sumItemAverage(recentaverage,objfloor[floor][corridor].Average);// += recentaverage;
                     }
                     
                     if(!(room in objfloor[floor][corridor])){
                         //If room does not exist, create it and add a sensor into it.
-                        objsensor = {"Average":recentaverage};
+                        var array = new Array(recentaverage, "");
+                        objsensor = {"Average":array};
                         objsensor[description] = path;
                         objfloor[floor][corridor][room] = objsensor;
                         //console.log("is"+objsensor.Total);
@@ -120,7 +127,7 @@
                         objsensor = objfloor[floor][corridor][room];
                         objsensor[description] = path;
                         //console.log("was:"+objsensor.Total);
-                        objsensor.Average += recentaverage;
+                        objsensor.Average[0] += recentaverage;
                         //console.log("is now:"+objsensor.Total);
                         objfloor[floor][corridor][room] = objsensor;
                     }

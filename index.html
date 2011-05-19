@@ -24,7 +24,9 @@
     
     //Vars for array of plots, and chart visulisation
     var plotArray = new Array();
-    var toggledNodes = new Array();
+    
+    var treeIndex = new IntValueStore();
+    //var toggledNodes = new Array();
     var vis;
     
     var sensors;
@@ -142,12 +144,14 @@
                 else if (nm=="kitchen plant"){nodes[i].toggle();}
                 else if (nm=="Machine room power"){nodes[i].toggle();}
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
-                if (nm == "Average"){
-                    nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue*100)/100+" kW";
-                }
-                for(x=0; x<plotArray.length; x++){
-                    for(y=0; y<plotArray[x].url.length; y++){
-                        if(plotArray[x].url[y] == "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue){
+                //if (nm == "Average"){
+                //    nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue."0"*100)/100+" kW";
+                //}
+                
+                
+                //for(x=0; x<plotArray.length; x++){
+                //    for(y=0; y<plotArray[x].url.length; y++){
+                //        if(plotArray[x].url[y] == "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue){
                             //var tmpnode = nodes[i].nodes()[0];
                             //while (typeof(tmpnode.parentNode) != "undefined"){
                             //    console.log("looped!");
@@ -155,9 +159,9 @@
                             //    tmpnode = tmpnode.parentNode;
                             //}
                         //console.log(nodes[i].nodes());
-                        }
-                    }
-                }
+               //         }
+               //     }
+               // }
                 //for(var x=0; x<plotArray.length; x++){
                 //    if(!nodes[i].toggled && "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue == plotArray[x].url[0]){// nodes[i].toggle();}
                 //    //console.log("http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue+" : "+plotArray[x].url[0]);
@@ -191,79 +195,37 @@
                     month = "0"+month;
                 }
                 
-                if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 7) != "Average")){
-                    var plot = {"id":0,"url":new Array(),"description":"",
-                        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
-                        "colour":"Colour", "room":"Room",
-                        "circuit":"Circuit", "avgselected":10.0,
-                        "avgtotal":15.0, "totalenergy":20.0,
-                        "maxtime":0, "mintime":0,
-                        "maxenergy":0.0, "minenergy":0.0,
-                        "data":new Array()}
-                    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;
-                    chart(plot, "single");
-                    console.log("Clicked: "+plot.url);
-                }
-                else if (n.nodeName.substring(0, 7) == "Average"){
-                    var plot = {"id":0,"url":new Array(),"description":"",
-                        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
-                        "colour":"Colour", "room":"Room",
-                        "circuit":"Circuit", "avgselected":10.0,
-                        "avgtotal":15.0, "totalenergy":20.0,
-                        "maxtime":0, "mintime":0,
-                        "maxenergy":0.0, "minenergy":0.0,
-                        "data":new Array()}
-                    //var tmpnode = n, traversed = false;
-                    //while (!traversed){
-                    
-                    var nodes = n.parentNode.nodes();
-                    for (var i=0;i<nodes.length;i++){
-                        //if ((typeof siblingnode.nodeValue != "undefined") && (nodes[i].nodeName.substring(0, 7) != "Average")){
-                        //    plot.url.push("http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue);
-                        //}
-                        if (typeof nodes[i].nodeValue != "undefined"){
-                            var siblingnode = nodes[i].nextSibling;
-                            while (siblingnode != null) {
-                                //var siblingnode = nodes[i].nextSibling
-                                if (typeof siblingnode.nodeValue != "undefined"){// && (siblingnode.nodeName.substring(0, 7) == "Average")){
-                                    var found = false;
-                                    for (var x=0; x<plot.url.length; x++){
-                                        if(plot.url[x] == "http://www.cl.cam.ac.uk/meters"+siblingnode.nodeValue){ found=true; break; }
-                                    }
-                                    if(!found){ 
-                                        plot.url.push("http://www.cl.cam.ac.uk/meters"+siblingnode.nodeValue);
-                                        //console.log("val: "+siblingnode.nodeValue+", name: "+siblingnode.nodeName);
-                                    }
-                                }
-                                else if ((typeof siblingnode.nodeValue == "undefined") &&
-                                    (siblingnode.nodeName.substring(0, 7) != "Average")){
-                                    //console.log("extra: "+siblingnode.nodeName+", "+siblingnode.nodeValue);
-                                    //console.log(siblingnode);
-                                    if (siblingnode.toggled){
-                                        //console.log(siblingnode.toggled);
-                                        for(var x=0; x<siblingnode.toggled.length; x++){
-                                        //    console.log(siblingnode.toggled);
-                                            if (typeof siblingnode.toggled[x].nodeValue != "number"){
-                                                var found = false;
-                                                for (var y=0; y<plot.url.length; y++){
-                                                    if(plot.url[y] == "http://www.cl.cam.ac.uk/meters"+siblingnode.toggled[x].nodeValue){ found=true; break; }
-                                                }
-                                                if(!found){ 
-                                                    plot.url.push("http://www.cl.cam.ac.uk/meters"+siblingnode.toggled[x].nodeValue);
-                                                //console.log("val: "+siblingnode.nodeValue+", name: "+siblingnode.nodeName);
-                                                }
-                                            }
-                                        }
-                                    }
-                                    //Get children here, and add plots to url.
-                                }
-                                siblingnode = siblingnode.nextSibling;
-                            }
-                        }
-                    }
-                    console.log(plot);
-                    chart(plot, "multiple");
-                }
+                //if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 7) != "Average")){
+                //    var plot = {"id":0,"url":new Array(),"description":"",
+                //        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
+                //        "colour":"Colour", "room":"Room",
+                //        "circuit":"Circuit", "avgselected":10.0,
+                //        "avgtotal":15.0, "totalenergy":20.0,
+                //        "maxtime":0, "mintime":0,
+                //        "maxenergy":0.0, "minenergy":0.0,
+                //        "data":new Array()}
+                //    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;
+                //    chart(plot, "single");
+                //    console.log("Clicked: "+plot.url);
+                //}
+                //else if (n.nodeName.substring(0, 7) == "Average"){
+                //    var plot = {"id":0,"url":new Array(),"description":"",
+                //        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
+                //        "colour":"Colour", "room":"Room",
+                //        "circuit":"Circuit", "avgselected":10.0,
+                //        "avgtotal":15.0, "totalenergy":20.0,
+                //        "maxtime":0, "mintime":0,
+                //        "maxenergy":0.0, "minenergy":0.0,
+                //        "data":new Array()}
+                //    
+                //    if (typeof n.nodeValue != "object"){
+                //        console.log("Av clicked!!");
+                //        console.log("n.nodeValue: "+n.nodeValue);
+                //    }
+                    console.log("Array@: "+n.nodeValue);
+                    console.log(treeIndex.getItem(n.nodeValue));
+                //    chart(plot, "multiple");
+                //}
                 refreshTree();
                 return layout.reset().root;
             }
