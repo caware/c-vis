@@ -144,9 +144,10 @@
                 else if (nm=="kitchen plant"){nodes[i].toggle();}
                 else if (nm=="Machine room power"){nodes[i].toggle();}
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
-                //if (nm == "Average"){
-                //    nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue."0"*100)/100+" kW";
-                //}
+                if (nm == "Average"){
+                    //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
+                    nodes[i].nodeName = "Average this month: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                }
                 
                 
                 //for(x=0; x<plotArray.length; x++){
@@ -222,8 +223,31 @@
                 //        console.log("Av clicked!!");
                 //        console.log("n.nodeValue: "+n.nodeValue);
                 //    }
-                    console.log("Array@: "+n.nodeValue);
-                    console.log(treeIndex.getItem(n.nodeValue));
+                console.log(treeIndex.getItem(n.nodeValue));
+                if ((typeof n.nodeValue != "undefined")){// && (n.nodeName.substring(0, 7) != "Average")){
+                    //console.log("Array@: "+n.nodeValue);
+                    //console.log(treeIndex.getItem(n.nodeValue));
+                    //chart(treeIndex.getItem(n.nodeValue)[1][0])
+                    
+                    //var plot = {"id":0,"url":new Array(),"description":"",
+                    //    "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
+                    //    "colour":"Colour", "room":"Room",
+                    //    "circuit":"Circuit", "avgselected":10.0,
+                    //    "avgtotal":15.0, "totalenergy":20.0,
+                    //    "maxtime":0, "mintime":0,
+                    //    "maxenergy":0.0, "minenergy":0.0,
+                    //    "data":new Array()}
+                    
+                    var ploturl = new Array();
+                    var sensorurl = treeIndex.getItem(n.nodeValue)[1];
+                    
+                    for (var x=0; x<sensorurl.length; x++){
+                        ploturl[x] = "http://www.cl.cam.ac.uk/meters"+sensorurl[x];
+                    }
+                    //var ploturl = "http://www.cl.cam.ac.uk/meters"+treeIndex.getItem(n.nodeValue)[1];
+                    chart(ploturl);
+                    //console.log("Clicked: "+plot.url);
+                }
                 //    chart(plot, "multiple");
                 //}
                 refreshTree();
@@ -231,7 +255,21 @@
             }
         }
         
-        function chart(plotline, type) {
+        function chart(ploturl) {
+            var todaydate = new Date();
+            var year = todaydate.getFullYear();
+            var month = (todaydate.getMonth()+1);
+            if (month<10){
+                month = "0"+month;
+            }
+            var plotline = {"id":0,"url":ploturl,"description":"",
+                        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
+                        "colour":"Colour", "room":"Room",
+                        "circuit":"Circuit", "avgselected":10.0,
+                        "avgtotal":15.0, "totalenergy":20.0,
+                        "maxtime":0, "mintime":0,
+                        "maxenergy":0.0, "minenergy":0.0,
+                        "data":new Array()}
         //Add plotline to plotArray and chart the graphs.
             //if (type == "single") {
                 var found = false;
@@ -260,12 +298,13 @@
                     }
                     else {
                         plotArray.push(plotline);
+                        //console.log("Plot:"+plotline);
                     }
                 }
                 
                 if(plotArray.length == 0){
                     $('#chartdiv').empty();
-                    drawgrid();
+                    //drawgrid();
                     return 0;
                 }
                 else{
@@ -280,6 +319,7 @@
                 
                 for(var i=0;i<plotArray.length;i++){
                     if (plotArray[i].url.length > 1){
+                    console.log(plotArray[i]);
                     var totaldata = new Array();
                         for (var k=0; k<plotArray[i].url.length; k++){
                             jsonArray[i][k] = getJson(plotArray[i].url[k]+plotArray[i].startmonthyear+".json");
@@ -295,7 +335,7 @@
                             }
                             //console.log(totaldata);
                             console.log("i:"+i+", k:"+k+", m:"+m+",  : "+jsonArray[0][0].data[10][1])
-                            console.log(totaldata[5]);
+                            console.log(totaldata[k]);
                             
                             for(var m=0; m<totaldata.length; m++){
                                 jsonArray[i][0].data[m][1] = totaldata[m];
@@ -305,7 +345,10 @@
                         
                     }
                     else{
-                        jsonArray[i][0] = getJson(plotArray[i].url+plotArray[i].startmonthyear+".json");
+                        console.log("plotArray"+plotArray[i].url[0]);
+                        jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startmonthyear+".json");
+                        console.log(jsonArray[i][0]);
+                        //return 0;
                     }
                     
                     var tmptotal = 0;
@@ -438,7 +481,7 @@
                     }
                     
                     //$('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
-                    drawgrid();
+                    //drawgrid();
                     
                     if (scalefit.checked){ fy.domain([0, maxy]); }
                     else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
@@ -695,7 +738,7 @@
                 .event("drag", focus);
             
             vis.render();
-            drawgrid();
+            //drawgrid();
             
             //}
             //else if (type="multiple"){
@@ -719,7 +762,7 @@
         
         var options = {
             enableCellNavigation: true,
-            enableColumnReorder: false,
+            //enableColumnReorder: false,
             //asyncEditorLoading: true,
             editable: true
         };
