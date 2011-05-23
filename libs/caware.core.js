@@ -152,18 +152,24 @@
             }
             else if (checked == "treeuse"){
                 //If tree is displayed by use:
-                var objcircuit = {"Average":0.0};
+                treeIndex.clearStore();
+                var objcircuit = {"Average":treeIndex.addNewItem(0)};
+                objcircuit.Overall = null;
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
+                    var path = elecsensors[i].path;
                     if (elecsensors[i].sensor == "S-m257"){
-                        objcircuit.Average = elecsensors[i].recenttotal / elecsensors[i].datasize;
-                        objcircuit.Overall = elecsensors[i].path;
+                        var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
+                        objcircuit.Average = treeIndex.addNewItem(av);
+                        objcircuit.Overall = treeIndex.addNewItem(elecsensors[i].path);
                     }
                     else if (elecsensors[i].sensor != "S-m36"){
+                        treeIndex.appendItemURL(path, objcircuit.Average);
+                    
                         var roomArray = elecsensors[i].room.split("");
                         var description = elecsensors[i].description;
                         var room = elecsensors[i].room;
-                        var path = elecsensors[i].path;
+                        
                         var recenttotal = elecsensors[i].recenttotal;
                         var datasize = elecsensors[i].datasize;
                         if (datasize > 0){ var recentaverage = recenttotal / datasize; }
@@ -187,10 +193,15 @@
                         }
                         
                         if(!(description in objcircuit)){
-                            objcircuit[description] = {"Average":recentaverage};
+                            //objcircuit[description] = {"Average":recentaverage};
+                            objcircuit[description] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            treeIndex.appendItemURL(path,objcircuit[description].Average);
                         }
                         else{
-                            objcircuit[description].Average += recentaverage;
+                            //objcircuit[description].Average += recentaverage;
+                            var ind = objcircuit[description].Average;
+                            treeIndex.sumItemAverage(recentaverage, ind);
+                            treeIndex.appendItemURL(path, ind);
                         }
                         
                         if(!(floor in objcircuit[description])){
@@ -200,22 +211,27 @@
                             //objcircuit[description][tmpfloor] = {};
                             //objcircuit[description].[tmpfloor[1]] = {};
                             //objcircuit[description].[tmpfloor[2]] = {};
-                            objcircuit[description][floor] = {"Average":recentaverage};
+                            //objcircuit[description][floor] = {"Average":recentaverage};
+                            objcircuit[description][floor] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            treeIndex.appendItemURL(path,objcircuit[description][floor].Average);
                         }
                         else{
-                            objcircuit[description][floor].Average += recentaverage;
+                            //objcircuit[description][floor].Average += recentaverage;
+                            var ind = objcircuit[description][floor].Average;
+                            treeIndex.sumItemAverage(recentaverage,ind);// += recentaverage;
+                            treeIndex.appendItemURL(path, ind);
                         }
                         
                         //if (recenttotal = 0){
                         if(!(room in objcircuit[description][floor])){
-                            objcircuit[description][floor][room] = path;
+                            objcircuit[description][floor][room] = treeIndex.addNewItem(path);
                             //objroom = {"Total":recenttotal};
                             //objsensor[description] = path;
                             //objcircuit[floor][corridor][room] = objsensor;
                             //console.log("is"+objsensor.Total);
                         }
                         else{
-                            objcircuit[description][floor][room+"?2"] = path;
+                            objcircuit[description][floor][room+"?2"] = treeIndex.addNewItem(path);
                             //objroom = {};
                             //objroom = objcircuit[floor][corridor][room];
                             //objsensor[description] = path;
