@@ -120,7 +120,7 @@
                     }
                     else{
                         var ind = objfloor[floor][corridor].Average;
-                        treeIndex.sumItemAverage(recentaverage,ind);// += recentaverage;
+                        treeIndex.sumItemAverage(recentaverage,ind);
                         treeIndex.appendItemURL(path, ind);
                     }
                     
