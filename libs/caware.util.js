@@ -19,6 +19,9 @@ function IntValueStore() {
     //A Class for defining a uniqure index => Array store
     
     this.index = new Array();
+    //This index is a 2D array to store an index value, and information assiociated with it.
+    //each array referenced by and index currnetly holds:
+    // [AVERAGE, [URL,URL,URL,...], SENSORNAME]
     
     this.addNewItem = function(value){
         //Adds a new value to the store and returns its index
@@ -41,6 +44,10 @@ function IntValueStore() {
     
     this.appendItemURL = function(value, valueindex){
         this.index[valueindex][1].push(value);
+    };
+    
+    this.insertItemName = function(value, valueindex){
+        this.index[valueindex][2] = value;
     };
     
     this.getItem = function(ind){
