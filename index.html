@@ -486,9 +486,18 @@
             focus.add(pv.Rule)
                 .data(function(){return fx.ticks(7);})
                 .left(fx)
-                .strokeStyle("#eee")
+                .strokeStyle("#aaa")
                 .anchor("bottom").add(pv.Label)
                 .text(function(fx){ return zoomDateFormat.format(fx);});
+                
+            /* X axis weekend bars? */
+            // focus.add(pv.Bar)
+            //.strokeStyle(function(d){
+            //        var tmp = new Date(d);
+            //        console.log(tmp.getDay());
+            //        if (d){ return "#aaa" }
+            //        else { return "#000" }
+            //        })
             
             /* Y-axis ticks. */
             focus.add(pv.Rule)
