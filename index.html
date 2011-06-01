@@ -180,12 +180,12 @@
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
-                var todaydate = new Date();
-                var year = todaydate.getFullYear();
-                var month = (todaydate.getMonth()+1);
-                if (month<10){
-                    month = "0"+month;
-                }
+                //var todaydate = new Date();
+                //var year = todaydate.getFullYear();
+                //var month = (todaydate.getMonth()+1);
+                //if (month<10){
+                //    month = "0"+month;
+                //}
                 
                 //if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 7) != "Average")){
                 //    var plot = {"id":0,"url":new Array(),"description":"",
@@ -214,7 +214,7 @@
                 //        console.log("Av clicked!!");
                 //        console.log("n.nodeValue: "+n.nodeValue);
                 //    }
-                console.log(treeIndex.getItem(n.nodeValue));
+                //console.log(treeIndex.getItem(n.nodeValue));
                 if ((typeof n.nodeValue != "undefined")){// && (n.nodeName.substring(0, 7) != "Average")){
                     //console.log("Array@: "+n.nodeValue);
                     //console.log(treeIndex.getItem(n.nodeValue));
@@ -253,6 +253,7 @@
             if (month<10){
                 month = "0"+month;
             }
+            month = "05";
             var plotline = {"id":0,"url":ploturl,"description":"",
                         "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
                         "colour":"Colour", "room":"Room",
@@ -266,7 +267,7 @@
                 var found = false;
                 for (var i=0; i<plotArray.length; i++) {
                     if(plotArray[i].url.length > 1){
-                        console.log(plotArray[i].url.length);
+                        //console.log(plotArray[i].url.length);
                         //var all = false;
                         //for (var x=0; x<plotArray[i]url.length; x++){
                         //    if(
@@ -310,7 +311,7 @@
                 
                 for(var i=0;i<plotArray.length;i++){
                     if (plotArray[i].url.length > 1){
-                    console.log(plotArray[i]);
+                    //console.log(plotArray[i]);
                     var totaldata = new Array();
                         for (var k=0; k<plotArray[i].url.length; k++){
                             jsonArray[i][k] = getJson(plotArray[i].url[k]+plotArray[i].startmonthyear+".json");
@@ -325,8 +326,8 @@
                                 totaldata[m] += jsonArray[i][k].data[m][1];
                             }
                             //console.log(totaldata);
-                            console.log("i:"+i+", k:"+k+", m:"+m+",  : "+jsonArray[0][0].data[10][1])
-                            console.log(totaldata[k]);
+                            //console.log("i:"+i+", k:"+k+", m:"+m+",  : "+jsonArray[0][0].data[10][1])
+                            //console.log(totaldata[k]);
                             
                             for(var m=0; m<totaldata.length; m++){
                                 jsonArray[i][0].data[m][1] = totaldata[m];
@@ -336,9 +337,9 @@
                         
                     }
                     else{
-                        console.log("plotArray"+plotArray[i].url[0]);
+                        //console.log("plotArray"+plotArray[i].url[0]);
                         jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startmonthyear+".json");
-                        console.log(jsonArray[i][0]);
+                        //console.log(jsonArray[i][0]);
                         //return 0;
                     }
                     
@@ -390,8 +391,8 @@
                         if (plotArray[i].data[0].x < start){
                             start = new Date(plotArray[i].data[0].x);
                         }
-                        if (plotArray[0].data[plotArray[0].data.length - 1].x > end){
-                            end = new Date(plotArray[0].data[plotArray[0].data.length - 1].x);
+                        if (plotArray[i].data[plotArray[i].data.length - 1].x > end){
+                            end = new Date(plotArray[i].data[plotArray[i].data.length - 1].x);
                         }
                     }
                     for (var j=0; j<plotArray[i].data.length; j++){
@@ -436,7 +437,7 @@
                     .top(5);
                 
                 
-                //var dd = {};
+                //var mydd = [];
          /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
                 .def("init", function() {
@@ -477,6 +478,8 @@
                     if (scalefit.checked){ fy.domain([0, maxy]); }
                     else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
                     else if (scaleoriginal.checked){ fy.domain(y.domain()); }
+                    //mydd = dd.slice(0);
+                    //console.log("bang!");
                     return dd;
                 })
                 .top(0)
@@ -541,11 +544,15 @@
             //        .lineWidth(2);
             //};
             
+            //console.log(function(){ return focus.init();} );
+            //console.log('mydd: ');
+            //var tmp = focus.init();
+            //console.log(eval(tmp));
             
             if(plotArray.length == 1){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
+                    .left(function(d){return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[0])
                     .lineWidth(2);
