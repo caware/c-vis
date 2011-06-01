@@ -714,13 +714,14 @@
             //    .strokeStyle("steelblue")
             //.lineWidth(2);
             
-            //for(var i=0; i<data.length; i++){
+            for(var j=0; j<data.length; j++){
                 context.add(pv.Line)
-                    .data(data[0])
+                    .data(data[j])
                     .left(function(d) x(d.x))
                     .bottom(function(d) y(d.y))
+                    .strokeStyle(plotColours[j])
                     .lineWidth(2);
-            //}
+            }
             
             //context.add(pv.Line)
             //        .data(data[1])
