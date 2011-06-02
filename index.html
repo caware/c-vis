@@ -720,9 +720,9 @@
             
             /* X-axis ticks. */
             context.add(pv.Rule)
-                .data(x.ticks(7))
+                .data(x.ticks(5))
                 .left(x)
-                .strokeStyle("#eee")
+                .strokeStyle("#aaa")
             .anchor("bottom").add(pv.Label)
                 .text(function(x){ return overallDateFormat.format(x); });
             

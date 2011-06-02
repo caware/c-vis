@@ -49,99 +49,101 @@
                         objmain.Overall = treeIndex.addNewItem(elecsensors[i].path);
                         //objmain.Main = objfloor;
                     }
+                    else{
                     
-                    treeIndex.appendItemURL(path,objfloor.Average);
-                    treeIndex.appendItemURL(path,objmain.Average);
+                        treeIndex.appendItemURL(path,objfloor.Average);
+                        treeIndex.appendItemURL(path,objmain.Average);
                     
-                    var roomArray = elecsensors[i].room.split("");//Split the room number into an array
-                    //Get current sensor information
-                    var description = elecsensors[i].description;
-                    var room = elecsensors[i].room;
-                    var recenttotal = elecsensors[i].recenttotal;
-                    var datasize = elecsensors[i].datasize;
-                    if (datasize > 0){ var recentaverage = recenttotal / datasize; }
-                    else { var recentaverage = 0; }
-                    var floor="";
-                    var corridor="";
-                    
-                    //Create holding objects for rooms and corridors
-                    var objroom = new Object();
-                    var objcorridor = new Object();
-                    //Identify rooms
-                    switch (roomArray[0]){
-                        case "G":
-                            floor="Ground Floor";
-                            break;
-                        case "F":
-                            floor="First Floor";
-                            break;
-                        case "S":
-                            floor="Second Floor";
-                            break;
-                    }
-                    
-                    switch (roomArray[1]){
-                        case "N":
-                            corridor="North Corridor";
-                            break;
-                        case "E":
-                            corridor="East Corridor";
-                            break;
-                        case "S":
-                            corridor="South Corridor";
-                            break;
-                        case "W":
-                            corridor="West Corridor";
-                            break;
-                        case "C":
-                            corridor="Centre Corridor";
-                            break;
-                    }
-                    
-                    //If floors or corridors do not yet exist in the tree, create them
-                    //If they do, update their totals with the current sensors recenttotal.
-                    if(!(floor in objfloor)){
-                        //var array = new Array(recentaverage, "");
-                        objfloor[floor] = {"Average":treeIndex.addNewItem(recentaverage)};
-                        treeIndex.appendItemURL(path,objfloor[floor].Average);
+                        var roomArray = elecsensors[i].room.split("");//Split the room number into an array
+                        //Get current sensor information
+                        var description = elecsensors[i].description;
+                        var room = elecsensors[i].room;
+                        var recenttotal = elecsensors[i].recenttotal;
+                        var datasize = elecsensors[i].datasize;
+                        if (datasize > 0){ var recentaverage = recenttotal / datasize; }
+                        else { var recentaverage = 0; }
+                        var floor="";
+                        var corridor="";
                         
-                    }
-                    else{
-                        //var oldaverage = treeIndex.getValue(objfloor[floor].Average);
-                        var ind = objfloor[floor].Average;
-                        treeIndex.sumItemAverage(recentaverage, ind);
-                        treeIndex.appendItemURL(path, ind);
-                    }
-                    
-                    if(!(corridor in objfloor[floor])){
-                        //var array = new Array(recentaverage, "");
-                        objfloor[floor][corridor] = {"Average":treeIndex.addNewItem(recentaverage)};
-                        treeIndex.appendItemURL(path,objfloor[floor][corridor].Average)
-                    }
-                    else{
-                        var ind = objfloor[floor][corridor].Average;
-                        treeIndex.sumItemAverage(recentaverage,ind);
-                        treeIndex.appendItemURL(path, ind);
-                    }
-                    
-                    if(!(room in objfloor[floor][corridor])){
-                        //If room does not exist, create it and add a sensor into it.
-                        //var array = new Array(recentaverage, "");
-                        //objsensor = {"Average":treeIndex.addNewItem(recentaverage)};
-                        objsensor = {};
-                        objsensor[description] = treeIndex.addNewItem(path);
-                        objfloor[floor][corridor][room] = objsensor;
-                        //console.log("is"+objsensor.Total);
-                    }
-                    else{
-                        //If the room does exist, add the current sensor to it, and update it's total
-                        objsensor = {};
-                        objsensor = objfloor[floor][corridor][room];
-                        objsensor[description] = treeIndex.addNewItem(path);
-                        //console.log("was:"+objsensor.Total);
-                        //treeIndex.sumItemAverage(recentaverage, objsensor[description]);
-                        //console.log("is now:"+objsensor.Total);
-                        objfloor[floor][corridor][room] = objsensor;
+                        //Create holding objects for rooms and corridors
+                        var objroom = new Object();
+                        var objcorridor = new Object();
+                        /Identify rooms
+                        switch (roomArray[0]){
+                            case "G":
+                                floor="Ground Floor";
+                                break;
+                            case "F":
+                                floor="First Floor";
+                                break;
+                            case "S":
+                                floor="Second Floor";
+                                break;
+                        }
+                        
+                        switch (roomArray[1]){
+                            case "N":
+                                corridor="North Corridor";
+                                break;
+                            case "E":
+                                corridor="East Corridor";
+                                break;
+                            case "S":
+                                corridor="South Corridor";
+                                break;
+                            case "W":
+                                corridor="West Corridor";
+                                break;
+                            case "C":
+                                corridor="Centre Corridor";
+                                break;
+                        }
+                        
+                        //If floors or corridors do not yet exist in the tree, create them
+                        //If they do, update their totals with the current sensors recenttotal.
+                        if(!(floor in objfloor)){
+                            //var array = new Array(recentaverage, "");
+                            objfloor[floor] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            treeIndex.appendItemURL(path,objfloor[floor].Average);
+                            
+                        }
+                        else{
+                            //var oldaverage = treeIndex.getValue(objfloor[floor].Average);
+                            var ind = objfloor[floor].Average;
+                            treeIndex.sumItemAverage(recentaverage, ind);
+                            treeIndex.appendItemURL(path, ind);
+                        }
+                        
+                        if(!(corridor in objfloor[floor])){
+                            //var array = new Array(recentaverage, "");
+                            objfloor[floor][corridor] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            treeIndex.appendItemURL(path,objfloor[floor][corridor].Average)
+                        }
+                        else{
+                            var ind = objfloor[floor][corridor].Average;
+                            treeIndex.sumItemAverage(recentaverage,ind);
+                            treeIndex.appendItemURL(path, ind);
+                        }
+                        
+                        if(!(room in objfloor[floor][corridor])){
+                            //If room does not exist, create it and add a sensor into it.
+                            //var array = new Array(recentaverage, "");
+                            //objsensor = {"Average":treeIndex.addNewItem(recentaverage)};
+                            objsensor = {};
+                            objsensor[description] = treeIndex.addNewItem(path);
+                            objfloor[floor][corridor][room] = objsensor;
+                            //console.log("is"+objsensor.Total);
+                        }
+                        else{
+                            //If the room does exist, add the current sensor to it, and update it's total
+                            objsensor = {};
+                            objsensor = objfloor[floor][corridor][room];
+                            objsensor[description] = treeIndex.addNewItem(path);
+                            //console.log("was:"+objsensor.Total);
+                            //treeIndex.sumItemAverage(recentaverage, objsensor[description]);
+                            //console.log("is now:"+objsensor.Total);
+                            objfloor[floor][corridor][room] = objsensor;
+                        }
                     }
                     
                 }
