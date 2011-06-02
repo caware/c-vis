@@ -1,4 +1,3 @@
-      
        function buildTree(checked){
         //Get the sensor index file and build and display the sensor tree.
             sensors = getSensors(indexUrl,checked);
@@ -68,7 +67,7 @@
                         //Create holding objects for rooms and corridors
                         var objroom = new Object();
                         var objcorridor = new Object();
-                        /Identify rooms
+                        //Identify rooms
                         switch (roomArray[0]){
                             case "G":
                                 floor="Ground Floor";

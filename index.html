@@ -113,6 +113,8 @@
                     
             //treevis.render();
             
+            root.sort(nodeSort);
+            
             var nodes = root.nodes();
             for(var i=0; i<nodes.length;i++){
                 var nm = nodes[i].nodeName
@@ -177,8 +179,12 @@
             
             treevis.render();
             
-            function nodeSort(one, two) {
-            
+            function nodeSort(node1, node2) {
+                var tmp = new Array(node1.nodeName, node2.nodeName);
+                tmp.sort();
+                if (node1.nodeName == tmp[0].nodename){ return -1; }
+                else if (node2.nodeName == tmp[0].nodename){ return 1; }
+                else if (node1.nodeName == node2.nodeName){ return 0; }
             }
             
             function toggle(n) {
