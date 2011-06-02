@@ -28,6 +28,8 @@
     var vis;
     var sensors;
     
+    var oldd1, oldd2;
+    
     //var sensorTree; //Variable to store current sensor tree
     //var foundSensors; //Variable to store all availible sensors
     //var cachedReadings = {}; //Object to store previously fetched sensor data
@@ -438,11 +440,18 @@
                 
                 
                 //var mydd = [];
+                
          /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
                 .def("init", function() {
+                    //if (typeof oldd1 != "undefined" && typeof oldd2 != "undefined" ){
+                    //    d1 = oldd1;
+                    //    d2 = oldd2;
+                    //}
+                    //else{
                     var d1 = x.invert(i.x),
                         d2 = x.invert(i.x + i.dx);
+                    //}
                     var dd = [];
                     for(var j=0; j<data.length; j++){//for each line in the data array
                         dd[j] = [];
@@ -480,6 +489,8 @@
                     else if (scaleoriginal.checked){ fy.domain(y.domain()); }
                     //mydd = dd.slice(0);
                     //console.log("bang!");
+                    oldd1 = d1;
+                    oldd2 = d2;
                     return dd;
                 })
                 .top(0)
@@ -723,12 +734,6 @@
                     .lineWidth(2);
             }
             
-            //context.add(pv.Line)
-            //        .data(data[1])
-            //        .left(function(d) x(d.x))
-            //        .bottom(function(d) y(d.y))
-            //        .lineWidth(2);
-            
             
             /* The selectable, draggable focus region. */
             context.add(pv.Panel)
@@ -747,11 +752,6 @@
             
             vis.render();
             drawgrid();
-            
-            //}
-            //else if (type="multiple"){
-            //    console.log("multiple!");
-            //}
         }
         
         var grid;
