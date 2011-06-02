@@ -29,6 +29,7 @@
     var sensors;
     
     var oldd1, oldd2;
+    var zoomx = 100, zoomdx = 200;
     
     //var sensorTree; //Variable to store current sensor tree
     //var foundSensors; //Variable to store all availible sensors
@@ -424,8 +425,16 @@
                     y = pv.Scale.linear(0, chartmax).range(0, h2);
                     
                 /* Interaction state. Focus scales will have domain set on-render. */
-                var i = {x:200, dx:100},
-                    fx = pv.Scale.linear().range(0, w),
+                
+                //if (typeof zoomx == "undefined" && typeof zoomdx == "undefined"){
+                //    console.log('bob');
+                //    var i = {x:200, dx:100};
+                //}
+                //else{
+                //    console.log('bob fish');
+                    var i = {x:zoomx, dx:zoomdx};
+                //}
+                var fx = pv.Scale.linear().range(0, w),
                     fy = pv.Scale.linear().range(0, h1);
                 
                 /* Root panel. */
@@ -449,8 +458,15 @@
                     //    d2 = oldd2;
                     //}
                     //else{
-                    var d1 = x.invert(i.x),
+                    //console.log(oldd1);
+                    //if(typeof oldd1 == "undefined"){
+                        console.log(i);
+                        d1 = x.invert(i.x);
+                        zoomx = i.x;
                         d2 = x.invert(i.x + i.dx);
+                        zoomdx = i.dx;
+                    //}
+                    
                     //}
                     var dd = [];
                     for(var j=0; j<data.length; j++){//for each line in the data array
@@ -489,8 +505,8 @@
                     else if (scaleoriginal.checked){ fy.domain(y.domain()); }
                     //mydd = dd.slice(0);
                     //console.log("bang!");
-                    oldd1 = d1;
-                    oldd2 = d2;
+                    //oldd1 = d1;
+                    //oldd2 = d2;
                     return dd;
                 })
                 .top(0)
@@ -743,9 +759,11 @@
                 .event("mousedown", pv.Behavior.select())
                 .event("select", focus)
             .add(pv.Bar)
-                .left(function(d) d.x)
+                .left(function(d){ console.log(d); return d.x; })
                 .width(function(d) d.dx)
-                .fillStyle("rgba(255, 128, 128, .4)")
+                //.left(zoomx)
+                //.width(zoomdx)
+                .fillStyle("rgba(128, 128, 255, .4)")
                 .cursor("move")
                 .event("mousedown", pv.Behavior.drag())
                 .event("drag", focus);
