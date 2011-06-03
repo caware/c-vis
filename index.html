@@ -37,7 +37,7 @@
     
     buildTree("treeuse");
     
-    function tree(sensortree){
+    function tree(sensortree,type){
             //Create tree from sensor index object.
             
             //Specify the root node from the tree JS object
@@ -115,6 +115,7 @@
             
             root.sort(nodeSort);
             
+            
             var nodes = root.nodes();
             for(var i=0; i<nodes.length;i++){
                 var nm = nodes[i].nodeName
@@ -131,59 +132,114 @@
                 else if (nm=="Computers"){nodes[i].toggle();}
                 else if (nm=="A/C"){nodes[i].toggle();}
                 else if (nm=="Server Power and Server A/C"){nodes[i].toggle();}
-                else if (nm=="Lighting & Power"){nodes[i].toggle();}
+                else if (nm=="Lighting and a/c"){nodes[i].toggle();}
                 else if (nm=="Lighting"){nodes[i].toggle();}
                 else if (nm=="Sockets"){nodes[i].toggle();}
                 else if (nm=="Power"){nodes[i].toggle();}
                 else if (nm=="computers and A/C"){nodes[i].toggle();}
                 else if (nm=="Lighting and Sockets"){nodes[i].toggle();}
                 else if (nm=="kitchen plant"){nodes[i].toggle();}
+                else if (nm=="Machine room a/c"){nodes[i].toggle();}
                 else if (nm=="Machine room power"){nodes[i].toggle();}
+                else if (nm=="Machine room power and a/c"){nodes[i].toggle();}
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
                 if (nm == "Average"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
                     nodes[i].nodeName = "Average this month: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
-                
-                
-                //for(x=0; x<plotArray.length; x++){
-                //    for(y=0; y<plotArray[x].url.length; y++){
-                //        if(plotArray[x].url[y] == "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue){
-                            //var tmpnode = nodes[i].nodes()[0];
-                            //while (typeof(tmpnode.parentNode) != "undefined"){
-                            //    console.log("looped!");
-                            //    console.log(tmpnode.nodes());
-                            //    tmpnode = tmpnode.parentNode;
-                            //}
-                        //console.log(nodes[i].nodes());
-               //         }
-               //     }
-               // }
-                //for(var x=0; x<plotArray.length; x++){
-                //    if(!nodes[i].toggled && "http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue == plotArray[x].url[0]){// nodes[i].toggle();}
-                //    //console.log("http://www.cl.cam.ac.uk/meters"+nodes[i].nodeValue+" : "+plotArray[x].url[0]);
-                //        console.log("!!");
-                //        var tmpnode = nodes[i];
-                //        console.log(tmpnode);
-                //        while (tmpnode.parentNode){
-                //            console.log("!!!");
-                //            
-                //            tmpnode = tmpnode.parentNode;
-                //            console.log(tmpnode);
-                //        }
-                //        if (tmpnode.toggled){tmpnode.toggle();}
-                //    }
-                //}
             }
             
+            //root.sort(nodeSort);
+            console.log(root);
             
             treevis.render();
             
             function nodeSort(node1, node2) {
                 var tmp = new Array(node1.nodeName, node2.nodeName);
+                
+                
+                //Make the Overall node always appear first
+                if (tmp[0].substring(0,5) == "Whole" ){
+                    return -1;
+                }
+                else if (tmp[1].substring(0,5) == "Whole" ){
+                    return 1;
+                }
+                //Make the Average node always 2n @ the top
+                if (tmp[0].substring(0,7) == "Average" ){
+                    return -1;
+                }
+                else if (tmp[1].substring(0,7) == "Average" ){
+                    return 1;
+                }
+            
+                
+                //tmp.sort();
+                if (type == "treegeo"){
+                    console.log('treegeo');
+                    if (tmp[0].substring(0,6) == "Ground" ){
+                        return -1;
+                    }
+                    if (tmp[1].substring(0,6) == "Ground" ){
+                        return 1;
+                    }
+                    if (tmp[0].substring(0,5) == "First" ){
+                        return -1;
+                    }
+                    if (tmp[1].substring(0,5) == "First" ){
+                        return 1;
+                    } 
+                    if (tmp[0].substring(0,6) == "Second" ){
+                        return -1;
+                    }
+                    if (tmp[1].substring(0,6) == "Second" ){
+                        return 1;
+                    }
+                }
+                else if (type == "treeuse"){
+                    console.log('treeuse');
+                    console.log(tmp);
+                    if (tmp[0].substring(0,6) == "Ground" ){
+                        console.log('0ground detect!');
+                        //console.log(tmp);
+                        if (tmp[1].substring(0,6) != "Second" && tmp[1].substring(0,5) != "First"){
+                            return 1;
+                        }
+                    }
+                    if (tmp[1].substring(0,6) == "Ground" ){
+                        console.log('1ground detect!');
+                        //console.log(tmp);
+                        if (tmp[0].substring(0,6) != "Second" && tmp[0].substring(0,5) != "First"){
+                            return -1;
+                        }
+                    }
+                    if (tmp[0].substring(0,5) == "First" ){
+                        console.log('0first detect!');
+                        //console.log(tmp);
+                        if (tmp[1].substring(0,6) != "Second"){
+                            return 1;
+                        }
+                    }
+                    if (tmp[1].substring(0,5) == "First" ){
+                        console.log('1first detect!');
+                        //console.log(tmp);
+                        if (tmp[0].substring(0,6) != "Second"){
+                            return -1;
+                        }
+                    }
+                    if (tmp[0].substring(0,6) == "Second" ){
+                        console.log('0-2nd detect!');
+                        return 1
+                    }
+                    if (tmp[1].substring(0,6) == "Second" ){
+                        console.log('1-2nd detect!');
+                        return -1
+                    }
+                }
+                
                 tmp.sort();
-                if (node1.nodeName == tmp[0].nodename){ return -1; }
-                else if (node2.nodeName == tmp[0].nodename){ return 1; }
+                if (node1.nodeName == tmp[0]){ return -1; }
+                else if (node2.nodeName == tmp[0]){ return 1; }
                 else if (node1.nodeName == node2.nodeName){ return 0; }
             }
             

@@ -1,7 +1,7 @@
        function buildTree(checked){
         //Get the sensor index file and build and display the sensor tree.
             sensors = getSensors(indexUrl,checked);
-            tree(sensors);
+            tree(sensors,checked);
         }
         
         function refreshTree(){
@@ -22,15 +22,16 @@
             //Get array of sensors from index file, and create blank destination object
             var elecsensors = sensorindex.sensors.elec;
             var treedata = new Object();
+            var bld = 'Whole Building';
             
             //If tree is displayed geographically
             if (checked == "treegeo"){
                 treeIndex.clearStore();
                 //Create object to hold floors
                 var objfloor = {"Average":treeIndex.addNewItem(0)};
-                objfloor.Overall = null;
+                objfloor[bld] = null;
                 var objmain = {"Average":treeIndex.addNewItem(0)};
-                objmain.Overall = null;
+                objmain[bld] = null;
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
@@ -38,14 +39,14 @@
                         //If sensor = main power, assign its total to the toplevel total
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         objfloor.Average = treeIndex.addNewItem(av);
-                        objfloor.Overall = treeIndex.addNewItem(elecsensors[i].path);
+                        objfloor[bld] = treeIndex.addNewItem(elecsensors[i].path);
                         objmain.Main = objfloor;
                         //objcircuit.Overall = elecsensors[i].path;
                     }
                     else if (elecsensors[i].sensor == "S-m257"){
                         var av = elecsensors[i].recenttotal / elecsensors[i].datasize;
                         objmain.Average = treeIndex.addNewItem(av);
-                        objmain.Overall = treeIndex.addNewItem(elecsensors[i].path);
+                        objmain[bld] = treeIndex.addNewItem(elecsensors[i].path);
                         //objmain.Main = objfloor;
                     }
                     else{
@@ -155,14 +156,14 @@
                 //If tree is displayed by use:
                 treeIndex.clearStore();
                 var objcircuit = {"Average":treeIndex.addNewItem(0)};
-                objcircuit.Overall = null;
+                objcircuit[bld] = null;
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
                     if (elecsensors[i].sensor == "S-m257"){
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         objcircuit.Average = treeIndex.addNewItem(av);
-                        objcircuit.Overall = treeIndex.addNewItem(elecsensors[i].path);
+                        objcircuit[bld] = treeIndex.addNewItem(elecsensors[i].path);
                     }
                     else if (elecsensors[i].sensor != "S-m36"){
                         treeIndex.appendItemURL(path, objcircuit.Average);
@@ -251,4 +252,4 @@
         }
         
         
-            
+        
