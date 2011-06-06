@@ -175,7 +175,7 @@
             }
             
             //root.sort(nodeSort);
-            console.log(root);
+            //console.log(root);
             
             treevis.render();
             
@@ -343,7 +343,7 @@
             if (month<10){
                 month = "0"+month;
             }
-            month = "05";
+            //month = "05";
             var plotline = {"id":0,"url":ploturl,"description":"",
                         "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
                         "colour":"Colour", "room":"Room",
@@ -396,34 +396,54 @@
                 }
                 
                 //var jsonArray = new Array([],[],[],[],[]);
-                var jsonArray = new Array();
                 
+                //Create and initialise an array for storing the json data from the sensors
+                var jsonArray = new Array();
                 for (var x=0;x<maxPlots;x++){
                     jsonArray.push([]);
                 }
                 
-                
+                //For each plot in plotArray
                 for(var i=0;i<plotArray.length;i++){
+                    //If the plot contains more than one URL, add up the data in the multiple URLs
                     if (plotArray[i].url.length > 1){
-                    //console.log(plotArray[i]);
-                    var totaldata = new Array();
+                        //Create array to store the summed data
+                        var totaldata = new Array();
+                        //For each URL belonging to the plot
                         for (var k=0; k<plotArray[i].url.length; k++){
+                            //Add the json object of that array to the array in jsonArray
                             jsonArray[i][k] = getJson(plotArray[i].url[k]+plotArray[i].startmonthyear+".json");
+                            //Add the room to the description
                             jsonArray[i][0].description += ", "+jsonArray[i][k].room;
                             
-                            
+                            //For each datum in the data array of the sensor
                             for(var m=0; m<jsonArray[i][k].data.length; m++){
+                                //for the first lot of data initailise to zero first so we can add to it
                                 if(k == 0){
                                     totaldata[m] = 0.0;
                                 }
-                                //jsonArray[i][0].data[m][1] += jsonArray[i][k].data[m][1];
+                                //Add each data point to the exsisting one in the total data array
                                 totaldata[m] += jsonArray[i][k].data[m][1];
                             }
-                            //console.log(totaldata);
-                            //console.log("i:"+i+", k:"+k+", m:"+m+",  : "+jsonArray[0][0].data[10][1])
-                            //console.log(totaldata[k]);
+                            
+                            
+                            //identify an jsonArray[i][?] that is big enough to hold totaldata, and then place in there, 
+                            //before copying that array to jsonArray[i][0].data
+                            
+                            //OR
+                            
+                            //have totaldata as a 2D array of timestamps and kws, and replace each time stamp when it gets bigger.
+                            //Then copy the whole lot to jsonArray[i][0].data?
+                            
                             
                             for(var m=0; m<totaldata.length; m++){
+                                
+                                console.log('i:'+i+', m:'+m+'.data[m][1]: '+jsonArray[i][0].data[m][1]+'totaldata[m]:'+totaldata[m]);
+                                console.log('datam.length = '+jsonArray[i][0].data.length);
+                                
+                                
+                                
+                                if(m+1 >= jsonArray[i][0].data.length){console.log('WUPS!');}
                                 jsonArray[i][0].data[m][1] = totaldata[m];
                             }
                         }
@@ -551,7 +571,7 @@
                     //else{
                     //console.log(oldd1);
                     //if(typeof oldd1 == "undefined"){
-                        console.log(i);
+                        //console.log(i);
                         d1 = x.invert(i.x);
                         zoomx = i.x;
                         d2 = x.invert(i.x + i.dx);
@@ -1100,7 +1120,7 @@
                 .event("mousedown", pv.Behavior.select())
                 .event("select", focus)
             .add(pv.Bar)
-                .left(function(d){ console.log(d); return d.x; })
+                .left(function(d){ return d.x; })
                 .width(function(d) d.dx)
                 //.left(zoomx)
                 //.width(zoomdx)
