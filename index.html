@@ -37,6 +37,11 @@
     //var foundSensors; //Variable to store all availible sensors
     //var cachedReadings = {}; //Object to store previously fetched sensor data
     
+     $(document).ready(function() {
+        checkCookie("WGBToolVisit");
+    });
+    
+    
     buildTree("treeuse");
     
     function tree(sensortree,type){
@@ -1222,8 +1227,11 @@
             <p class="alert">Your browser either does not support Javascript or it is not enabled. Please enable JavaScript for full functionality.</p>
         </div>
     </noscript>
+    <div id="firstvisit">
+        <p class="alert">This tool is still under development, please direct all questions and ideas to Chris Elsmore & Ian Leslie <a <a href="mailto:cce25@cam.ac.uk,Ian.Leslie@cl.cam.ac.uk?subject=Comments Regarding cl.cam.ac.uk/meters">here</a>.</p>
+    </div>
     <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
-    <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory. More...</p></div>
+    <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory.</p></div>
     <div style="float:right; width:400px; text-align:right;padding-right:20;">
         <input name="scale" id="scalefit" type="radio" onchange="vis.render()">
         <label for="scalefit"> Scale to fit</label>
