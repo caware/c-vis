@@ -16,7 +16,9 @@
     var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
     
     //Set plot colours
-    var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange");
+    var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise");
+    
+    var maxPlots = 10;
     
     //Date formats for chart tick labels
     var zoomDateFormat = pv.Format.date("%d/%m %H:%M");
@@ -132,16 +134,30 @@
                 else if (nm=="Computers"){nodes[i].toggle();}
                 else if (nm=="A/C"){nodes[i].toggle();}
                 else if (nm=="Server Power and Server A/C"){nodes[i].toggle();}
-                else if (nm=="Lighting and a/c"){nodes[i].toggle();}
+                else if (nm=="Lighting and a/c"){
+                    nodes[i].toggle();
+                    nodes[i].nodeName = "Lighting and A/C";
+                }
                 else if (nm=="Lighting"){nodes[i].toggle();}
                 else if (nm=="Sockets"){nodes[i].toggle();}
                 else if (nm=="Power"){nodes[i].toggle();}
-                else if (nm=="computers and A/C"){nodes[i].toggle();}
                 else if (nm=="Lighting and Sockets"){nodes[i].toggle();}
-                else if (nm=="kitchen plant"){nodes[i].toggle();}
-                else if (nm=="Machine room a/c"){nodes[i].toggle();}
-                else if (nm=="Machine room power"){nodes[i].toggle();}
-                else if (nm=="Machine room power and a/c"){nodes[i].toggle();}
+                else if (nm=="kitchen plant"){
+                    nodes[i].toggle();
+                    nodes[i].nodeName = "Kitchen Plant";
+                }
+                else if (nm=="Machine room a/c"){
+                    nodes[i].toggle();
+                    nodes[i].nodeName = "Machine Room A/C";
+                }
+                else if (nm=="Machine room power"){
+                    nodes[i].toggle();
+                    nodes[i].nodeName = "Machine Room Power";
+                }
+                else if (nm=="Machine room power and a/c"){
+                    nodes[i].toggle();
+                    nodes[i].nodeName = "Machine Room Power and A/C";
+                }
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
                 if (nm == "Average"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
@@ -354,7 +370,7 @@
                     }
                 }
                 if(!found){
-                    if (plotArray.length == 5){
+                    if (plotArray.length == maxPlots){
                         console.log("Maximum amount of plots already drawn.");
                     }
                     else {
@@ -374,8 +390,12 @@
                     }
                 }
                 
-                var jsonArray = new Array([],[],[],[],[]);
+                //var jsonArray = new Array([],[],[],[],[]);
+                var jsonArray = new Array();
                 
+                for (var x=0;x<maxPlots;x++){
+                    jsonArray.push([]);
+                }
                 
                 
                 for(var i=0;i<plotArray.length;i++){
@@ -741,6 +761,256 @@
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[4])
                     .lineWidth(2);
+            }
+            else if(plotArray.length == 6){
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[2];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[2])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[3];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[3])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[4];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[4])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[5];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[5])
+                    .lineWidth(2);
+            }
+            else if(plotArray.length == 7){
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[2];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[2])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[3];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[3])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[4];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[4])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[5];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[5])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[6];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[6])
+                    .lineWidth(2)
+            }
+            else if(plotArray.length == 8){
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[2];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[2])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[3];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[3])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[4];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[4])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[5];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[5])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[6];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[6])
+                    .lineWidth(2)
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[7];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[7])
+                    .lineWidth(2)
+            }
+            else if(plotArray.length == 9){
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[2];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[2])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[3];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[3])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[4];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[4])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[5];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[5])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[6];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[6])
+                    .lineWidth(2)
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[7];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[7])
+                    .lineWidth(2)
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[8];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[8])
+                    .lineWidth(2)
+            }
+            else if(plotArray.length == 10){
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[0];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[0])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[1];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[1])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[2];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[2])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[3];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[3])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[4];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[4])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[5];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[5])
+                    .lineWidth(2);
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[6];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[6])
+                    .lineWidth(2)
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[7];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[7])
+                    .lineWidth(2)
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[8];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[8])
+                    .lineWidth(2)
+                panel.add(pv.Line)
+                    .data(function(){return focus.init()[9];})
+                    .left(function(d){ return fx(d.x); })
+                    .bottom(function(d){ return fy(d.y); })
+                    .strokeStyle(plotColours[9])
+                    .lineWidth(2)
             }
             
             //debugger;
