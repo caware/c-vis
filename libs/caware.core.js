@@ -29,13 +29,13 @@
                 treeIndex.clearStore();
                 //Create object to hold floors
                 var objfloor = {"Average":treeIndex.addNewItem(0)};
-                objfloor[bld] = null;
                 var objmain = {"Average":treeIndex.addNewItem(0)};
-                objmain[bld] = null;
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
-                    if (elecsensors[i].sensor == "S-m36"){ 
+                    if (elecsensors[i].sensor == "S-m36"){
+                        var bld = 'Whole Building S-m36';
+                        objfloor[bld] = null;
                         //If sensor = main power, assign its total to the toplevel total
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         objfloor.Average = treeIndex.addNewItem(av);
@@ -44,6 +44,8 @@
                         //objcircuit.Overall = elecsensors[i].path;
                     }
                     else if (elecsensors[i].sensor == "S-m257"){
+                        var bld = 'Whole Building S-m257';
+                        objmain[bld] = null;
                         var av = elecsensors[i].recenttotal / elecsensors[i].datasize;
                         objmain.Average = treeIndex.addNewItem(av);
                         objmain[bld] = treeIndex.addNewItem(elecsensors[i].path);
@@ -162,12 +164,14 @@
                     var path = elecsensors[i].path;
                     if (elecsensors[i].sensor == "S-m257"){
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
-                        objcircuit.Average = treeIndex.addNewItem(av);
-                        objcircuit[bld] = treeIndex.addNewItem(elecsensors[i].path);
+                        //objcircuit.Average = treeIndex.addNewItem(av);
+                        objcircuit[bld] = treeIndex.addNewItem(av);
+                        treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
                     else if (elecsensors[i].sensor != "S-m36"){
                         treeIndex.appendItemURL(path, objcircuit.Average);
-                    
+                        
+                        
                         var roomArray = elecsensors[i].room.split("");
                         var description = elecsensors[i].description;
                         var room = elecsensors[i].room;
@@ -177,7 +181,7 @@
                         if (datasize > 0){ var recentaverage = recenttotal / datasize; }
                         else { var recentaverage = 0; }
                         var floor="";
-                        //var corridor="";
+                        treeIndex.sumItemAverage(recentaverage, objcircuit.Average);
                         
                         var objroom = new Object();
                         var objfloor = new Object();

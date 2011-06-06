@@ -145,7 +145,11 @@
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
                 if (nm == "Average"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
-                    nodes[i].nodeName = "Average this month: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                    nodes[i].nodeName = "Average Metered This Month: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                }
+                if (nm == "Whole Building"){
+                    //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
+                    nodes[i].nodeName = "Building Month Average: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
             }
             
@@ -176,7 +180,7 @@
                 
                 //tmp.sort();
                 if (type == "treegeo"){
-                    console.log('treegeo');
+                    //console.log('treegeo');
                     if (tmp[0].substring(0,6) == "Ground" ){
                         return -1;
                     }
@@ -197,42 +201,42 @@
                     }
                 }
                 else if (type == "treeuse"){
-                    console.log('treeuse');
-                    console.log(tmp);
+                    //console.log('treeuse');
+                    //console.log(tmp);
                     if (tmp[0].substring(0,6) == "Ground" ){
-                        console.log('0ground detect!');
+                        //console.log('0ground detect!');
                         //console.log(tmp);
                         if (tmp[1].substring(0,6) != "Second" && tmp[1].substring(0,5) != "First"){
                             return 1;
                         }
                     }
                     if (tmp[1].substring(0,6) == "Ground" ){
-                        console.log('1ground detect!');
+                        //console.log('1ground detect!');
                         //console.log(tmp);
                         if (tmp[0].substring(0,6) != "Second" && tmp[0].substring(0,5) != "First"){
                             return -1;
                         }
                     }
                     if (tmp[0].substring(0,5) == "First" ){
-                        console.log('0first detect!');
+                        //console.log('0first detect!');
                         //console.log(tmp);
                         if (tmp[1].substring(0,6) != "Second"){
                             return 1;
                         }
                     }
                     if (tmp[1].substring(0,5) == "First" ){
-                        console.log('1first detect!');
+                        //console.log('1first detect!');
                         //console.log(tmp);
                         if (tmp[0].substring(0,6) != "Second"){
                             return -1;
                         }
                     }
                     if (tmp[0].substring(0,6) == "Second" ){
-                        console.log('0-2nd detect!');
+                        //console.log('0-2nd detect!');
                         return 1
                     }
                     if (tmp[1].substring(0,6) == "Second" ){
-                        console.log('1-2nd detect!');
+                        //console.log('1-2nd detect!');
                         return -1
                     }
                 }
@@ -578,7 +582,7 @@
             focus.add(pv.Rule)
                 .data(function(){return fx.ticks(7);})
                 .left(fx)
-                .strokeStyle("#aaa")
+                .strokeStyle(function(d) d ? "#aaa" : "#000")
                 .anchor("bottom").add(pv.Label)
                 .text(function(fx){ return zoomDateFormat.format(fx);});
                 
