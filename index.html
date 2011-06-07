@@ -416,14 +416,27 @@
                             //Add the room to the description
                             jsonArray[i][0].description += ", "+jsonArray[i][k].room;
                             
-                            //For each datum in the data array of the sensor
-                            for(var m=0; m<jsonArray[i][k].data.length; m++){
-                                //for the first lot of data initailise to zero first so we can add to it
-                                if(k == 0){
-                                    totaldata[m] = 0.0;
+                            if(k == 0){
+                                //in the first iteration, just copy the first sensor data accross.
+                                totaldata = jsonArray[i][k].data;
+                            }
+                            else{
+                                //For each datum in the data array of the sensor
+                                for(var m=0; m<jsonArray[i][k].data.length; m++){
+                                    //for the first lot of data initailise to zero first so we can add to it
+                                    
+                                    //Add each data point to the exsisting one in the total data array
+                                    //totaldata[m] += jsonArray[i][k].data[m][1];
+                                    if(m+1 >= jsonArray[i][0].data.length){
+                                        console.log('Not all sensors similar length, request update?');
+                                        //push new data onto the totaldata array
+                                        //totaldata.splice(m,0,jsonArray[i][0].data[m]);
+                                        totaldata.push(jsonArray[i][k].data[m]);
+                                    }
+                                    else{
+                                        totaldata[m][1] += jsonArray[i][k].data[m][1];
+                                    }
                                 }
-                                //Add each data point to the exsisting one in the total data array
-                                totaldata[m] += jsonArray[i][k].data[m][1];
                             }
                             
                             
@@ -436,17 +449,16 @@
                             //Then copy the whole lot to jsonArray[i][0].data?
                             
                             
-                            for(var m=0; m<totaldata.length; m++){
-                                
-                                console.log('i:'+i+', m:'+m+'.data[m][1]: '+jsonArray[i][0].data[m][1]+'totaldata[m]:'+totaldata[m]);
-                                console.log('datam.length = '+jsonArray[i][0].data.length);
-                                
-                                
-                                
-                                if(m+1 >= jsonArray[i][0].data.length){console.log('WUPS!');}
-                                jsonArray[i][0].data[m][1] = totaldata[m];
-                            }
+                            //for(var m=0; m<totaldata.length; m++){
+                            //    
+                            //    console.log('i:'+i+', m:'+m+'.data[m][1]: '+jsonArray[i][0].data[m][1]+'totaldata[m]:'+totaldata[m]);
+                            //    console.log('datam.length = '+jsonArray[i][0].data.length);
+                            //    if(m+1 >= jsonArray[i][0].data.length){console.log('WUPS!');}
+                            //    jsonArray[i][0].data[m][1] = totaldata[m];
+                            //}
                         }
+                        jsonArray[i][0].data = totaldata;
+                        totaldata = null;
                         jsonArray[i][0].room = "--";
                         
                     }

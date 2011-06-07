@@ -237,7 +237,9 @@
                             //console.log("is"+objsensor.Total);
                         }
                         else{
-                            objcircuit[description][floor][room+"?2"] = treeIndex.addNewItem(path);
+                            var tmpobj = {};
+                            
+                            objcircuit[description][floor][room+"|2"] = treeIndex.addNewItem(path);
                             //objroom = {};
                             //objroom = objcircuit[floor][corridor][room];
                             //objsensor[description] = path;
