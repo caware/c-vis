@@ -147,10 +147,13 @@
                 else if (nm=="Lighting"){nodes[i].toggle();}
                 else if (nm=="Sockets"){nodes[i].toggle();}
                 else if (nm=="Power"){nodes[i].toggle();}
-                else if (nm=="Lighting and Sockets"){nodes[i].toggle();}
-                else if (nm=="kitchen plant"){
+                else if (nm=="Lighting and sockets"){
                     nodes[i].toggle();
-                    nodes[i].nodeName = "Kitchen Plant";
+                    nodes[i].nodeName = "Lighting and Sockets";
+                }
+                else if (nm=="kitchen power"){
+                    nodes[i].toggle();
+                    nodes[i].nodeName = "Kitchen Power";
                 }
                 else if (nm=="Machine room a/c"){
                     nodes[i].toggle();
@@ -405,14 +408,14 @@
                         for (var k=0; k<plotArray[i].url.length; k++){
                             //Add the json object of that array to the array in jsonArray
                             jsonArray[i][k] = getJson(plotArray[i].url[k]+plotArray[i].startmonthyear+".json");
-                            var tmpjson = getJson(plotArray[i].url[k]+"2011-05.json");
+                            ////var tmpjson = getJson(plotArray[i].url[k]+"2011-05.json");
                             //console.log(tmpjson.data);
                             //Add the room to the description
                             jsonArray[i][0].description += ", "+jsonArray[i][k].room;
                             
                             //jsonArray[i][k].data = jsonArray[i][k].data.concat(tmpjson.data);
-                            tmpjson.data = tmpjson.data.concat(jsonArray[i][k].data);
-                            jsonArray[i][k].data = tmpjson.data;
+                            ////tmpjson.data = tmpjson.data.concat(jsonArray[i][k].data);
+                            ////jsonArray[i][k].data = tmpjson.data;
                             
                             
                             if(k == 0){
@@ -426,7 +429,7 @@
                                     
                                     //Add each data point to the exsisting one in the total data array
                                     //totaldata[m] += jsonArray[i][k].data[m][1];
-                                    if(m+1 >= jsonArray[i][0].data.length){
+                                    if(m+1 > jsonArray[i][0].data.length){
                                         console.log('Not all sensors similar length, request update?');
                                         //push new data onto the totaldata array
                                         //totaldata.splice(m,0,jsonArray[i][0].data[m]);
@@ -464,11 +467,11 @@
                     else{
                         //console.log("plotArray"+plotArray[i].url[0]);
                         jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startmonthyear+".json");
-                        var tmpjson = getJson(plotArray[i].url[0]+"2011-05.json");
-                        console.log(tmpjson);
+                        ////var tmpjson = getJson(plotArray[i].url[0]+"2011-05.json");
+                        //console.log(tmpjson);
                         //jsonArray[i][0].data = jsonArray[i][0].data.concat(tmpjson.data);
-                        tmpjson.data = tmpjson.data.concat(jsonArray[i][0].data);
-                        jsonArray[i][0].data = tmpjson.data;
+                        ////tmpjson.data = tmpjson.data.concat(jsonArray[i][0].data);
+                        ////jsonArray[i][0].data = tmpjson.data;
                         //console.log(jsonArray[i][0]);
                         //return 0;
                     }
@@ -499,9 +502,11 @@
                         
                         tmpdata.push({x:new Date(tmpx),y: tmpy});
                     }
+                    console.log('sensor '+plotArray[i].description+' datalen:'+tmpdata.length+' total:'+tmptotal);
                     plotArray[i].avgtotal = Math.round((tmptotal / tmpdata.length)*1000)/1000;
                     plotArray[i].totalenergy = Math.round(tmptotal*1000)/1000;
                     plotArray[i].data = tmpdata;
+                    //console.log(tmpdata);
                     tmpdata = null;
                     tmptotal = 0;
                 }
