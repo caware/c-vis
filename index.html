@@ -29,6 +29,7 @@
     //Vars for array of plots, and chart visulisation
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
+    var plotController = new PlotController(maxPlots);
     var vis;
     var sensors;
     
@@ -323,7 +324,10 @@
                         ploturl[x] = "http://www.cl.cam.ac.uk/meters"+sensorurl[x];
                     }
                     //var ploturl = "http://www.cl.cam.ac.uk/meters"+treeIndex.getItem(n.nodeValue)[1];
-                    chart(ploturl);
+                    //chart(ploturl);
+                    var todaydate = new Date();
+                    console.log(todaydate);
+                    console.log(plotController.togglePlotByUrl(ploturl));
                     //console.log("Clicked: "+plot.url);
                 }
                 //    chart(plot, "multiple");
