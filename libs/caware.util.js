@@ -68,3 +68,35 @@ function checkCookie(name){
     console.log("created cookie");
   }
 }
+
+function getMonthsBetween(stmonth, styear, endmonth, endyear){
+    stmonth = parseInt(stmonth);
+    styear = parseInt(styear);
+    endmonth = parseInt(endmonth);
+    endyear = parseInt(endyear);
+    console.log('getMonthsBetween Called');
+    var outputarray = new Array();
+    var go = 20;
+    for (var i=0;i<go;i++){
+        if ((stmonth == endmonth) && (styear == endyear)){
+            if (stmonth < 10) var tmpmonth = '0'+stmonth;
+            else var tmpmonth = stmonth;
+            outputarray.push(styear+"-"+tmpmonth);
+            break;
+        }
+        else {
+            if (stmonth < 10) var tmpmonth = '0'+stmonth;
+            else var tmpmonth = stmonth;
+            
+            outputarray.push(styear+"-"+tmpmonth);
+            if (stmonth < 12) stmonth += 1;
+            else if (stmonth = 12){
+                stmonth = 1;
+                styear += 1;
+            }
+        }
+        console.log('looped');
+        i++;
+    }
+    return outputarray;
+}

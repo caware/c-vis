@@ -328,6 +328,7 @@
                     var todaydate = new Date();
                     console.log(todaydate);
                     console.log(plotController.togglePlotByUrl(ploturl));
+                    plotController.calculateData();
                     //console.log("Clicked: "+plot.url);
                 }
                 //    chart(plot, "multiple");
@@ -545,12 +546,12 @@
               //  $('#tablediv').empty();
              //   return 0;
             //}
-            actuallyChart(dataArray,start,end,chartmax);
+            //actuallyChart(dataArray,start,end,chartmax);
         }
             
-            function actuallyChart(data,start,end,chartmax){
-                //var data = dataArray;
-                
+            function actuallyChart(dataArray,start,end,chartmax,chartcount){
+                var data = dataArray;
+                console.log(data);
                 /* Scales and sizing. */
                 var w = 700,
                     h1 = 300,
@@ -629,7 +630,10 @@
                         }
                         //tot = tot + dd[a].y;
                         var avg = tot / tmp.length;
-                        plotArray[a].avgselected = Math.round(avg*1000)/1000;
+                        var roundavg = Math.round(avg*1000)/1000;
+                        //FIXME: do something with roundavg, ie update the plot controller
+                        //plotController.updateAvgSelected(plotArray[a].url, roundavg);
+                        //plotArray[a].avgselected = 
                     }
                     
                     //$('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
@@ -711,7 +715,7 @@
             //var tmp = focus.init();
             //console.log(eval(tmp));
             
-            if(plotArray.length == 1){
+            if(chartcount == 1){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){return fx(d.x); })
@@ -719,7 +723,7 @@
                     .strokeStyle(plotColours[0])
                     .lineWidth(2);
             }
-            else if(plotArray.length == 2){
+            else if(chartcount == 2){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -733,7 +737,7 @@
                     .strokeStyle(plotColours[1])
                     .lineWidth(2);
             }
-            else if(plotArray.length == 3){
+            else if(chartcount == 3){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -753,7 +757,7 @@
                     .strokeStyle(plotColours[2])
                     .lineWidth(2);
             }
-            else if(plotArray.length == 4){
+            else if(chartcount == 4){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -779,7 +783,7 @@
                     .strokeStyle(plotColours[3])
                     .lineWidth(2);
             }
-            else if(plotArray.length == 5){
+            else if(chartcount == 5){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -811,7 +815,7 @@
                     .strokeStyle(plotColours[4])
                     .lineWidth(2);
             }
-            else if(plotArray.length == 6){
+            else if(chartcount == 6){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -849,7 +853,7 @@
                     .strokeStyle(plotColours[5])
                     .lineWidth(2);
             }
-            else if(plotArray.length == 7){
+            else if(chartcount == 7){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -893,7 +897,7 @@
                     .strokeStyle(plotColours[6])
                     .lineWidth(2)
             }
-            else if(plotArray.length == 8){
+            else if(chartcount == 8){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -943,7 +947,7 @@
                     .strokeStyle(plotColours[7])
                     .lineWidth(2)
             }
-            else if(plotArray.length == 9){
+            else if(chartcount == 9){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -999,7 +1003,7 @@
                     .strokeStyle(plotColours[8])
                     .lineWidth(2)
             }
-            else if(plotArray.length == 10){
+            else if(chartcount == 10){
                 panel.add(pv.Line)
                     .data(function(){return focus.init()[0];})
                     .left(function(d){ return fx(d.x); })
@@ -1172,6 +1176,9 @@
         
         function addMonth(){
             console.log('click');
+            plotController.addMonth();
+            plotController.calculateData();
+            //console.log(plotController.getPlots());
         }
         
         var grid;
