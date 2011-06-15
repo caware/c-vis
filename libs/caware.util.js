@@ -74,20 +74,21 @@ function getMonthsBetween(stmonth, styear, endmonth, endyear){
     styear = parseInt(styear);
     endmonth = parseInt(endmonth);
     endyear = parseInt(endyear);
-    console.log('getMonthsBetween Called');
+    //console.log('getMonthsBetween Called');
     var outputarray = new Array();
     var go = 20;
     for (var i=0;i<go;i++){
         if ((stmonth == endmonth) && (styear == endyear)){
-            if (stmonth < 10) var tmpmonth = '0'+stmonth;
-            else var tmpmonth = stmonth;
+            if (stmonth < 10) var tmpmonth = "0"+stmonth.toString();
+            else var tmpmonth = stmonth.toString();
             outputarray.push(styear+"-"+tmpmonth);
+            //console.log(tmpmonth);
             break;
         }
         else {
-            if (stmonth < 10) var tmpmonth = '0'+stmonth;
-            else var tmpmonth = stmonth;
-            
+            if (stmonth < 10) var tmpmonth = "0"+stmonth.toString();
+            else var tmpmonth = stmonth.toString();
+            //console.log(tmpmonth);
             outputarray.push(styear+"-"+tmpmonth);
             if (stmonth < 12) stmonth += 1;
             else if (stmonth = 12){
@@ -95,7 +96,7 @@ function getMonthsBetween(stmonth, styear, endmonth, endyear){
                 styear += 1;
             }
         }
-        console.log('looped');
+        //console.log('looped');
         i++;
     }
     return outputarray;

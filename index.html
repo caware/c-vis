@@ -5,6 +5,7 @@
     <script type="text/javascript" src="libs/jquery-1.5.1.min.js"></script>
     <script src="libs/jquery.event.drag-2.0.min.js"></script>
     <script type="text/javascript" src="libs/protovis-d3.2.js"></script>
+    <script type="text/javascript" src="libs/date-en-GB.js"></script>
     <script src="libs/slick.core.js"></script>
     <script src="libs/slick.grid.js"></script>
     <script src="libs/slick.editors.js"></script>
@@ -99,18 +100,11 @@
                 .fillStyle(function(n){
                     var nodedata = treeIndex.getItem(n.nodeValue);
                     if (typeof nodedata != "undefined"){
-                        for(x=0; x<plotArray.length; x++){
-                            var tmparray = [];
-                            for (y=0; y<nodedata[1].length; y++){
-                                tmparray[y] = "http://www.cl.cam.ac.uk/meters"+nodedata[1][y];
-                            }
-                            if(plotArray[x].url.compare(tmparray)){
-                        //        console.log("CLICK: http://www.cl.cam.ac.uk/meters"+nodedata[1].toString());//{
-                        //        //console.log(n.index+" found");
-                        //        //console.log("used "+plotArray[x].colour);
-                                return plotArray[x].colour;
-                            }
+                        var tmparray = [];
+                        for (y=0; y<nodedata[1].length; y++){
+                            tmparray[y] = "http://www.cl.cam.ac.uk/meters"+nodedata[1][y];
                         }
+                        return plotController.getColourByUrl(tmparray);
                     }
                     if (n.nodeName.split(" ",1)[0] == "Average"){return "#FFFFFF";}
                     if (n.firstChild){ return "#AAAAAA"; }
@@ -632,7 +626,7 @@
                         var avg = tot / tmp.length;
                         var roundavg = Math.round(avg*1000)/1000;
                         //FIXME: do something with roundavg, ie update the plot controller
-                        //plotController.updateAvgSelected(plotArray[a].url, roundavg);
+                        plotController.updateAvgByIndex(a, roundavg);
                         //plotArray[a].avgselected = 
                     }
                     
@@ -1187,8 +1181,8 @@
             //{id:"PlotColour", name:"Colour", field:"colour", width:50},
             {id:"Room", name:"Room", field:"room", width:45},
             {id:"Description", name:"Description", field:"description", width:170},
-            {id:"StartMonthyear", name:"Start", field:"startmonthyear", options:"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:100},
-            {id:"EndMonthyear", name:"End", field:"endmonthyear", options:"Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec", editor:SelectCellEditor, width:100},
+            {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:100},
+            {id:"EndMonthyear", name:"End", field:"endmonthyear", width:100},
             {id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
             {id:"kWTotal", name:"Avg kW Total", field:"avgtotal", width:95},
             {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126},
@@ -1271,7 +1265,7 @@
             grid = new Slick.Grid("#myGrid", dataView, columns, options);
             
             dataView.beginUpdate();
-            dataView.setItems(plotArray);
+            dataView.setItems(plotController.getPlots());
             dataView.endUpdate();
             
             grid.render();
