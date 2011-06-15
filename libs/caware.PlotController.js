@@ -180,7 +180,7 @@ function PlotController(maximumplots) {
                 //For each URL belonging to the plot
                 for (var k=0; k<plotArray[i].url.length; k++){
                     //Add the json object of that array to the array in jsonArray
-                    console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
+                    //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     for (var t=0;t<montharray.length;t++){
                         if (t == 0){
@@ -223,7 +223,18 @@ function PlotController(maximumplots) {
                 
             }
             else{
-                jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
+                //jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
+                montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
+                console.log('month array found!!!!!!!!!!!!!!!!!!!!!!');
+                for (var t=0;t<montharray.length;t++){
+                        if (t == 0){
+                            jsonArray[i][0] = getJson(plotArray[i].url[0]+montharray[t]+".json");
+                        }
+                        else{
+                            var tjson = getJson(plotArray[i].url[0]+montharray[t]+".json");
+                            jsonArray[i][0].data = jsonArray[i][0].data.concat(tjson.data);
+                        }
+                    }
             }
             
             var tmptotal = 0;
