@@ -320,7 +320,8 @@
                     //var ploturl = "http://www.cl.cam.ac.uk/meters"+treeIndex.getItem(n.nodeValue)[1];
                     //chart(ploturl);
                     var todaydate = new Date();
-                    console.log(todaydate);
+                    console.log(sensorurl);
+                    //console.log(todaydate);
                     console.log(plotController.togglePlotByUrl(ploturl));
                     plotController.calculateData();
                     //console.log("Clicked: "+plot.url);
@@ -1169,7 +1170,7 @@
         }
         
         function addMonth(){
-            console.log('click');
+            //console.log('click');
             plotController.addMonth();
             plotController.calculateData();
             //console.log(plotController.getPlots());

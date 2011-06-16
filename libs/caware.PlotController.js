@@ -107,7 +107,7 @@ function PlotController(maximumplots) {
     this.addMonth = function(){
         //
         this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(-1);
-        console.log(this.viewrange.startdate);
+        //console.log(this.viewrange.startdate);
         
         for (var p in this.plotarray){
             if (this.plotarray.hasOwnProperty(p)){
@@ -225,7 +225,7 @@ function PlotController(maximumplots) {
             else{
                 //jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
                 montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                console.log('month array found!!!!!!!!!!!!!!!!!!!!!!');
+                //console.log('month array found!!!!!!!!!!!!!!!!!!!!!!');
                 for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             jsonArray[i][0] = getJson(plotArray[i].url[0]+montharray[t]+".json");
@@ -263,7 +263,7 @@ function PlotController(maximumplots) {
                 
                 tmpdata.push({x:new Date(tmpx),y: tmpy});
             }
-            console.log('sensor '+plotArray[i].description+' datalen:'+tmpdata.length+' total:'+tmptotal);
+            //console.log('sensor '+plotArray[i].description+' datalen:'+tmpdata.length+' total:'+tmptotal);
             plotArray[i].avgtotal = Math.round((tmptotal / tmpdata.length)*1000)/1000;
             plotArray[i].totalenergy = Math.round(tmptotal*1000)/1000;
             plotArray[i].data = tmpdata;
@@ -307,7 +307,7 @@ function PlotController(maximumplots) {
         //  $('#tablediv').empty();
         //   return 0;
         //}
-        console.log('Fin');
+        //console.log('Fin');
         var chartcount = plotArray.length;
         actuallyChart(dataArray,start,end,chartmax,chartcount);
     };
