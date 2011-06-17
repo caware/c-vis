@@ -24,9 +24,9 @@
     var maxPlots = 10;
     
     //Date formats for chart tick labels
-    var zoomDateFormat = pv.Format.date("%d-%b '%y");
+    var zoomDateFormat = pv.Format.date("%a %d %b");
     var zoomTimeFormat = pv.Format.date("%H:%M");
-    var overallDateFormat = pv.Format.date("%d-%b '%y");
+    var overallDateFormat = pv.Format.date("%d %b '%y");
     
     //Vars for array of plots, and chart visulisation
     var plotArray = new Array();
@@ -343,8 +343,8 @@
                 console.log(data);
                 /* Scales and sizing. */
                 var w = 700,
-                    h1 = 300,
-                    h2 = 30,
+                    h1 = 310,
+                    h2 = 50,
                     x = pv.Scale.linear(start, end).range(0, w),
                     //y = pv.Scale.linear(0, pv.max(data, function(d) d.y)).range(0, h2);
                     y = pv.Scale.linear(0, chartmax).range(0, h2);
@@ -366,11 +366,11 @@
                 vis = new pv.Panel()
                     .canvas("chartdiv")
                     .width(w)
-                    .height(h1 + 20 + h2)
+                    .height(h1 + 30 + h2)
                     .bottom(20)
                     .left(30)
                     .right(20)
-                    .top(5);
+                    .top(20);
                 
                 
                 //var mydd = [];
@@ -442,28 +442,41 @@
             
             /* X-axis ticks. */
             focus.add(pv.Rule)
-                .top(15)
                 .data(function(){return fx.ticks(7);})
                 .left(fx)
                 .strokeStyle(function(d) d ? "#aaa" : "#000")
+                .lineWidth(function(d){
+                    //console.log(d);
+                    var tmp = new Date(d);
+                    console.log(tmp.getDay());
+                    if (tmp.getDay() == 6 || tmp.getDay() == 1){
+                        if (tmp.getHours() == 0){ return 3; }
+                        else return 1;
+                    }
+                    else return 1;
+                })
                 .anchor("bottom").add(pv.Label)
-                    .text(function(fx){ return zoomTimeFormat.format(fx);})
+                    .text(function(fx){ return zoomTimeFormat.format(fx);});
+            
+            focus.add(pv.Rule)
+                .data(function(){return fx.ticks(7);})
+                .left(fx)
+                .strokeStyle("rgba(255,255,255,0)")
                 .anchor("top").add(pv.Label)
-                    .top(0)
                     .text(function(fx){ return zoomDateFormat.format(fx);});
                 
             
             /* X axis weekend bars? */
-            focus.add(pv.Bar)
-                .data(function(){return fx;})
-                .left(fx)
-                .top(15)
-                .fillStyle(function(d){
-                    var tmp = new Date(d);
-                    console.log(d);
-                    if (tmp.getDay() == 5 || tmp.getDay() == 6){ return "rgba(235,235,235,0.7)" }
-                    else { return "rgba(255,255,255,1)" }
-                    });
+            //focus.add(pv.Bar)
+            //    .data(function(){return fx;})
+            //    .left(fx)
+            //    .top(15)
+            //    .fillStyle(function(d){
+            //        var tmp = new Date(d);
+            //        console.log(d);
+            //        if (tmp.getDay() == 5 || tmp.getDay() == 6){ return "rgba(235,235,235,0.7)" }
+            //        else { return "rgba(255,255,255,1)" }
+            //        });
             
             /* Y-axis ticks. */
             focus.add(pv.Rule)
@@ -477,6 +490,7 @@
             
             panel = focus.add(pv.Panel)
                 .overflow("hidden");
+                
             
             //var selecteddata = focus.innit();
             //var selected = focus.init;
@@ -908,6 +922,16 @@
             context.add(pv.Rule)
                 .data(x.ticks(5))
                 .left(x)
+                .lineWidth(function(d){
+                    //console.log(d);
+                    var tmp = new Date(d);
+                    console.log(tmp.getDay());
+                    if (tmp.getDay() == 6 || tmp.getDay() == 1){
+                        if (tmp.getHours() == 0){ return 3; }
+                        else return 1;
+                    }
+                    else return 1;
+                })
                 .strokeStyle("#aaa")
             .anchor("bottom").add(pv.Label)
                 .text(function(x){ return overallDateFormat.format(x); });
@@ -956,14 +980,17 @@
             
             context.add(pv.Dot)
                 .left(-15)
-                .bottom(18)
+                .bottom(25)
                 .shape("triangle")
                 .angle(Math.PI*0.5)
                 .size(110)
                 .strokeStyle("darkgrey")
+                //.anchor("bottom").add(pv.Label)
+                //    .text("Add Previous Month")
                 .lineWidth(2)
+                .cursor("pointer")
                 .events("all")
-               .event("mousedown", addMonth);
+                .event("mousedown", addMonth);
                 
             vis.render();
             drawgrid();
@@ -1093,7 +1120,7 @@
         </div>
     </noscript>
     <div id="firstvisit">
-        <p class="alert">This tool is still under development, please direct all questions and ideas to Chris Elsmore & Ian Leslie <a <a href="mailto:cce25@cam.ac.uk,Ian.Leslie@cl.cam.ac.uk?subject=Comments Regarding cl.cam.ac.uk/meters">here</a>.</p>
+        <p class="alert">This tool is still under development. If things stop working a page reload is often the best remedy!</p>
     </div>
     <div style="text-align:center;"><h2>William Gates Building Energy Usage</h2></div>
     <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory.</p></div>
