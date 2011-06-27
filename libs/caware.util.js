@@ -45,7 +45,7 @@ function readCookie(name){
       cparts = ck.split('=');
       // setting the flag if a cookie with the name specified exists
       if (cparts[0]==name){
-        console.log(ck);
+        //console.log(ck);
         flag=1;
      }
     }

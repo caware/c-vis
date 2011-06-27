@@ -10,6 +10,7 @@
     <script src="libs/slick.grid.js"></script>
     <script src="libs/slick.editors.js"></script>
     <script src="libs/slick.dataview.js"></script>
+    <script type="text/javascript" src="libs/caware.ColourPool.js"></script>
     <script type="text/javascript" src="libs/caware.IntValueStore.js"></script>
     <script type="text/javascript" src="libs/caware.PlotController.js"></script>
     <script type="text/javascript" src="libs/caware.util.js"></script>
@@ -375,31 +376,43 @@
                 
                 //var mydd = [];
                 
+            function fokus(id){
+                d1 = x.invert(i.x);
+                zoomx = i.x;
+                d2 = x.invert(i.x + i.dx);
+                zoomdx = i.dx;
+                
+                var dd = [];
+                for(var j=0; j<data.length; j++){//for each line in the data array
+                    dd[j] = [];
+                    dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
+                        pv.search.index(data[j], d2, function(d) d.x) + 1));
+                }
+                fx.domain(d1, d2);
+                if (typeof id == 'undefined') return dd;
+                else {
+                    return dd[id];
+                }
+            }
+            
+                
          /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
                 .def("init", function() {
-                    //if (typeof oldd1 != "undefined" && typeof oldd2 != "undefined" ){
-                    //    d1 = oldd1;
-                    //    d2 = oldd2;
+                    //d1 = x.invert(i.x);
+                    //zoomx = i.x;
+                    //d2 = x.invert(i.x + i.dx);
+                    //zoomdx = i.dx;
+                    //
+                    //var dd = [];
+                    //for(var j=0; j<data.length; j++){//for each line in the data array
+                    //    dd[j] = [];
+                    //    dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
+                    //        pv.search.index(data[j], d2, function(d) d.x) + 1));
                     //}
-                    //else{
-                    //console.log(oldd1);
-                    //if(typeof oldd1 == "undefined"){
-                        //console.log(i);
-                        d1 = x.invert(i.x);
-                        zoomx = i.x;
-                        d2 = x.invert(i.x + i.dx);
-                        zoomdx = i.dx;
-                    //}
+                    //fx.domain(d1, d2);
                     
-                    //}
-                    var dd = [];
-                    for(var j=0; j<data.length; j++){//for each line in the data array
-                        dd[j] = [];
-                        dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
-                            pv.search.index(data[j], d2, function(d) d.x) + 1));
-                    }
-                    fx.domain(d1, d2);
+                    var dd = fokus();
                     
                     var tot = 0;
                     var maxy = 0;
@@ -422,7 +435,6 @@
                         var roundavg = Math.round(avg*1000)/1000;
                         //FIXME: do something with roundavg, ie update the plot controller
                         plotController.updateAvgByIndex(a, roundavg);
-                        //plotArray[a].avgselected = 
                     }
                     
                     //$('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
@@ -448,7 +460,7 @@
                 .lineWidth(function(d){
                     //console.log(d);
                     var tmp = new Date(d);
-                    console.log(tmp.getDay());
+                    //console.log(tmp.getDay());
                     if (tmp.getDay() == 6 || tmp.getDay() == 1){
                         if (tmp.getHours() == 0){ return 3; }
                         else return 1;
@@ -526,356 +538,374 @@
             //var tmp = focus.init();
             //console.log(eval(tmp));
             
-            if(chartcount == 1){
+            mydd = fokus();
+            
+            console.log('------------------');
+            //console.log(mydd.length);
+            //console.log(mydd[0]);
+            //console.log(focus.init()[0]);
+            
+            //for (var i=0; i < 1; i++) {
+                //var count = i;
+                //var funct = function(c){return fokus(0);};
                 panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-            }
-            else if(chartcount == 2){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
+                    .data(function(){ console.log('bob'); return fokus()[0]; })
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotColours[0])
                     .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-            }
-            else if(chartcount == 3){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-            }
-            else if(chartcount == 4){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-            }
-            else if(chartcount == 5){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[4];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[4])
-                    .lineWidth(2);
-            }
-            else if(chartcount == 6){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[4];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[4])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[5];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[5])
-                    .lineWidth(2);
-            }
-            else if(chartcount == 7){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[4];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[4])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[5];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[5])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[6];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[6])
-                    .lineWidth(2)
-            }
-            else if(chartcount == 8){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[4];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[4])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[5];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[5])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[6];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[6])
-                    .lineWidth(2)
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[7];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[7])
-                    .lineWidth(2)
-            }
-            else if(chartcount == 9){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[4];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[4])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[5];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[5])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[6];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[6])
-                    .lineWidth(2)
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[7];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[7])
-                    .lineWidth(2)
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[8];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[8])
-                    .lineWidth(2)
-            }
-            else if(chartcount == 10){
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[0];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[0])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[1];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[1])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[2];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[2])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[3];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[3])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[4];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[4])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[5];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[5])
-                    .lineWidth(2);
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[6];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[6])
-                    .lineWidth(2)
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[7];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[7])
-                    .lineWidth(2)
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[8];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[8])
-                    .lineWidth(2)
-                panel.add(pv.Line)
-                    .data(function(){return focus.init()[9];})
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
-                    .strokeStyle(plotColours[9])
-                    .lineWidth(2)
-            }
+            //};
+            
+            // if(chartcount == 1){
+//                 panel.add(pv.Line)
+//                     .data(function(){return fokus()[0];})
+//                     .left(function(d){return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//             }
+//             else if(chartcount == 2){
+//                 panel.add(pv.Line)
+//                     .data(function(){return fokus()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return fokus()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//             }
+//             else if(chartcount == 3){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//             }
+//             else if(chartcount == 4){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//             }
+//             else if(chartcount == 5){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//             }
+//             else if(chartcount == 6){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[5];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[5])
+//                     .lineWidth(2);
+//             }
+//             else if(chartcount == 7){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[5];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[5])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[6];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[6])
+//                     .lineWidth(2)
+//             }
+//             else if(chartcount == 8){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[5];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[5])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[6];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[6])
+//                     .lineWidth(2)
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[7];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[7])
+//                     .lineWidth(2)
+//             }
+//             else if(chartcount == 9){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[5];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[5])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[6];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[6])
+//                     .lineWidth(2)
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[7];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[7])
+//                     .lineWidth(2)
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[8];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[8])
+//                     .lineWidth(2)
+//             }
+//             else if(chartcount == 10){
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[0];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[0])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[1];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[1])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[2];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[2])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[3];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[3])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[4];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[4])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[5];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[5])
+//                     .lineWidth(2);
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[6];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[6])
+//                     .lineWidth(2)
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[7];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[7])
+//                     .lineWidth(2)
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[8];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[8])
+//                     .lineWidth(2)
+//                 panel.add(pv.Line)
+//                     .data(function(){return focus.init()[9];})
+//                     .left(function(d){ return fx(d.x); })
+//                     .bottom(function(d){ return fy(d.y); })
+//                     .strokeStyle(plotColours[9])
+//                     .lineWidth(2)
+//             }
             
             //debugger;
                 //console.log(a);
@@ -925,7 +955,7 @@
                 .lineWidth(function(d){
                     //console.log(d);
                     var tmp = new Date(d);
-                    console.log(tmp.getDay());
+                    //console.log(tmp.getDay());
                     if (tmp.getDay() == 6 || tmp.getDay() == 1){
                         if (tmp.getHours() == 0){ return 3; }
                         else return 1;
@@ -997,6 +1027,10 @@
             
             
         }
+        //function dostuff(){
+        //    fokus;
+        //    vis.render();
+        //}
         
         function addMonth(){
             //console.log('click');
