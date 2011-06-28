@@ -90,7 +90,7 @@
                 .radius("7")
                 //.shape("triangle")
                 .shape(function(n){
-                    if (n.nodeName.split(" ",1)[0] == "Average"){return "circle";}
+                    if (n.nodeName.split(" ",1)[0] == "Monitored"){return "circle";}
                     //else if  == "Ground" || n.nodeName == "First" || n.nodeName == "Second" || n.nodeName == "Sensors" || n.nodeName == "Electricity"){
                     //    return "triangle";
                     if (!n.toggled && !n.firstChild){return "square";}
@@ -126,6 +126,8 @@
             
             root.sort(nodeSort);
             
+            var today = new Date();
+            var thismonth = today.toString("MMMM")
             
             var nodes = root.nodes();
             for(var i=0; i<nodes.length;i++){
@@ -173,11 +175,11 @@
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
                 if (nm == "Average"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
-                    nodes[i].nodeName = "Average Metered This Month: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                    nodes[i].nodeName = "Monitored Average For "+thismonth+": "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
                 if (nm == "Whole Building"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
-                    nodes[i].nodeName = "Building Month Average: "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                    nodes[i].nodeName = "Whole Building Average For "+thismonth+": "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
             }
             
@@ -277,41 +279,6 @@
             
             function toggle(n) {
                 n.toggle(pv.event.altKey);
-                //var todaydate = new Date();
-                //var year = todaydate.getFullYear();
-                //var month = (todaydate.getMonth()+1);
-                //if (month<10){
-                //    month = "0"+month;
-                //}
-                
-                //if((typeof n.nodeValue != "undefined") && (n.nodeName.substring(0, 7) != "Average")){
-                //    var plot = {"id":0,"url":new Array(),"description":"",
-                //        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
-                //        "colour":"Colour", "room":"Room",
-                //        "circuit":"Circuit", "avgselected":10.0,
-                //        "avgtotal":15.0, "totalenergy":20.0,
-                //        "maxtime":0, "mintime":0,
-                //        "maxenergy":0.0, "minenergy":0.0,
-                //        "data":new Array()}
-                //    plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;
-                //    chart(plot, "single");
-                //    console.log("Clicked: "+plot.url);
-                //}
-                //else if (n.nodeName.substring(0, 7) == "Average"){
-                //    var plot = {"id":0,"url":new Array(),"description":"",
-                //        "startmonthyear":year+"-"+month, "endmonthyear":year+"-"+month,
-                //        "colour":"Colour", "room":"Room",
-                //        "circuit":"Circuit", "avgselected":10.0,
-                //        "avgtotal":15.0, "totalenergy":20.0,
-                //        "maxtime":0, "mintime":0,
-                //        "maxenergy":0.0, "minenergy":0.0,
-                //        "data":new Array()}
-                //    
-                //    if (typeof n.nodeValue != "object"){
-                //        console.log("Av clicked!!");
-                //        console.log("n.nodeValue: "+n.nodeValue);
-                //    }
-                //console.log(treeIndex.getItem(n.nodeValue));
                 
                 //If the node clicked is a leaf node
                 if ((typeof n.nodeValue != "undefined")){
@@ -337,8 +304,7 @@
                 return layout.reset().root;
             }
         }
-        
-
+            
             
             function actuallyChart(dataArray,start,end,chartmax,chartcount,plotcol){
                 var data = dataArray;
@@ -353,14 +319,7 @@
                     
                 /* Interaction state. Focus scales will have domain set on-render. */
                 
-                //if (typeof zoomx == "undefined" && typeof zoomdx == "undefined"){
-                //    console.log('bob');
-                //    var i = {x:200, dx:100};
-                //}
-                //else{
-                //    console.log('bob fish');
-                    var i = {x:zoomx, dx:zoomdx};
-                //}
+                var i = {x:zoomx, dx:zoomdx};
                 var fx = pv.Scale.linear().range(0, w),
                     fy = pv.Scale.linear().range(0, h1);
                 
@@ -374,8 +333,6 @@
                     .right(20)
                     .top(20);
                 
-                
-                //var mydd = [];
                 
             function datasel(id){
                 d1 = x.invert(i.x);
@@ -400,24 +357,12 @@
          /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
                 .def("init", function() {
-                    //d1 = x.invert(i.x);
-                    //zoomx = i.x;
-                    //d2 = x.invert(i.x + i.dx);
-                    //zoomdx = i.dx;
-                    //
-                    //var dd = [];
-                    //for(var j=0; j<data.length; j++){//for each line in the data array
-                    //    dd[j] = [];
-                    //    dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
-                    //        pv.search.index(data[j], d2, function(d) d.x) + 1));
-                    //}
-                    //fx.domain(d1, d2);
                     
                     var dd = datasel();
-                    
                     var tot = 0;
                     var maxy = 0;
                     var miny = 0;
+                    
                     for(var a=0;a<data.length;a++){
                         tot = 0;
                         var tmp = dd[a]
@@ -430,11 +375,10 @@
                             else{
                                 if(tmp[b].y < miny){miny = tmp[b].y;}
                             }
-                        }
-                        //tot = tot + dd[a].y;
+                        };
                         var avg = tot / tmp.length;
                         var roundavg = Math.round(avg*1000)/1000;
-                        //FIXME: do something with roundavg, ie update the plot controller
+                        
                         plotController.updateAvgByIndex(a, roundavg);
                     }
                     
@@ -569,9 +513,7 @@
                 .data(x.ticks(5))
                 .left(x)
                 .lineWidth(function(d){
-                    //console.log(d);
                     var tmp = new Date(d);
-                    //console.log(tmp.getDay());
                     if (tmp.getDay() == 6 || tmp.getDay() == 1){
                         if (tmp.getHours() == 0){ return 3; }
                         else return 1;
@@ -585,17 +527,6 @@
             /* Y-axis ticks. */
             context.add(pv.Rule)
                 .bottom(0);
-            
-            /* Context area chart. */
-            //context.add(pv.Area)
-            //    .data(data[0])
-            //    .left(function(d) x(d.x))
-            //    .bottom(1)
-            //    .height(function(d) y(d.y))
-            //    .fillStyle(null)
-            //.anchor("top").add(pv.Line)
-            //    .strokeStyle("steelblue")
-            //.lineWidth(2);
             
             for(var j=0; j<data.length; j++){
                 context.add(pv.Line)
@@ -631,8 +562,6 @@
                 .angle(Math.PI*0.5)
                 .size(110)
                 .strokeStyle("darkgrey")
-                //.anchor("bottom").add(pv.Label)
-                //    .text("Add Previous Month")
                 .lineWidth(2)
                 .cursor("pointer")
                 .events("all")
