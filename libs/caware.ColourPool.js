@@ -21,6 +21,21 @@ function ColourPool(colourarray) {
         else return 0;
     };
     
+    this.toggleColour = function(id){
+        if (this.setcolours.hasOwnProperty(id)){
+            this.colours.push(this.setcolours[id]);
+            delete this.setcolours[id];
+            return 0;
+        }
+        else{
+            if (this.colours.length == 0) return -1;
+            this.setcolours[id] = this.colours[0];
+            this.colours.splice(0, 1);
+            return this.setcolours[id];
+        }
+    
+    };
+    
     this.getColour = function(id){
         if (this.setcolours.hasOwnProperty(id)){
             return this.setcolours[id];

@@ -42,7 +42,7 @@ function PlotController(maximumplots) {
         this.plotarray[id].avgselected = avgsel;
     };
     
-    this.togglePlotByUrl = function(ploturl){
+    this.togglePlotByUrl = function(sensorurl){
         // Adds a new plot to the store from an array of ploturls
         //var todaydate = new Date();
         var year = this.viewrange.startdate.getFullYear();
@@ -53,12 +53,17 @@ function PlotController(maximumplots) {
         var endmonth = (this.viewrange.enddate.getMonth()+1);
         if (endmonth<10) endmonth = "0"+endmonth;
         
-        var plotline = {"id":0,"url":ploturl,"description":"",
+        ploturl = [];
+        for (var x=0; x<sensorurl.length; x++){
+            ploturl[x] = "http://www.cl.cam.ac.uk/meters"+sensorurl[x];
+        }
+        
+        var plotline = {"id":0,"url":ploturl,"description":"","sensor":sensorurl,
                         "startmonth":month.toString(), "startyear":year.toString(),
                         "endmonth":endmonth.toString(), "endyear":endyear.toString(),
                         "startmonthyear":month.toString()+'-'+year.toString(),
                         "endmonthyear":endmonth.toString()+'-'+endyear.toString(),
-                        "colour":"Colour", "sensor":"Sensor", "room":"Room",
+                        "colour":colourpool.getColour(sensorurl), "sensor":"Sensor", "room":"Room",
                         "circuit":"Circuit", "avgselected":10.0,
                         "avgtotal":15.0, "totalenergy":20.0,
                         "maxtime":0, "mintime":0,
@@ -241,7 +246,8 @@ function PlotController(maximumplots) {
             var tmpdata = new Array();                
             plotArray[i].description = jsonArray[i][0].description;
             plotArray[i].room = jsonArray[i][0].room;
-            plotArray[i].colour = plotColours[i];
+            //plotArray[i].colour = plotColours[i];
+            //plotArray[i].colour = colourpool.getColour(plotArray[i].sensor);
             //this.plotarray[i].colour = plotColours[i];
             
             for (var j=0; j<jsonArray[i][0].data.length; j++){
@@ -276,8 +282,10 @@ function PlotController(maximumplots) {
         var start = null;
         var end = null;
         var chartmax = 0;
+        var plotcolours = [];
         
         for (var i=0; i<plotArray.length; i++){
+            plotcolours[i] = plotArray[i].colour;
             if (i == 0){
                 start = new Date(plotArray[0].data[0].x);
                 end = new Date(plotArray[0].data[plotArray[0].data.length - 1].x);
@@ -309,7 +317,7 @@ function PlotController(maximumplots) {
         //}
         //console.log('Fin');
         var chartcount = plotArray.length;
-        actuallyChart(dataArray,start,end,chartmax,chartcount);
+        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours);
     };
     
     

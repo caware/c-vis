@@ -1,5 +1,8 @@
 Repo for the development of a visualisation tool to display the energy use of C-Aware energy sensors
 
+V1.8 IN DEVELOPMENT:
+	Plots no longer jump colours on sensor changes.
+
 V1.7:
 	Added support for displaying previous months data as well as the current month. Tidied up the UI, split the time and date below and above the main graph panel.
 
