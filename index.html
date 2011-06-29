@@ -20,7 +20,7 @@
     var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
     
     //Set plot colours
-    var plotColours = new Array("firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise");
+    var linecolours = new Array("firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise");
     
     var maxPlots = 10;
     
@@ -33,11 +33,13 @@
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
     var plotController = new PlotController(maxPlots);
-    var colourpool = new ColourPool(plotColours);
+    var colourpool = new ColourPool(linecolours);
     var vis;
     var sensors;
     
-    var oldd1, oldd2;
+    //var oldd1, oldd2;
+    var initialzoomx = 100, initialzoomdx = 200;
+    var datazoomx, datazoomdx;
     var zoomx = 100, zoomdx = 200;
     
     //var sensorTree; //Variable to store current sensor tree
@@ -335,9 +337,9 @@
                 
                 
             function datasel(id){
-                d1 = x.invert(i.x);
+                d1 = x.invert(zoomx);
                 zoomx = i.x;
-                d2 = x.invert(i.x + i.dx);
+                d2 = x.invert(zoomx + zoomdx);
                 zoomdx = i.dx;
                 
                 var dd = [];
@@ -548,8 +550,6 @@
             .add(pv.Bar)
                 .left(function(d){ return d.x; })
                 .width(function(d) d.dx)
-                //.left(zoomx)
-                //.width(zoomdx)
                 .fillStyle("rgba(100, 128, 255, .3)")
                 .cursor("move")
                 .event("mousedown", pv.Behavior.drag())

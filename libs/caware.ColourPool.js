@@ -14,7 +14,7 @@ function ColourPool(colourarray) {
     
     this.unsetColour = function(id){
         if (this.setcolours.hasOwnProperty(id)){
-            this.colours.push(this.setcolours[id]);
+            this.colours.unshift(this.setcolours[id]);
             delete this.setcolours[id];
             return 1;
         }
@@ -23,7 +23,7 @@ function ColourPool(colourarray) {
     
     this.toggleColour = function(id){
         if (this.setcolours.hasOwnProperty(id)){
-            this.colours.push(this.setcolours[id]);
+            this.colours.unshift(this.setcolours[id]);
             delete this.setcolours[id];
             return 0;
         }
