@@ -345,8 +345,10 @@
                 var dd = [];
                 for(var j=0; j<data.length; j++){//for each line in the data array
                     dd[j] = [];
+                    
                     dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
                         pv.search.index(data[j], d2, function(d) d.x) + 1));
+                    
                 }
                 fx.domain(d1, d2);
                 if (typeof id == 'undefined') return dd;
@@ -359,7 +361,7 @@
          /* Focus panel (zoomed in). */
             var focus = vis.add(pv.Panel)
                 .def("init", function() {
-                    
+                    date1 = new Date();
                     var dd = datasel();
                     var tot = 0;
                     var maxy = 0;
@@ -390,6 +392,9 @@
                     if (scalefit.checked){ fy.domain([0, maxy]); }
                     else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
                     else if (scaleoriginal.checked){ fy.domain(y.domain()); }
+                    
+                    date2 = new Date();
+                    console.log(date2.getMilliseconds()-date1.getMilliseconds());
                     return dd;
                 })
                 .top(0)
@@ -530,9 +535,35 @@
             context.add(pv.Rule)
                 .bottom(0);
             
-            for(var j=0; j<data.length; j++){
+            var totdata = [];
+            
+            console.log('DATA LENGTH= '+data[0].length);
+            //while (totdata[0].length > 800){
+            var mydiv = data[0].length / 600;
+            var rounddiv = Math.round(mydiv*1)/1;
+            console.log(rounddiv);
+            
+                for(var p=0; p<data.length; p++){
+                    for(var q=0; q<data[p].length;q++){
+                        if (q == 0) totdata[p]=[];
+                        if (q%rounddiv == 0) totdata[p].push(data[p][q]);
+                    }
+                }
+            //}
+            
+            //if (totdata[0].length > 600){
+            //    for(var p=0; p<totdata.length; p++){
+            //        for(var q=1; q<totdata[p].length;q++){
+            //            if (q%2 == 0) totdata[p].splice(q,1);
+            //        }
+            //    }
+            //}
+            
+            console.log('NEW DATA LENGTH= '+totdata[0].length);
+            
+            for(var j=0; j<totdata.length; j++){
                 context.add(pv.Line)
-                    .data(data[j])
+                    .data(totdata[j])
                     .left(function(d) x(d.x))
                     .bottom(function(d) y(d.y))
                     .strokeStyle(plotcol[j])
@@ -566,9 +597,11 @@
                 .cursor("pointer")
                 .events("all")
                 .event("mousedown", addMonth);
-                
+            //date1 = new Date();
             vis.render();
-            drawgrid();
+            //date2 = new Date();
+            //console.log(date2.getMilliseconds()-date1.getMilliseconds());
+            //drawgrid();
             
             
         }
