@@ -10,7 +10,7 @@
                 tree(sensors);
             }
             else{
-                console.log("getSensors not yet called!");
+                //console.log("getSensors not yet called!");
             }
         }
         
@@ -243,7 +243,7 @@
                             //objroom = {};
                             //objroom = objcircuit[floor][corridor][room];
                             //objsensor[description] = path;
-                            console.log("Sensor "+elecsensors[i].path+" in room "+room+" already in object!");
+                            //console.log("Sensor "+elecsensors[i].path+" in room "+room+" already in object!");
                             //objsensor.Total += recenttotal;
                             //console.log("is now:"+objsensor.Total);
                             //objcircuit[floor][corridor][room] = objsensor;

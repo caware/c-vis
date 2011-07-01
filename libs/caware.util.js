@@ -60,12 +60,12 @@ function checkCookie(name){
   {
      // hide the div element using css style attribute
      $("#firstvisit").remove();
-     console.log("emptied top bar vistor welcome back");
+     //console.log("emptied top bar vistor welcome back");
   }
   // create a new cookie if cookie already not present
   else{
     createCookie(name,"VisitedIn28Days",28);
-    console.log("created cookie");
+    //console.log("created cookie");
   }
 }
 

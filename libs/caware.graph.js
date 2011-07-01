@@ -162,7 +162,7 @@ function tree(sensortree){
                         "data":new Array()}
                     plot.url[0] = "http://www.cl.cam.ac.uk/meters"+n.nodeValue;
                     chart(plot, "single");
-                    console.log("Clicked: "+plot.url);
+                    //console.log("Clicked: "+plot.url);
                 }
                 else if (n.nodeName.substring(0, 7) == "Average"){
                     var plot = {"id":0,"url":new Array(),"description":"",
@@ -242,7 +242,7 @@ function tree(sensortree){
                 }
                 if(!found){
                     if (plotArray.length == 5){
-                        console.log("Maximum amount of plots already drawn.");
+                        //console.log("Maximum amount of plots already drawn.");
                     }
                     else {
                         plotArray.push(plotline);

@@ -82,7 +82,9 @@ function PlotController(maximumplots) {
         }
         
         if (!found){
-            if (this.plotarray.length == this.maxplots) console.log("Maximum amount of plots already drawn.");
+            if (this.plotarray.length == this.maxplots){
+                //console.log("Maximum amount of plots already drawn.");
+            }
             else {
                 this.plotarray.push(plotline);
             }
@@ -211,7 +213,7 @@ function PlotController(maximumplots) {
                             //Add each data point to the exsisting one in the total data array
                             //totaldata[m] += jsonArray[i][k].data[m][1];
                             if(m+1 > jsonArray[i][0].data.length){
-                                console.log('Not all sensors similar length, request update?');
+                                //console.log('Not all sensors similar length, request update?');
                                 //push new data onto the totaldata array
                                 //totaldata.splice(m,0,jsonArray[i][0].data[m]);
                                 totaldata.push(jsonArray[i][k].data[m]);

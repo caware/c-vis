@@ -293,7 +293,7 @@
                     //var ploturl = "http://www.cl.cam.ac.uk/meters"+treeIndex.getItem(n.nodeValue)[1];
                     //chart(ploturl);
                     //var todaydate = new Date();
-                    console.log(sensorurl);
+                    //console.log(sensorurl);
                     colourpool.toggleColour(sensorurl);
                     //console.log(todaydate);
                     plotController.togglePlotByUrl(sensorurl);
@@ -310,7 +310,7 @@
             
             function actuallyChart(dataArray,start,end,chartmax,chartcount,plotcol){
                 var data = dataArray;
-                console.log(data);
+                //console.log(data);
                 /* Scales and sizing. */
                 var w = 700,
                     h1 = 310,
@@ -394,7 +394,7 @@
                     else if (scaleoriginal.checked){ fy.domain(y.domain()); }
                     
                     date2 = new Date();
-                    console.log(date2.getMilliseconds()-date1.getMilliseconds());
+                    //console.log(date2.getMilliseconds()-date1.getMilliseconds());
                     return dd;
                 })
                 .top(0)
@@ -436,7 +436,7 @@
             panel = focus.add(pv.Panel)
                 .overflow("hidden");
             
-            console.log('------------------');
+            //console.log('------------------');
             switch (chartcount) {
                 case 10:
                     panel.add(pv.Line)
@@ -537,11 +537,11 @@
             
             var totdata = [];
             
-            console.log('DATA LENGTH= '+data[0].length);
+            //console.log('DATA LENGTH= '+data[0].length);
             //while (totdata[0].length > 800){
             var mydiv = data[0].length / 600;
             var rounddiv = Math.round(mydiv*1)/1;
-            console.log(rounddiv);
+            //console.log(rounddiv);
             
                 for(var p=0; p<data.length; p++){
                     for(var q=0; q<data[p].length;q++){
@@ -559,7 +559,7 @@
             //    }
             //}
             
-            console.log('NEW DATA LENGTH= '+totdata[0].length);
+            //console.log('NEW DATA LENGTH= '+totdata[0].length);
             
             for(var j=0; j<totdata.length; j++){
                 context.add(pv.Line)
@@ -616,7 +616,7 @@
         var grid;
         
         var columns = [
-            //{id:"PlotColour", name:"Colour", field:"colour", width:50},
+            {id:"PlotColour", name:"Colour", field:"test", width:50, formatter:GraphicalColourCellFormatter},
             {id:"Room", name:"Room", field:"room", width:45},
             {id:"Description", name:"Description", field:"description", width:170},
             {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:100},
