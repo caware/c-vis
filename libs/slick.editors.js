@@ -18,7 +18,8 @@
         },
         
         GraphicalColourCellFormatter : function(row, cell, value, columnDef, dataContext) {
-            return ("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width='300px' height='300px'><circle cx='0' cy='0' r='60' style='fill: gold;'></circle></svg>");
+            //return ("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" width='300px' height='300px'><circle cx='0' cy='0' r='60' style='fill: gold;'></circle></svg>");
+            return "TEST";
         },
 
         GraphicalPercentCompleteCellFormatter : function(row, cell, value, columnDef, dataContext) {
