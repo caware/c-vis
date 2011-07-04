@@ -290,7 +290,7 @@
                     var sensorurl = treeIndex.getItem(n.nodeValue)[1];
                     
                     
-                    var ploturl = "http://www.cl.cam.ac.uk/meters"+treeIndex.getItem(n.nodeValue)[1];
+                    //var ploturl = "http://www.cl.cam.ac.uk/meters"+treeIndex.getItem(n.nodeValue)[1];
                     //chart(ploturl);
                     //var todaydate = new Date();
                     //console.log(sensorurl);
@@ -298,7 +298,7 @@
                     //console.log(todaydate);
                     plotController.togglePlotByUrl(sensorurl);
                     plotController.calculateData();
-                    console.log("Clicked: "+ploturl);
+                    //console.log("Clicked: "+plot.url);
                 }
                 //    chart(plot, "multiple");
                 //}
@@ -539,18 +539,17 @@
             
             //console.log('DATA LENGTH= '+data[0].length);
             //while (totdata[0].length > 800){
-            if (data[0].length < 600) totdata = data;
-            else {
-                var mydiv = data[0].length / 600;
-                var rounddiv = Math.round(mydiv*1)/1;
-                        
+            var mydiv = data[0].length / 600;
+            var rounddiv = Math.round(mydiv*1)/1;
+            //console.log(rounddiv);
+            
                 for(var p=0; p<data.length; p++){
                     for(var q=0; q<data[p].length;q++){
                         if (q == 0) totdata[p]=[];
                         if (q%rounddiv == 0) totdata[p].push(data[p][q]);
                     }
                 }
-            }
+            //}
             
             //if (totdata[0].length > 600){
             //    for(var p=0; p<totdata.length; p++){
@@ -560,11 +559,9 @@
             //    }
             //}
             
-            console.log(totdata);
+            //console.log('NEW DATA LENGTH= '+totdata[0].length);
             
-            
-            
-            for(var j=0; j<data.length; j++){
+            for(var j=0; j<totdata.length; j++){
                 context.add(pv.Line)
                     .data(totdata[j])
                     .left(function(d) x(d.x))
