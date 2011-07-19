@@ -290,7 +290,9 @@
                 
                 //If the node clicked is a leaf node
                 if ((typeof n.nodeValue != "undefined")){
-                    
+                    //time1 = new Date();
+                    //console.log("Clicked");
+                    //$('#chartdiv').text('LOADING...');
                     //Grab the URLs ascoiated with teh node, add the TLD to them and call plot
                     var ploturl = new Array();
                     var sensorurl = treeIndex.getItem(n.nodeValue)[1];
@@ -304,6 +306,8 @@
                     //console.log(todaydate);
                     plotController.togglePlotByUrl(sensorurl);
                     plotController.calculateData();
+                    //time2 = new Date();
+                    //console.log('Rendered in: '+time1.getTime()-time2.getTime());
                     console.log("Clicked: "+ploturl);
                 }
                 //    chart(plot, "multiple");
