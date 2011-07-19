@@ -24,6 +24,8 @@
             var treedata = new Object();
             var bld = 'Whole Building';
             
+            console.log(elecsensors);
+            
             //If tree is displayed geographically
             if (checked == "treegeo"){
                 treeIndex.clearStore();
@@ -162,7 +164,9 @@
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
+                    console.log(elecsensors[i].sensor);
                     if (elecsensors[i].sensor == "S-m257"){
+                        console.log('FOUND');
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         //objcircuit.Average = treeIndex.addNewItem(av);
                         objcircuit[bld] = treeIndex.addNewItem(av);
@@ -253,6 +257,7 @@
                 //console.log(objfloor);
                 treedata.Electricity = new Object();
                 treedata.Electricity = objcircuit;
+                console.log(treedata);
                 return treedata;
             }
         }
