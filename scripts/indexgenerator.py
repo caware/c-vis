@@ -9,7 +9,7 @@
 
 import os, sys, datetime, json, re
 
-MONTH_POWER_LOG = '^S-m\d\d-\d\d\d\d-[0-9]{2,3}.json$'
+MONTH_POWER_LOG = '^S-m[0-9]{2,3}-\d\d\d\d-\d\d\.json$'
 
 debug = False
 
