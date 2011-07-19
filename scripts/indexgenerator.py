@@ -44,7 +44,7 @@ else:
     
     for dirname, dirnames, filenames in os.walk(dirtoread):
         for filename in filenames:
-            if (filename[-5:] == ".json") and filename != filetowrite and powerlogfile.match('filename'):
+            if (filename[-5:] == ".json") and filename != filetowrite and powerlogfile.match(filename):
                 readfile = open(os.path.join(dirname, filename), 'r').read()
                 jsonfile = json.loads(readfile)
                 
