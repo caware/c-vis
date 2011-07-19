@@ -7,9 +7,13 @@
 # Usage: indexgenerator.py root/of/json/file/tree/ path/to/output/json/file
 #
 
-import os, sys, datetime, json
+import os, sys, datetime, json, re
+
+MONTH_POWER_LOG = '^S-m\d\d-\d\d\d\d-\d'
 
 debug = False
+
+powerlogfile = re.compile(MONTH_POWER_LOG)
 
 now = datetime.datetime.now()
 
@@ -40,11 +44,11 @@ else:
     
     for dirname, dirnames, filenames in os.walk(dirtoread):
         for filename in filenames:
-            if (filename[-5:] == ".json") and filename != filetowrite:
+            if (filename[-5:] == ".json") and filename != filetowrite and powerlogfile.match('filename'):
                 readfile = open(os.path.join(dirname, filename), 'r').read()
                 jsonfile = json.loads(readfile)
                 
-                if 'room' and 'path' and 'label' and 'description' and 'data' in jsonfile and len(jsonfile['data']) > 0:
+                if 'room' and 'path' and 'label' and 'description' and 'data' in jsonfile and len(jsonfile['data']) > 0 :
                     
                     alreadyfound = False
                     #if we know about this sensor, add its readings only.
