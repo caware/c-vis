@@ -1,7 +1,7 @@
 <html>
 <head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <title>WGB Energy Usage</title>
-    <!--[if !IE]>-->
     <script type="text/javascript" src="libs/jquery-1.5.1.min.js"></script>
     <script src="libs/jquery.event.drag-2.0.min.js"></script>
     <script type="text/javascript" src="libs/protovis-d3.2.js"></script>
@@ -131,7 +131,7 @@
             var today = new Date();
             var thismonth = today.toString("MMMM")
             
-            console.log('test');
+            //console.log('test');
             var nodes = root.nodes();
             for(var i=0; i<nodes.length;i++){
                 var nm = nodes[i].nodeName
@@ -178,18 +178,18 @@
                 else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
                 if (nm == "Average"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
-                    console.log(treeIndex);
-                    console.log(nodes[i]);
+                    //console.log(treeIndex);
+                    //console.log(nodes[i]);
                     nodes[i].nodeName = "Monitored Average For "+thismonth+": "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
                 if (nm == "Whole Building"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
-                    console.log(treeIndex);
-                    console.log(nodes[i]);
+                    //console.log(treeIndex);
+                    //console.log(nodes[i]);
                     nodes[i].nodeName = "Whole Building Average For "+thismonth+": "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
             }
-            console.log('testo');
+            //console.log('testo');
             
             //root.sort(nodeSort);
             //console.log(root);
@@ -308,7 +308,7 @@
                     plotController.calculateData();
                     //time2 = new Date();
                     //console.log('Rendered in: '+time1.getTime()-time2.getTime());
-                    console.log("Clicked: "+ploturl);
+                    //console.log("Clicked: "+ploturl);
                 }
                 //    chart(plot, "multiple");
                 //}
@@ -570,7 +570,7 @@
             //    }
             //}
             
-            console.log(totdata);
+            //console.log(totdata);
             
             
             
@@ -725,7 +725,7 @@
         }
         
     </script>
-    <!--<![endif]-->
+    
     
     <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.5.custom.css" media="screen" charset="utf-8"/>
