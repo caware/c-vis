@@ -41,7 +41,7 @@ li {
 	border-top: 0;
 	background: url('css/images/header-bg.gif') repeat-x center top;
 	color: black;
-	height: 24px;
+	height: 22px;
 	line-height: 24px;
 }	
 
@@ -126,6 +126,14 @@ li {
 .percent-complete-bar {
 	display: inline-block;
 	height: 6px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+}
+
+.colour-swatch {
+    margin: 1px;
+	display: inline-block;
+	height: 16px;
 	-moz-border-radius: 3px;
 	-webkit-border-radius: 3px;
 }

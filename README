@@ -3,6 +3,8 @@ Repo for the development of a visualisation tool to display the energy use of C-
 V1.8 IN DEVELOPMENT:
 	Plots no longer jump colours on sensor changes.
 	Added months for which node averages were calculated into tree text.
+	Added Google Chrome Frame banner for IE users.
+	Added colour swatches in table.
 
 V1.7:
 	Added support for displaying previous months data as well as the current month. 
