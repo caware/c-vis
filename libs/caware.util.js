@@ -1,7 +1,5 @@
 function getJson(url){
-    //Fetches a json file and returns the parsed object using the jQuery JSON Parser
-    var jsonData = $.ajax({ type: "GET", url: url,async: false }).responseText;
-    return jQuery.parseJSON(jsonData);
+    return cache.getObject(url);
 }
 
 Array.prototype.compare = function(testArr) {
