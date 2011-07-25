@@ -1,5 +1,7 @@
 function getJson(url){
     return cache.getObject(url);
+    //var jsonData = $.ajax({ type: "GET", url: url,async: false }).responseText;
+    //return jQuery.parseJSON(jsonData);
 }
 
 Array.prototype.compare = function(testArr) {

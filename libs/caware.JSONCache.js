@@ -16,11 +16,15 @@ function JSONCache() {
             }
         }
         
-        if (found) return this.cache[url];
+        if (found){
+            console.log('Cache Hit!');
+            return jQuery.parseJSON(this.cache[url]);
+        }
         else{ 
-            var json = jQuery.parseJSON($.ajax({ type: "GET", url: url,async: false }).responseText);
-            this.cache[url] = json;
-            return json;
+            var jsonfile = $.ajax({ type: "GET", url: url,async: false }).responseText;
+            this.cache[url] = jsonfile;
+            console.log('Cache Miss!');
+            return jQuery.parseJSON(jsonfile);
         }
     };
     

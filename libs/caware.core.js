@@ -15,7 +15,7 @@
         }
         
         function getSensors(indexfile,checked){
-        //Get the sensor index file and build the JS object tree from it.
+            //Get the sensor index file and build the JS object tree from it.
             //var jsonData = $.ajax({ type: "GET", url: indexfile ,async: false }).responseText;
             var sensorindex = getJson(indexfile)
             
@@ -23,8 +23,6 @@
             var elecsensors = sensorindex.sensors.elec;
             var treedata = new Object();
             var bld = 'Whole Building';
-            
-            console.log(elecsensors);
             
             //If tree is displayed geographically
             if (checked == "treegeo"){
@@ -131,27 +129,20 @@
                         
                         if(!(room in objfloor[floor][corridor])){
                             //If room does not exist, create it and add a sensor into it.
-                            //var array = new Array(recentaverage, "");
-                            //objsensor = {"Average":treeIndex.addNewItem(recentaverage)};
                             objsensor = {};
                             objsensor[description] = treeIndex.addNewItem(path);
                             objfloor[floor][corridor][room] = objsensor;
-                            //console.log("is"+objsensor.Total);
                         }
                         else{
                             //If the room does exist, add the current sensor to it, and update it's total
                             objsensor = {};
                             objsensor = objfloor[floor][corridor][room];
                             objsensor[description] = treeIndex.addNewItem(path);
-                            //console.log("was:"+objsensor.Total);
-                            //treeIndex.sumItemAverage(recentaverage, objsensor[description]);
-                            //console.log("is now:"+objsensor.Total);
                             objfloor[floor][corridor][room] = objsensor;
                         }
                     }
                     
                 }
-                //console.log(objfloor);
                 treedata.Electricity = new Object();
                 treedata.Electricity = objmain;
                 return treedata;
@@ -164,11 +155,8 @@
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
-                    console.log(elecsensors[i].sensor);
                     if (elecsensors[i].sensor == "S-m257"){
-                        console.log('FOUND');
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
-                        //objcircuit.Average = treeIndex.addNewItem(av);
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
@@ -189,7 +177,7 @@
                         
                         var objroom = new Object();
                         var objfloor = new Object();
-                        //console.log(roomArray);
+                        
                         switch (roomArray[0]){
                             case "G":
                                 floor="Ground Floor";
@@ -232,35 +220,17 @@
                             treeIndex.appendItemURL(path, ind);
                         }
                         
-                        //if (recenttotal = 0){
                         if(!(room in objcircuit[description][floor])){
                             objcircuit[description][floor][room] = treeIndex.addNewItem(path);
-                            //objroom = {"Total":recenttotal};
-                            //objsensor[description] = path;
-                            //objcircuit[floor][corridor][room] = objsensor;
-                            //console.log("is"+objsensor.Total);
                         }
                         else{
                             var tmpobj = {};
-                            
                             objcircuit[description][floor][room+"|2"] = treeIndex.addNewItem(path);
-                            //objroom = {};
-                            //objroom = objcircuit[floor][corridor][room];
-                            //objsensor[description] = path;
-                            //console.log("Sensor "+elecsensors[i].path+" in room "+room+" already in object!");
-                            //objsensor.Total += recenttotal;
-                            //console.log("is now:"+objsensor.Total);
-                            //objcircuit[floor][corridor][room] = objsensor;
                         }
                     }
                 }
-                //console.log(objfloor);
                 treedata.Electricity = new Object();
                 treedata.Electricity = objcircuit;
-                console.log(treedata);
                 return treedata;
             }
         }
-        
-        
-        

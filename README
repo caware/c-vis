@@ -5,6 +5,7 @@ V1.8 IN DEVELOPMENT:
 	Added months for which node averages were calculated into tree text.
 	Added Google Chrome Frame banner for IE users.
 	Added colour swatches in table.
+	Added simple caching of sensor files.
 
 V1.7:
 	Added support for displaying previous months data as well as the current month. 
