@@ -76,7 +76,7 @@ function PlotController(maximumplots) {
                 if (plotline.url.compare(this.plotarray[i].url)){
                     found = true;
                     this.plotarray.splice(i,1);
-                    console.log("Removed: "+plotline.url);
+                    //console.log("Removed: "+plotline.url);
                     break;
                 }
             }
@@ -187,7 +187,7 @@ function PlotController(maximumplots) {
                 var totaldata = new Array();
                 //For each URL belonging to the plot
                 for (var k=0; k<plotArray[i].url.length; k++){
-                    console.log(plotArray[i].url.length);
+                    //console.log(plotArray[i].url.length);
                     //Add the json object of that array to the array in jsonArray
                     //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
@@ -227,7 +227,6 @@ function PlotController(maximumplots) {
                         }
                     }
                 }
-                console.log('looped!');
                 jsonArray[i][0].data = totaldata;
                 totaldata = null;
                 jsonArray[i][0].room = "--";

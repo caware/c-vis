@@ -17,13 +17,13 @@ function JSONCache() {
         }
         
         if (found){
-            console.log('Cache Hit!');
+            //console.log('Cache Hit!');
             return jQuery.parseJSON(this.cache[url]);
         }
         else{ 
             var jsonfile = $.ajax({ type: "GET", url: url,async: false }).responseText;
             this.cache[url] = jsonfile;
-            console.log('Cache Miss!');
+            //console.log('Cache Miss!');
             return jQuery.parseJSON(jsonfile);
         }
     };
