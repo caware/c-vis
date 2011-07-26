@@ -1,6 +1,16 @@
 Repo for the development of a visualisation tool to display the energy use of C-Aware energy sensors
 
-V1.8 IN DEVELOPMENT:
+More information about the project can be found at http://www.cl.cam.ac.uk/research/srg/netos/c-aware/
+
+
+
+
+Change log:
+
+V1.9 In Development:
+    Started additions to HTML validation.
+
+V1.8:
 	Plots no longer jump colours on sensor changes.
 	Added months for which node averages were calculated into tree text.
 	Added Google Chrome Frame banner for IE users.
