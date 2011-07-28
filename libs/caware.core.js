@@ -53,6 +53,7 @@
                     }
                     else{
                     
+                        //add sensors to the overall averages nodes
                         treeIndex.appendItemURL(path,objfloor.Average);
                         treeIndex.appendItemURL(path,objmain.Average);
                     
@@ -167,6 +168,12 @@
                         var roomArray = elecsensors[i].room.split("");
                         var description = elecsensors[i].description;
                         var room = elecsensors[i].room;
+                        console.log(elecsensors[i].coverage);
+                        if ("coverage" in elecsensors[i]){
+                            if (elecsensors[i].coverage != "cOVERAGE"){
+                                room += " ("+elecsensors[i].coverage+")";
+                            }
+                        }
                         
                         var recenttotal = elecsensors[i].recenttotal;
                         var datasize = elecsensors[i].datasize;

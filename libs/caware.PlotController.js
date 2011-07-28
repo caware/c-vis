@@ -201,7 +201,9 @@ function PlotController(maximumplots) {
                         }
                     }
                     //Add the room to the description
+                    //Use coverage if availible
                     jsonArray[i][0].description += ", "+jsonArray[i][k].room;
+                    console.log(jsonArray[i][0].coverage);
                     
                     
                     if(k == 0){
@@ -321,6 +323,10 @@ function PlotController(maximumplots) {
         //   return 0;
         //}
         //console.log('Fin');
+        for (var i=0; i<jsonArray.length; i++){
+            console.log(jsonArray[i][0].coverage);
+        }
+        
         var chartcount = plotArray.length;
         actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours);
     };

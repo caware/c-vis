@@ -70,6 +70,10 @@ else:
                             if sensor['sensor'] == 'S-m' + labelsplit[0]:
                                 sensor['readings'].append(filename)
                                 if mostrecentreading:
+                                    if 'coverage' in jsonfile:
+                                        if jsonfile['coverage'] != 'cOVERAGE':
+                                            sensor['coverage'] = jsonfile['coverage']
+                                        
                                     sensor['recenttotal'] = temptotal
                                     sensor['datasize'] = datasize
                                     sensorlabel = 'S-m' + labelsplit[0]
