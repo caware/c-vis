@@ -9,6 +9,7 @@ Change log:
 
 V1.9 In Development:
     Started additions to HTML validation.
+    Now uses coverage fields from data in tree and table.
 
 V1.8:
 	Plots no longer jump colours on sensor changes.

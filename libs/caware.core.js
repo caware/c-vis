@@ -61,6 +61,13 @@
                         //Get current sensor information
                         var description = elecsensors[i].description;
                         var room = elecsensors[i].room;
+                        
+                        if ("coverage" in elecsensors[i]){
+                            if (elecsensors[i].coverage != "cOVERAGE"){
+                                room += " ("+elecsensors[i].coverage+")";
+                            }
+                        }
+                        
                         var recenttotal = elecsensors[i].recenttotal;
                         var datasize = elecsensors[i].datasize;
                         if (datasize > 0){ var recentaverage = recenttotal / datasize; }
@@ -168,7 +175,7 @@
                         var roomArray = elecsensors[i].room.split("");
                         var description = elecsensors[i].description;
                         var room = elecsensors[i].room;
-                        console.log(elecsensors[i].coverage);
+                        //console.log(elecsensors[i].coverage);
                         if ("coverage" in elecsensors[i]){
                             if (elecsensors[i].coverage != "cOVERAGE"){
                                 room += " ("+elecsensors[i].coverage+")";
