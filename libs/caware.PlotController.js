@@ -71,6 +71,8 @@ function PlotController(maximumplots) {
                         "data":new Array()}
         var found = false;
         
+        //console.log(plotline);
+        
         for (var i in this.plotarray){
             if (this.plotarray.hasOwnProperty(i)){
                 if (plotline.url.compare(this.plotarray[i].url)){
@@ -191,6 +193,7 @@ function PlotController(maximumplots) {
                     //Add the json object of that array to the array in jsonArray
                     //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
+                    //console.log(montharray);
                     for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             jsonArray[i][k] = getJson(plotArray[i].url[k]+montharray[t]+".json");
@@ -247,7 +250,7 @@ function PlotController(maximumplots) {
             else{
                 //jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
                 montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                //console.log('month array found!!!!!!!!!!!!!!!!!!!!!!');
+                console.log(montharray);
                 for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             jsonArray[i][0] = getJson(plotArray[i].url[0]+montharray[t]+".json");

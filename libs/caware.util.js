@@ -70,19 +70,21 @@ function checkCookie(name){
 }
 
 function getMonthsBetween(stmonth, styear, endmonth, endyear){
-    stmonth = parseInt(stmonth);
-    styear = parseInt(styear);
-    endmonth = parseInt(endmonth);
-    endyear = parseInt(endyear);
-    //console.log('getMonthsBetween Called');
+    //console.log(stmonth);
+    stmonth = parseInt(stmonth,10);
+    styear = parseInt(styear,10);
+    endmonth = parseInt(endmonth,10);
+    endyear = parseInt(endyear,10);
+    //console.log(stmonth);
     var outputarray = new Array();
     var go = 20;
     for (var i=0;i<go;i++){
         if ((stmonth == endmonth) && (styear == endyear)){
+            console.log(stmonth);
             if (stmonth < 10) var tmpmonth = "0"+stmonth.toString();
             else var tmpmonth = stmonth.toString();
             outputarray.push(styear+"-"+tmpmonth);
-            //console.log(tmpmonth);
+            console.log(styear+"-"+tmpmonth);
             break;
         }
         else {

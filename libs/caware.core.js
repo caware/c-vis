@@ -171,7 +171,7 @@
                     else if (elecsensors[i].sensor != "S-m36"){
                         treeIndex.appendItemURL(path, objcircuit.Average);
                         
-                        
+                        //console.log(elecsensors[i]);
                         var roomArray = elecsensors[i].room.split("");
                         var description = elecsensors[i].description;
                         var room = elecsensors[i].room;
