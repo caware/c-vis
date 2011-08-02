@@ -10,6 +10,7 @@
 import os, sys, datetime, json, re
 
 MONTH_POWER_LOG = '^S-m[0-9]{2,3}-\d\d\d\d-\d\d\.json$'
+DAY_POWER_LOG = '^S-m[0-9]{2,3}-\d\d\d\d-\d\d\-\d\d.json$'
 
 debug = False
 
@@ -70,23 +71,26 @@ else:
                             if sensor['sensor'] == 'S-m' + labelsplit[0]:
                             
                                 sensor['readings'].append(filename)
-                                sensor['readings'].sort()
-                                sensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
+                                sensor['readings'].sort(reverse=True)
                                 
-                                if mostrecentreading:
-                                    if 'coverage' in jsonfile:
-                                        if jsonfile['coverage'] != 'cOVERAGE':
-                                            sensor['coverage'] = jsonfile['coverage']
-                                        
+                                if sensor['readings'][0] == filename:
+                                    #sensor is newer than others, prfer newer data over old.
+                                    sensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
                                     sensor['recenttotal'] = temptotal
-                                    sensor['datasize'] = datasize
+                                    #sensor['datasize'] = datasize
                                     sensorlabel = 'S-m' + labelsplit[0]
                                     sensor['sensor'] = sensorlabel
                                     
                                     sensor['room'] = jsonfile['room']           
                                     sensor['description'] = jsonfile['description']
+                                    
+                                    if 'coverage' in jsonfile:
+                                        if jsonfile['coverage'] != 'cOVERAGE':
+                                            sensor['coverage'] = jsonfile['coverage']
+                                    
                                 if debug:
                                     print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['readings'])
+                                
                                 alreadyfound = True
                                 break
                     
@@ -99,36 +103,24 @@ else:
                         sensorlabel = 'S-m' + labelsplit[0]
                         tempsensor['sensor'] = sensorlabel
                         tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
-                        
-                        if mostrecentreading:
-                            tempsensor['recenttotal'] = temptotal
-                            tempsensor['datasize'] = datasize
-                            
-                            tempsensor['room'] = jsonfile['room']           
-                            tempsensor['description'] = jsonfile['description']
-                            
-                            if 'coverage' in jsonfile:
-                                        if jsonfile['coverage'] != 'cOVERAGE':
-                                            sensor['coverage'] = jsonfile['coverage']
+                        tempsensor['recenttotal'] = temptotal
+                        #tempsensor['datasize'] = datasize
+                        tempsensor['room'] = jsonfile['room']           
+                        tempsensor['description'] = jsonfile['description']
+                        if 'coverage' in jsonfile:
+                            if jsonfile['coverage'] != 'cOVERAGE':
+                                sensor['coverage'] = jsonfile['coverage']
                             
                         elec.append(tempsensor)
+                        
                         if debug:
                             print 'New sensor found: '+str(tempsensor)
                         tempsensor = {}
-                    
-                    
-                    
-                    #for sensor in elec:
-                    #        print sensor['sensor']
                     
                     totalfiles = totalfiles + 1
                 else:
                     if debug:
                         print "skipped malformed or null file"+str(filename)
-                        
-    for meter in elec:
-        meter['readings'].sort()
-        # if meter does not have 
     
     myjson = {}
     sensors = {}
