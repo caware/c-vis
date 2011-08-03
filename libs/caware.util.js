@@ -1,5 +1,6 @@
 function getJson(url){
-    return cache.getObject(url);
+    //console.log('URL: '+url);
+    return (cache.getObject(url));
     //var jsonData = $.ajax({ type: "GET", url: url,async: false }).responseText;
     //return jQuery.parseJSON(jsonData);
 }
@@ -80,11 +81,11 @@ function getMonthsBetween(stmonth, styear, endmonth, endyear){
     var go = 20;
     for (var i=0;i<go;i++){
         if ((stmonth == endmonth) && (styear == endyear)){
-            console.log(stmonth);
+            //console.log(stmonth);
             if (stmonth < 10) var tmpmonth = "0"+stmonth.toString();
             else var tmpmonth = stmonth.toString();
             outputarray.push(styear+"-"+tmpmonth);
-            console.log(styear+"-"+tmpmonth);
+            //console.log(styear+"-"+tmpmonth);
             break;
         }
         else {

@@ -21,7 +21,7 @@
     <script type="text/javascript" src="libs/caware.JSONCache.js"></script>
     
     <script type="text/javascript+protovis">
-    var indexUrl = "http://www.cl.cam.ac.uk/~cce25/test.json";
+    var indexUrl = "http://www.cl.cam.ac.uk/~cce25/test3.json";
     
     //Set plot colours
     var linecolours = new Array("firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise");
@@ -34,11 +34,12 @@
     var overallDateFormat = pv.Format.date("%d %b '%y");
     
     //Vars for array of plots, and chart visulisation
+    var cache = new JSONCache();
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
-    var plotController = new PlotController(maxPlots);
+    var plotController = new PlotController(maxPlots,indexUrl);
     var colourpool = new ColourPool(linecolours);
-    var cache = new JSONCache();
+    
     var vis;
     var sensors;
     
@@ -308,8 +309,12 @@
                     //var todaydate = new Date();
                     //console.log(sensorurl);
                     colourpool.toggleColour(sensorurl);
+                    
+                    if (plotController.togglePlotByUrl(sensorurl) < 0){
+                        colourpool.toggleColour(sensorurl);
+                    }
                     //console.log(todaydate);
-                    plotController.togglePlotByUrl(sensorurl);
+                    
                     plotController.calculateData();
                     //time2 = new Date();
                     //console.log('Rendered in: '+time1.getTime()-time2.getTime());

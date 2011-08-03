@@ -1,10 +1,13 @@
-function PlotController(maximumplots) {
+function PlotController(maximumplots, indexUrl) {
     // A Class for defining a controller object for plots
     
     this.plotarray = new Array();
     this.maxplots = maximumplots;
     
-    this.viewrange = {"startdate":new Date(),"enddate":new Date()}
+    this.viewrange = {"startdate":new Date(),"enddate":new Date()};
+    
+    var sensorindex = getJson(indexUrl);
+    
     
     this.getPlots = function(){
         return this.plotarray;
@@ -45,6 +48,7 @@ function PlotController(maximumplots) {
     this.togglePlotByUrl = function(sensorurl){
         // Adds a new plot to the store from an array of ploturls
         //var todaydate = new Date();
+        //console.log(sensorurl);
         var year = this.viewrange.startdate.getFullYear();
         var month = (this.viewrange.startdate.getMonth()+1);
         if (month<10) month = "0"+month;
@@ -52,6 +56,35 @@ function PlotController(maximumplots) {
         var endyear = this.viewrange.enddate.getFullYear();
         var endmonth = (this.viewrange.enddate.getMonth()+1);
         if (endmonth<10) endmonth = "0"+endmonth;
+        
+        var elecsensors = sensorindex.sensors.elec;
+        var valid = false;
+        
+        var monthread = 'monthly-readings';
+        
+        //console.log(sensorurl);
+        for(var i=0;i<elecsensors.length;i++){
+            for(var z=0;z<sensorurl.length;z++){
+                if (elecsensors[i].path == sensorurl[z]){
+                    //console.log(elecsensors[i][monthread]);
+                    //console.log(elecsensors[i].sensor+'-'+year.toString()+'-'+month.toString()+'.json');
+                    //if ((elecsensors[i].sensor+'-'+year.toString()+'-'+month.toString()+'.json') in elecsensors[i][monthread]){
+                    for(var x=0; x<elecsensors[i][monthread].length; x++){
+                        //console.log(elecsensors[i][monthread][x]);
+                        if ((elecsensors[i].sensor+'-'+endyear.toString()+'-'+endmonth.toString()+'.json') == elecsensors[i][monthread][x]){
+                            valid = true;
+                            //console.log('Valid Data');
+                            //break;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (!valid){
+            //console.log('No data!');
+            return -1;
+        }
         
         ploturl = [];
         for (var x=0; x<sensorurl.length; x++){
@@ -250,7 +283,7 @@ function PlotController(maximumplots) {
             else{
                 //jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
                 montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                console.log(montharray);
+                //console.log(montharray);
                 for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             jsonArray[i][0] = getJson(plotArray[i].url[0]+montharray[t]+".json");
