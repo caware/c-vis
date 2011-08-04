@@ -186,13 +186,13 @@
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
                     //console.log(treeIndex);
                     //console.log(nodes[i]);
-                    nodes[i].nodeName = "Monitored Average For "+thismonth+": "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                    nodes[i].nodeName = "Monitored Average ("+thismonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
-                if (nm == "Whole Building"){
+                if (nm.slice(0,8) == "Building"){
                     //nodes[i].nodeName = "Average this month: "+Math.round(nodes[i].nodeValue[0] * 100)/100+" kW";
                     //console.log(treeIndex);
                     //console.log(nodes[i]);
-                    nodes[i].nodeName = "Whole Building Average For "+thismonth+": "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                    nodes[i].nodeName = nm+" Average ("+thismonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
                 }
             }
             //console.log('testo');
@@ -207,10 +207,10 @@
                 
                 
                 //Make the Overall node always appear first
-                if (tmp[0].substring(0,5) == "Whole" ){
+                if (tmp[0].substring(0,8) == "Building" ){
                     return -1;
                 }
-                else if (tmp[1].substring(0,5) == "Whole" ){
+                else if (tmp[1].substring(0,8) == "Building" ){
                     return 1;
                 }
                 //Make the Average node always 2n @ the top
@@ -527,7 +527,8 @@
                         .left(function(d){ return fx(d.x); })
                         .bottom(function(d){ return fy(d.y); })
                         .strokeStyle(plotcol[0])
-                        .lineWidth(2);
+                        .lineWidth(2)
+                        .strokeDasharray ("1, 2");
             }
             
             /* Context panel (zoomed out). */
@@ -762,7 +763,7 @@
         <p class="alert">This tool is still under development. If things stop working a page reload is often the best remedy!</p>
     </div>
     <![endif]-->
-    <div style="text-align:center;"><h2>William Gates Building Energy Usage V1.9 DEV</h2></div>
+    <div style="text-align:center;"><h2>William Gates Building Energy Usage V1.9.5 Alpha</h2></div>
     <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory.</p></div>
     <div style="float:right; width:400px; text-align:right;padding-right:20;">
         <input name="scale" id="scalefit" type="radio" onchange="vis.render()">

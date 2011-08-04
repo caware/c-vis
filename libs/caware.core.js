@@ -22,41 +22,46 @@
             //Get array of sensors from index file, and create blank destination object
             var elecsensors = sensorindex.sensors.elec;
             var treedata = new Object();
-            var bld = 'Whole Building';
+            var bld = 'Building';
             
             //If tree is displayed geographically
             if (checked == "treegeo"){
                 treeIndex.clearStore();
                 //Create object to hold floors
-                //var objfloor = {"Average":treeIndex.addNewItem(0)};
-                var objfloor = {};
-                var objmain = {"Average":treeIndex.addNewItem(0)};
+                var objfloor = {"Average":treeIndex.addNewItem(0)};
+                //var objfloor = {};
+                //var objmain = {"Average":treeIndex.addNewItem(0)};
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
                     if (elecsensors[i].sensor == "S-m36"){
-                        var bld = 'Whole Building S-m36';
+                        var bld = 'Building (S-m36)';
                         objfloor[bld] = null;
                         //If sensor = main power, assign its total to the toplevel total
-                        //var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
+                        var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         //objfloor.Average = treeIndex.addNewItem(av);
-                        objfloor[bld] = treeIndex.addNewItem(elecsensors[i].path);
-                        objmain.Main = objfloor;
+                        //objfloor[bld] = treeIndex.addNewItem(elecsensors[i].path);
+                        objfloor[bld] = treeIndex.addNewItem(av);
+                        treeIndex.appendItemURL(elecsensors[i].path, objfloor[bld]);
+                        //objmain.Main = objfloor;
                         //objcircuit.Overall = elecsensors[i].path;
                     }
                     else if (elecsensors[i].sensor == "S-m257"){
-                        var bld = 'Whole Building S-m257';
-                        objmain[bld] = null;
+                        var bld = 'Building (S-m257)';
+                        //objmain[bld] = null;
                         var av = elecsensors[i].recenttotal / elecsensors[i].datasize;
-                        objmain.Average = treeIndex.addNewItem(av);
-                        objmain[bld] = treeIndex.addNewItem(elecsensors[i].path);
+                        objfloor[bld] = treeIndex.addNewItem(av);
+                        treeIndex.appendItemURL(elecsensors[i].path, objfloor[bld]);
+                        //objmain.Average = treeIndex.addNewItem(elecsensors[i].path);
+                        //objmain[bld] = treeIndex.addNewItem(av);
                         //objmain.Main = objfloor;
                     }
                     else if (elecsensors[i].sensor != "S-m27"){
                     
                         //add sensors to the overall averages nodes
-                        //treeIndex.appendItemURL(path,objfloor.Average);
-                        treeIndex.appendItemURL(path,objmain.Average);
+                        treeIndex.appendItemURL(path,objfloor.Average);
+                        
+                        //treeIndex.appendItemURL(path,objmain[bld]);
                     
                         var roomArray = elecsensors[i].room.split("");//Split the room number into an array
                         //Get current sensor information
@@ -75,6 +80,7 @@
                         else { var recentaverage = 0; }
                         var floor="";
                         var corridor="";
+                        treeIndex.sumItemAverage(recentaverage, objfloor.Average);
                         
                         //Create holding objects for rooms and corridors
                         var objroom = new Object();
@@ -153,7 +159,7 @@
                     
                 }
                 treedata.Electricity = new Object();
-                treedata.Electricity = objmain;
+                treedata.Electricity = objfloor;
                 return treedata;
             }
             else if (checked == "treeuse"){
