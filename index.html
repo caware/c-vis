@@ -409,9 +409,11 @@
                     //$('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
                     drawgrid();
                     
-                    if (scalefit.checked){ fy.domain([0, maxy]); }
-                    else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
-                    else if (scaleoriginal.checked){ fy.domain(y.domain()); }
+                    //if (scalefit.checked){ fy.domain([0, maxy]); }
+                    //else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
+                    //else if (scaleoriginal.checked){ 
+                    fy.domain(y.domain());
+                    //}
                     
                     date2 = new Date();
                     //console.log(date2.getMilliseconds()-date1.getMilliseconds());
