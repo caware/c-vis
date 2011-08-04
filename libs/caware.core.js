@@ -28,7 +28,8 @@
             if (checked == "treegeo"){
                 treeIndex.clearStore();
                 //Create object to hold floors
-                var objfloor = {"Average":treeIndex.addNewItem(0)};
+                //var objfloor = {"Average":treeIndex.addNewItem(0)};
+                var objfloor = {};
                 var objmain = {"Average":treeIndex.addNewItem(0)};
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
@@ -37,8 +38,8 @@
                         var bld = 'Whole Building S-m36';
                         objfloor[bld] = null;
                         //If sensor = main power, assign its total to the toplevel total
-                        var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
-                        objfloor.Average = treeIndex.addNewItem(av);
+                        //var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
+                        //objfloor.Average = treeIndex.addNewItem(av);
                         objfloor[bld] = treeIndex.addNewItem(elecsensors[i].path);
                         objmain.Main = objfloor;
                         //objcircuit.Overall = elecsensors[i].path;
@@ -51,10 +52,10 @@
                         objmain[bld] = treeIndex.addNewItem(elecsensors[i].path);
                         //objmain.Main = objfloor;
                     }
-                    else{
+                    else if (elecsensors[i].sensor != "S-m27"){
                     
                         //add sensors to the overall averages nodes
-                        treeIndex.appendItemURL(path,objfloor.Average);
+                        //treeIndex.appendItemURL(path,objfloor.Average);
                         treeIndex.appendItemURL(path,objmain.Average);
                     
                         var roomArray = elecsensors[i].room.split("");//Split the room number into an array
@@ -164,11 +165,12 @@
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
                     if (elecsensors[i].sensor == "S-m257"){
+                        
                         var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
-                    else if (elecsensors[i].sensor != "S-m36"){
+                    else if (elecsensors[i].sensor != "S-m36" && elecsensors[i].sensor != "S-m27"){
                         treeIndex.appendItemURL(path, objcircuit.Average);
                         
                         //console.log(elecsensors[i]);

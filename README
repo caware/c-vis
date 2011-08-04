@@ -7,11 +7,12 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 
 Change log:
 
-V1.9 In Development:
+V1.9.5:
     Bug fixes.
     Started additions to HTML validation.
     Now uses coverage fields from data in tree and table.
     Now indexes daily meter data.
+    Ignores S-m27 meter for release.
 
 V1.8:
 	Plots no longer jump colours on sensor changes.
