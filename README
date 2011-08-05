@@ -9,6 +9,10 @@ Change log:
 
 V.1.9: In Development.
 
+V1.8.6:
+    Code clean up.
+    Added overall meter on load.
+
 V1.8.5:
     Bug fixes.
     Started additions to HTML validation.
