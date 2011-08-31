@@ -20,6 +20,7 @@
     <script type="text/javascript" src="libs/caware.util.js"></script>
     <script type="text/javascript" src="libs/caware.core.js"></script>
     <script type="text/javascript" src="libs/caware.JSONCache.js"></script>
+    <script type="text/javascript" src="libs/WeatherJSONBridge.js"></script>
     
     <script type="text/javascript+protovis">
     var indexUrl = "http://www.cl.cam.ac.uk/~cce25/test3.json";
@@ -510,6 +511,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[9])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 9:
                 panel.add(pv.Line)
@@ -517,6 +519,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[8])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 8:
                 panel.add(pv.Line)
@@ -524,6 +527,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[7])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 7:
                 panel.add(pv.Line)
@@ -531,6 +535,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[6])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 6:
                 panel.add(pv.Line)
@@ -538,6 +543,7 @@
                     .left(function(d){ return fx(d.x); }) 
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[5])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 5:
                 panel.add(pv.Line)
@@ -545,6 +551,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[4])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 4:
                 panel.add(pv.Line)
@@ -552,6 +559,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[3])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 3:
                 panel.add(pv.Line)
@@ -559,6 +567,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[2])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 2:
                 panel.add(pv.Line)
@@ -566,6 +575,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[1])
+                    .interpolate("step-before")
                     .lineWidth(2);
             case 1:
                 panel.add(pv.Line)
@@ -573,6 +583,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[0])
+                    .interpolate("step-before")
                     .lineWidth(2);
         }
         
