@@ -23,7 +23,7 @@
     <script type="text/javascript" src="libs/WeatherJSONBridge.js"></script>
     
     <script type="text/javascript+protovis">
-    var indexUrl = "http://www.cl.cam.ac.uk/~cce25/test3.json";
+    var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
     
     //Set plot colours
     var linecolours = new Array("firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise");
@@ -266,6 +266,7 @@
                 var ploturl = new Array();
                 var sensorurl = treeIndex.getItem(n.nodeValue)[1];
                 
+                console.log(sensorurl);
                 //console.log(sensorurl);
                 colourpool.toggleColour(sensorurl);
                 

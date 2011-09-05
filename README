@@ -8,10 +8,13 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 Change log:
 
 V.1.9: In Development.
+    Tool now deals with missing data files, presenting the earliest and latest files at max and min.
+    Improved average code.
 
 V1.8.6:
     Code clean up.
     Added overall meter on load.
+
 
 V1.8.5:
     Bug fixes.
@@ -20,25 +23,27 @@ V1.8.5:
     Now indexes daily meter data.
     Ignores S-m27 meter for release.
 
+
 V1.8:
-	Plots no longer jump colours on sensor changes.
-	Added months for which node averages were calculated into tree text.
-	Added Google Chrome Frame banner for IE users.
-	Added colour swatches in table.
-	Added simple caching of sensor files.
+    Plots no longer jump colours on sensor changes.
+    Added months for which node averages were calculated into tree text.
+    Added Google Chrome Frame banner for IE users.
+    Added colour swatches in table.
+    Added simple caching of sensor files.
+
 
 V1.7:
-	Added support for displaying previous months data as well as the current month. 
-	Tidied up the UI, split the time and date below and above the main graph panel.
+    Added support for displaying previous months data as well as the current month. 
+    Tidied up the UI, split the time and date below and above the main graph panel.
 
 
 V1.6:
-	Added increased number of plots to be displayed, and general code and UI tweaks
+    Added increased number of plots to be displayed, and general code and UI tweaks
 
 
 V1.5:
-	Added ability for Average nodes to display summation of all nodes beneath them.
+    Added ability for Average nodes to display summation of all nodes beneath them.
 
 
 V1.4:
-	Added Average nodes into the exploration tree.
+    Added Average nodes into the exploration tree.

@@ -51,6 +51,8 @@
         <img id="play" src="play.png" alt="Play" onclick="playClick()">
     </div>
     <script type="text/javascript+protovis">
+        
+        
         var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
         var dataArray = {};
         var store = new IntValueStore();
@@ -71,7 +73,7 @@
             if (month<10){
                 month = "0"+month;
             }
-            month = "05";
+            //month = "05";
             if (typeof indexfile === "string"){
                 var sensorindex = getJson(indexfile);
                 var elecsensors = sensorindex.sensors.elec;
@@ -144,6 +146,7 @@
         
         
         fetchSensors(indexUrl);
+        console.log(dataArray);
         
         getSensors(indexUrl);
         
@@ -241,6 +244,8 @@
             //objcircuit.unmetered = store.addNewItem(unmetered);
             console.log(objcircuit);
             functiontree = objcircuit;
+            
+            console.log(JSON.stringify(functiontree));
         }
         
         var minT = 0,

@@ -34,11 +34,27 @@
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
+                    var key = "monthly-readings";
+                    var avtot = 0;
+                    var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
+                    var recentreading = getJson("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
+                    var avlength = recentreading.data.length;
+                    console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
+                    for (var x = 0; x < avlength; x++){
+                        avtot += recentreading.data[x][1];
+                    }
+                    if (avlength == 0){
+                        var av = 0;
+                    }
+                    else {
+                        var av = (avtot / avlength);
+                    }
+                    
                     if (elecsensors[i].sensor == "S-m36"){
                         var bld = 'Building (S-m36)';
                         objfloor[bld] = null;
                         //If sensor = main power, assign its total to the toplevel total
-                        var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
+                        //var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         //objfloor.Average = treeIndex.addNewItem(av);
                         //objfloor[bld] = treeIndex.addNewItem(elecsensors[i].path);
                         objfloor[bld] = treeIndex.addNewItem(av);
@@ -49,14 +65,14 @@
                     else if (elecsensors[i].sensor == "S-m257"){
                         var bld = 'Building (S-m257)';
                         //objmain[bld] = null;
-                        var av = elecsensors[i].recenttotal / elecsensors[i].datasize;
+                        //var av = elecsensors[i].recenttotal / elecsensors[i].datasize;
                         objfloor[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objfloor[bld]);
                         //objmain.Average = treeIndex.addNewItem(elecsensors[i].path);
                         //objmain[bld] = treeIndex.addNewItem(av);
                         //objmain.Main = objfloor;
                     }
-                    else if (elecsensors[i].sensor != "S-m27"){
+                    else { //if (elecsensors[i].sensor != "S-m27"){
                     
                         //add sensors to the overall averages nodes
                         treeIndex.appendItemURL(path,objfloor.Average);
@@ -74,13 +90,13 @@
                             }
                         }
                         
-                        var recenttotal = elecsensors[i].recenttotal;
-                        var datasize = elecsensors[i].datasize;
-                        if (datasize > 0){ var recentaverage = recenttotal / datasize; }
-                        else { var recentaverage = 0; }
+                        //var recenttotal = elecsensors[i].recenttotal;
+                        //var datasize = elecsensors[i].datasize;
+                        //if (datasize > 0){ var recentaverage = recenttotal / datasize; }
+                        //else { var recentaverage = 0; }
                         var floor="";
                         var corridor="";
-                        treeIndex.sumItemAverage(recentaverage, objfloor.Average);
+                        treeIndex.sumItemAverage(av, objfloor.Average);
                         
                         //Create holding objects for rooms and corridors
                         var objroom = new Object();
@@ -120,25 +136,25 @@
                         //If they do, update their totals with the current sensors recenttotal.
                         if(!(floor in objfloor)){
                             //var array = new Array(recentaverage, "");
-                            objfloor[floor] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            objfloor[floor] = {"Average":treeIndex.addNewItem(av)};
                             treeIndex.appendItemURL(path,objfloor[floor].Average);
                             
                         }
                         else{
                             //var oldaverage = treeIndex.getValue(objfloor[floor].Average);
                             var ind = objfloor[floor].Average;
-                            treeIndex.sumItemAverage(recentaverage, ind);
+                            treeIndex.sumItemAverage(av, ind);
                             treeIndex.appendItemURL(path, ind);
                         }
                         
                         if(!(corridor in objfloor[floor])){
                             //var array = new Array(recentaverage, "");
-                            objfloor[floor][corridor] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            objfloor[floor][corridor] = {"Average":treeIndex.addNewItem(av)};
                             treeIndex.appendItemURL(path,objfloor[floor][corridor].Average)
                         }
                         else{
                             var ind = objfloor[floor][corridor].Average;
-                            treeIndex.sumItemAverage(recentaverage,ind);
+                            treeIndex.sumItemAverage(av,ind);
                             treeIndex.appendItemURL(path, ind);
                         }
                         
@@ -156,6 +172,7 @@
                             objfloor[floor][corridor][room] = objsensor;
                         }
                     }
+                    av = null;
                     
                 }
                 treedata.Electricity = new Object();
@@ -163,6 +180,7 @@
                 return treedata;
             }
             else if (checked == "treeuse"){
+                //console.log("TESIG USE");
                 //If tree is displayed by use:
                 treeIndex.clearStore();
                 var objcircuit = {"Average":treeIndex.addNewItem(0)};
@@ -170,13 +188,29 @@
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
+                    var key = "monthly-readings";
+                    var avtot = 0;
+                    var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
+                    var recentreading = getJson("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
+                    var avlength = recentreading.data.length;
+                    console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
+                    for (var x = 0; x < avlength; x++){
+                        avtot += recentreading.data[x][1];
+                    }
+                    if (avlength == 0){
+                        var av = 0;
+                    }
+                    else {
+                        var av = (avtot / avlength);
+                    }
+                    
                     if (elecsensors[i].sensor == "S-m257"){
-                        
-                        var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
+                        //get most vrecent reading,
+                        //work out size and total thus.
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
-                    else if (elecsensors[i].sensor != "S-m36" && elecsensors[i].sensor != "S-m27"){
+                    else if (elecsensors[i].sensor != "S-m36" ){//&& elecsensors[i].sensor != "S-m27"){
                         treeIndex.appendItemURL(path, objcircuit.Average);
                         
                         //console.log(elecsensors[i]);
@@ -190,12 +224,12 @@
                             }
                         }
                         
-                        var recenttotal = elecsensors[i].recenttotal;
-                        var datasize = elecsensors[i].datasize;
-                        if (datasize > 0){ var recentaverage = recenttotal / datasize; }
-                        else { var recentaverage = 0; }
+                        //var recenttotal = elecsensors[i].recenttotal;
+                        //var datasize = elecsensors[i].datasize;
+                        //if (datasize > 0){ var recentaverage = recenttotal / datasize; }
+                        //else { var recentaverage = 0; }
                         var floor="";
-                        treeIndex.sumItemAverage(recentaverage, objcircuit.Average);
+                        treeIndex.sumItemAverage(av, objcircuit.Average);
                         
                         var objroom = new Object();
                         var objfloor = new Object();
@@ -214,13 +248,13 @@
                         
                         if(!(description in objcircuit)){
                             //objcircuit[description] = {"Average":recentaverage};
-                            objcircuit[description] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            objcircuit[description] = {"Average":treeIndex.addNewItem(av)};
                             treeIndex.appendItemURL(path,objcircuit[description].Average);
                         }
                         else{
                             //objcircuit[description].Average += recentaverage;
                             var ind = objcircuit[description].Average;
-                            treeIndex.sumItemAverage(recentaverage, ind);
+                            treeIndex.sumItemAverage(av, ind);
                             treeIndex.appendItemURL(path, ind);
                         }
                         
@@ -232,13 +266,13 @@
                             //objcircuit[description].[tmpfloor[1]] = {};
                             //objcircuit[description].[tmpfloor[2]] = {};
                             //objcircuit[description][floor] = {"Average":recentaverage};
-                            objcircuit[description][floor] = {"Average":treeIndex.addNewItem(recentaverage)};
+                            objcircuit[description][floor] = {"Average":treeIndex.addNewItem(av)};
                             treeIndex.appendItemURL(path,objcircuit[description][floor].Average);
                         }
                         else{
                             //objcircuit[description][floor].Average += recentaverage;
                             var ind = objcircuit[description][floor].Average;
-                            treeIndex.sumItemAverage(recentaverage,ind);// += recentaverage;
+                            treeIndex.sumItemAverage(av,ind);// += recentaverage;
                             treeIndex.appendItemURL(path, ind);
                         }
                         
@@ -250,6 +284,7 @@
                             objcircuit[description][floor][room+"|2"] = treeIndex.addNewItem(path);
                         }
                     }
+                    av = null;
                 }
                 treedata.Electricity = new Object();
                 treedata.Electricity = objcircuit;
