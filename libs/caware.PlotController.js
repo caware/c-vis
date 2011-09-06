@@ -302,6 +302,7 @@ function PlotController(maximumplots, indexUrl) {
             if (plotArray[i].url.length > 1){
                 //Create array to store the summed data
                 var totaldata = new Array();
+                var totalobj = {};
                 //For each URL belonging to the plot
                 for (var k=0; k<plotArray[i].url.length; k++){
                     //console.log(plotArray[i].url.length);
@@ -309,6 +310,8 @@ function PlotController(maximumplots, indexUrl) {
                     //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     //console.log(montharray);
+                    
+                    
                     for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             jsonArray[i][k] = getJson(plotArray[i].url[k]+montharray[t]+".json");
@@ -356,8 +359,38 @@ function PlotController(maximumplots, indexUrl) {
                             }
                         }
                     }
+                    
+                    var tmpdata = jsonArray[i][k].data;
+                    for(var p=0; p<tmpdata.length; p++){
+                        var key = tmpdata[p][0];
+                        //console.log(tmpdata[p][1]);
+                        if (!totalobj.hasOwnProperty(key)){
+                            //console.log("New date: "+new Date(key));
+                            totalobj[key] = 0;
+                        }
+                        totalobj[key]+=tmpdata[p][1];
+                    }
+                    
+                    
                 }
-                jsonArray[i][0].data = totaldata;
+                
+                var totalarr = [];
+                for (var dat in totalobj){
+                    totalarr.push([parseInt(dat, 10),totalobj[dat]]);
+                    //console.log(dat);
+                }
+                totalarr.sort(sortArrayNum);
+                //console.log(totalarr);
+                
+                for (var dat in totalarr){
+                    var tmpdate = new Date(totalarr[dat][0]);
+                    //console.log(tmpdate+" - "+totalarr[dat][1]);
+                }
+                
+                
+                //console.log(totalarr);
+                //console.log(totaldata);
+                jsonArray[i][0].data = totalarr;
                 totaldata = null;
                 jsonArray[i][0].room = "--";
                 

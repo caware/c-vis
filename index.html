@@ -613,7 +613,7 @@
                     .lineWidth(2);
             case 1:
                 panel.add(pv.Line)
-                    .data(function(){ return datasel(0); })
+                    .data(function(){ console.log(datasel(0)); return datasel(0); })
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[0])

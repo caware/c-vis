@@ -104,3 +104,7 @@ function getMonthsBetween(stmonth, styear, endmonth, endyear){
     }
     return outputarray;
 }
+
+function sortArrayNum(a,b){
+    return a[0] - b[0];
+}
