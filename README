@@ -7,7 +7,9 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 
 Change log:
 
-V.1.9: In Development.
+V1.9.5: In Development.
+
+V.1.9:.
     Tool now deals with missing data files, presenting the earliest and latest files at max and min.
     Improved average code.
     Displays N/A in tree when sensors below have differing data dates for average calc.
