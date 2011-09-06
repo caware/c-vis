@@ -3,6 +3,9 @@ function JSONCache() {
     
     this.cache = {};
     
+    this.cachehits = 0;
+    this.cachemisses = 0;
+    
     this.getObject = function(url){
         //Fetches a json file from the cache, or downloads and inserts it if not already there.
         
@@ -17,13 +20,13 @@ function JSONCache() {
         }
         
         if (found){
-            //console.log('Cache Hit!');
+            this.cachehits++;
             return jQuery.parseJSON(this.cache[url]);
         }
         else{ 
             var jsonfile = $.ajax({ type: "GET", url: url,async: false }).responseText;
             this.cache[url] = jsonfile;
-            //console.log('Cache Miss!');
+            this.cachemisses++;
             return jQuery.parseJSON(jsonfile);
         }
     };

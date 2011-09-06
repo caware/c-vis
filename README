@@ -10,6 +10,7 @@ Change log:
 V.1.9: In Development.
     Tool now deals with missing data files, presenting the earliest and latest files at max and min.
     Improved average code.
+    Displays N/A in tree when sensors below have differing data dates for average calc.
 
 V1.8.6:
     Code clean up.

@@ -17,6 +17,7 @@
     <script type="text/javascript" src="libs/caware.ColourPool.js"></script>
     <script type="text/javascript" src="libs/caware.IntValueStore.js"></script>
     <script type="text/javascript" src="libs/caware.PlotController.js"></script>
+    <script type="text/javascript" src="libs/caware.SensorAccessor.js"></script>
     <script type="text/javascript" src="libs/caware.util.js"></script>
     <script type="text/javascript" src="libs/caware.core.js"></script>
     <script type="text/javascript" src="libs/caware.JSONCache.js"></script>
@@ -40,6 +41,7 @@
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
     var plotController = new PlotController(maxPlots,indexUrl);
+    var sensorAccess = new SensorAccessor(indexUrl);
     var colourpool = new ColourPool(linecolours);
     
     var vis;
@@ -126,7 +128,7 @@
         root.sort(nodeSort);
         
         var today = new Date();
-        var thismonth = today.toString("MMMM")
+        var thismonth = today.toString("MMM")
         
         //console.log('test');
         var nodes = root.nodes();
@@ -173,11 +175,42 @@
                 nodes[i].nodeName = "Machine Room Power and A/C";
             }
             else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
+            
             if (nm == "Average"){
-                nodes[i].nodeName = "Monitored Average ("+thismonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                //console.log(treeIndex.getItem(nodes[i].nodeValue)[1]);
+                var url = treeIndex.getItem(nodes[i].nodeValue)[1];
+                //console.log(url);
+                var avmonth = 0;
+                for (var x=0; x<url.length;x++){
+                    var date = sensorAccess.getLatestReadingDate(url[x]);
+                    var darray = date.split("-");
+                    var avdate = Date.parse(darray[0]+"-01-"+darray[1]);
+                    //console.log(avdate.toString("MMM"));
+                    if(x==0){avmonth = avdate.toString("MMM")}
+                    else{
+                        if(avmonth != avdate.toString("MMM")){
+                            avmonth = 0;
+                            break;
+                        }
+                    }
+                }
+                if (avmonth == 0){
+                    //console.log("NOVALID DATA");
+                    nodes[i].nodeName = "Monitored Average - N/A";
+                }
+                else {
+                    nodes[i].nodeName = "Monitored Average ("+avmonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                }
             }
             if (nm.slice(0,8) == "Building"){
-                nodes[i].nodeName = nm+" Average ("+thismonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
+                var url = treeIndex.getItem(nodes[i].nodeValue)[1][0];
+                var date = sensorAccess.getLatestReadingDate(url);
+                var darray = date.split("-");
+                var avdate = Date.parse(darray[0]+"-01-"+darray[1]);
+                //console.log(avdate);
+                var avmonth = avdate.toString("MMM")
+                //avmonth = "tmp";
+                nodes[i].nodeName = nm+" Average ("+avmonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
             }
         }
         
@@ -266,7 +299,7 @@
                 var ploturl = new Array();
                 var sensorurl = treeIndex.getItem(n.nodeValue)[1];
                 
-                console.log(sensorurl);
+                //console.log(sensorurl);
                 //console.log(sensorurl);
                 colourpool.toggleColour(sensorurl);
                 

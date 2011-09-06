@@ -67,7 +67,7 @@ function PlotController(maximumplots, indexUrl) {
         
         var startmax, endmax;
         
-        console.log(sensorurl);
+        //console.log(sensorurl);
         for(var i=0;i<elecsensors.length;i++){
             for(var z=0;z<sensorurl.length;z++){
         //        //console.log(elecsensors[i].path);
@@ -78,7 +78,7 @@ function PlotController(maximumplots, indexUrl) {
                     var endmax = elecsensors[i][key][0].match(/[0-9]{4}-[0-9]{2}/)[0];
                     var tmplen = elecsensors[i][key].length-1;
                     var startmax = elecsensors[i][key][tmplen].match(/[0-9]{4}-[0-9]{2}/)[0];
-                    console.log(recentreading);
+                    //console.log(recentreading);
                     //var recentyear = recentreading.slice(7,11);
                     var mymatch = recentreading.match(/-[0-9]{4}-[0-9]{2}/)[0];
                     var recentyear = mymatch.slice(1,5);
@@ -122,7 +122,7 @@ function PlotController(maximumplots, indexUrl) {
                         "data":new Array()}
         var found = false;
         
-        console.log(plotline);
+        //console.log(plotline);
         
         //return -1;
         
@@ -162,8 +162,8 @@ function PlotController(maximumplots, indexUrl) {
                         }
                     }
                 }
-                console.log("Start: "+tmpstart);
-                console.log("End: "+tmpend);
+                //console.log("Start: "+tmpstart);
+                //console.log("End: "+tmpend);
                 
                 this.viewrange.startdate = tmpstart;
                 this.viewrange.enddate = tmpend;
@@ -173,32 +173,32 @@ function PlotController(maximumplots, indexUrl) {
                         //make start max into data before isbefore stuff.
                         var tmpstartmax = Date.parse(this.plotarray[p].startmax.slice(0,4)+"-01-"+this.plotarray[p].startmax.slice(5,7));
                         var tmpendmax = Date.parse(this.plotarray[p].endmax.slice(0,4)+"-01-"+this.plotarray[p].endmax.slice(5,7));
-                        console.log(tmpstartmax);
-                        console.log(tmpendmax);
+                        //console.log(tmpstartmax);
+                        //console.log(tmpendmax);
                         if (tmpstartmax.isBefore(this.viewrange.startdate)){
                             //If the sensors history goes back further than the view range, use the viewrange as the start
-                            console.log("sensor has more history data than view");
+                            //console.log("sensor has more history data than view");
                             this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                             this.plotarray[p].startmonth = this.viewrange.startdate.getMonth()+1;
                             this.plotarray[p].startmonth = this.plotarray[p].startmonth.toString();
                         }
                         else {
                             //Else, use the sensor's earliest data set
-                            console.log("sensor has less data than view, restricting start data to last possible.");
+                            //console.log("sensor has less data than view, restricting start data to last possible.");
                             this.plotarray[p].startyear = tmpstartmax.getFullYear().toString();
                             this.plotarray[p].startmonth = tmpstartmax.getMonth()+1;
                             this.plotarray[p].startmonth = this.plotarray[p].startmonth.toString();
                         }
                         if (tmpendmax.isAfter(this.viewrange.enddate)){
                             //If the sensors most recent data is after the viewport, use the viewport as the end point
-                            console.log("sensor has more current data than view");
+                            //console.log("sensor has more current data than view");
                             this.plotarray[p].endyear = this.viewrange.enddate.getFullYear().toString();
                             this.plotarray[p].endmonth = this.viewrange.enddate.getMonth()+1;
                             this.plotarray[p].endmonth = this.plotarray[p].endmonth.toString();
                         }
                         else {
                             //Else, use the most recent data availible from the sensor.
-                            console.log("sensor has less data than view, restricting start data to earliest possible.");
+                            //console.log("sensor has less data than view, restricting start data to earliest possible.");
                             this.plotarray[p].endyear = tmpendmax.getFullYear().toString();
                             this.plotarray[p].endmonth = tmpendmax.getMonth()+1;
                             this.plotarray[p].endmonth = this.plotarray[p].endmonth.toString();

@@ -39,7 +39,7 @@
                     var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
                     var recentreading = getJson("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     var avlength = recentreading.data.length;
-                    console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
+                    //console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     for (var x = 0; x < avlength; x++){
                         avtot += recentreading.data[x][1];
                     }
@@ -193,7 +193,7 @@
                     var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
                     var recentreading = getJson("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     var avlength = recentreading.data.length;
-                    console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
+                    //console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     for (var x = 0; x < avlength; x++){
                         avtot += recentreading.data[x][1];
                     }
