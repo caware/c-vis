@@ -545,7 +545,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[9])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 9:
                 panel.add(pv.Line)
@@ -553,7 +553,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[8])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 8:
                 panel.add(pv.Line)
@@ -561,7 +561,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[7])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 7:
                 panel.add(pv.Line)
@@ -569,7 +569,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[6])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 6:
                 panel.add(pv.Line)
@@ -577,7 +577,7 @@
                     .left(function(d){ return fx(d.x); }) 
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[5])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 5:
                 panel.add(pv.Line)
@@ -585,7 +585,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[4])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 4:
                 panel.add(pv.Line)
@@ -593,7 +593,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[3])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 3:
                 panel.add(pv.Line)
@@ -601,7 +601,7 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[2])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 2:
                 panel.add(pv.Line)
@@ -609,15 +609,15 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[1])
-                    .interpolate("step-before")
+                    .interpolate(null)
                     .lineWidth(2);
             case 1:
                 panel.add(pv.Line)
-                    .data(function(){ console.log(datasel(0)); return datasel(0); })
+                    .data(function(){ return datasel(0); })
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[0])
-                    .interpolate("step-before")
+                    .interpolate(null) //"step-before"
                     .lineWidth(2);
         }
         
@@ -733,7 +733,7 @@
         <p class="alert">This tool is still under development. If things stop working a page reload is often the best remedy!</p>
     </div>
     <![endif]-->
-    <div style="text-align:center;"><h2>William Gates Building Energy Usage V1.9 Alpha</h2></div>
+    <div style="text-align:center;"><h2>William Gates Building Energy Usage V1.9.5 Alpha</h2></div>
     <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory.</p></div>
     <div style="float:right; width:400px; text-align:right;padding-right:20;">
     </div>
