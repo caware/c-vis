@@ -11,10 +11,6 @@
     <script type="text/javascript" src="libs/jquery.event.drag-2.0.min.js"></script>
     <script type="text/javascript" src="libs/protovis-d3.2.js"></script>
     <script type="text/javascript" src="libs/date-en-GB.js"></script>
-    <script type="text/javascript" src="libs/slick.core.js"></script>
-    <script type="text/javascript" src="libs/slick.grid.js"></script>
-    <script type="text/javascript" src="libs/slick.editors.js"></script>
-    <script type="text/javascript" src="libs/slick.dataview.js"></script>
     <script type="text/javascript" src="libs/caware.ColourPool.js"></script>
     <script type="text/javascript" src="libs/caware.IntValueStore.js"></script>
     <script type="text/javascript" src="libs/caware.PlotController.js"></script>
@@ -23,7 +19,7 @@
     <script type="text/javascript" src="libs/caware.core.js"></script>
     <script type="text/javascript" src="libs/caware.JSONCache.js"></script>
     <script type="text/javascript" src="libs/WeatherJSONBridge.js"></script>
-    
+    <script type="text/javascript" src="test/freqdata.js"></script>
     <style type="text/css">
 
 #fig {
@@ -35,34 +31,6 @@
   </head>
   <body><div id="center"><div id="fig">
     <script type="text/javascript+protovis">
-    
-    var freq = {
-    "label": "Grid Frequency Meter",
-    "path": "meters.cl.cam.ac.uk/freq",
-    "description": "frequency",
-    "units" : "Hz",
-    "ts" : "2011-09-06T10Z",
-    "data": [
-[1315303647000,  49.91],
-[1315303648000,  49.92],
-[1315303649000,  49.93],
-[1315303650000,  49.94],
-[1315303651000,  49.95],
-[1315303652000,  49.96],
-[1315303653000,  49.97],
-[1315303654000,  49.98],
-[1315303655000,  49.99],
-[1315303656000,  50.00],
-[1315303657000,  50.01],
-[1315303658000,  50.02],
-[1315303659000,  50.01],
-[1315303660000,  50.00],
-[1315303661000,  49.98],
-[1315303662000,  49.93],
-[1315303663000,  49.94],
-[1315303664000,  49.95],
-[1315303665000,  49.96],
-[1315303666000,  49.97]]};
 
 var dataArray = freq.data;
 
@@ -77,19 +45,24 @@ for (var i=0; i<dataArray.length; i++){
 //console.log(data);
 
 /* Sizing and scales. */
-var w = 1300,
-    h = 700,
-    x = pv.Scale.linear(data, function(d) d.x).range(0, w),
-    y = pv.Scale.linear(49.85, 50.30).range(0, h);
+var w = 1000,
+    h = 500,
+    ymax = pv.max(data, function(d) d.y),
+    ymin = pv.min(data, function(d) d.y),
+    x = pv.Scale.linear(data, function(d) d.x).range(0+5, w-5),
+    y = pv.Scale.linear(ymin, ymax).range(0+10, h-10);
+    //y = pv.Scale.linear(49.85, 50.30).range(0, h);
 
 /* The root panel. */
 var vis = new pv.Panel()
     .width(w)
     .height(h)
     .bottom(20)
-    .left(20)
-    .right(10)
-    .top(5);
+    .left(30)
+    .right(20)
+    .top(5)
+    .event("mousemove",
+        pv.Behavior.point(Infinity).collapse("y"));
 
 /* X-axis ticks. */
 vis.add(pv.Rule)
@@ -112,20 +85,79 @@ vis.add(pv.Rule)
   .anchor("left").add(pv.Label)
     .text(y.tickFormat);
 
-/* The line. */
+// The line.
+//vis.add(pv.Line)
+//    .data(data)
+//    .interpolate(null)
+//    .left(function(d) x(d.x))
+//    .bottom(function(d) y(d.y))
+//    .segmented(false)
+//    .lineWidth(1);
+//    
+//vis.add(pv.Dot)
+//    .data(data)
+//    .linewidth(1)
+//   .fillStyle(function(d){
+//        console.log(d.y);
+//        if (d.y == 50) { return "blue"};
+//        if (d.y > 50) { return "red"};
+//        if (d.y < 50) { return "green"};
+//    })
+//    
+//vis.add(pv.Line)
+//    .data(data)
+//    .interpolate(null)
+//    .lineWidth(1)
+//    .strokeStyle(function(d){
+//        if (d.y > 50) { return "red"};
+//        if (d.y < 50) { return "green"};
+//    })
+//    .left(function(d) x(d.x))
+//    .bottom(function(d) y(d.y))
+//  .add(pv.Dot)
+//    .lineWidth(0)
+//    .size(function(d){
+//        if (d.y == 50) { return "blue"};
+//        else { return 0};
+//    })
+//    .fillStyle(function(d){
+//        //console.log(d.y);
+//        if (d.y == 50) { return "blue"};
+//    }); /*
+//    
+
+var activepoint = 0;
 vis.add(pv.Line)
     .data(data)
-    .interpolate("step-after")
+    .interpolate(null)
+    .lineWidth(1)
+    .segmented(true)
+    .strokeStyle("black")
     .left(function(d) x(d.x))
     .bottom(function(d) y(d.y))
-    .segmented(true)
-    .strokeStyle(function(d){
-        console.log(d.y);
-        if (d.y == 50) { return "blue"};
-        if (d.y > 50) { return "red"};
-        if (d.y < 50) { return "green"};
+    .event("point", function() {
+        activepoint = this.index;
+        return vis;
     })
-    .lineWidth(3);
+  .add(pv.Dot)
+    .lineWidth(0)
+    .size(function(d){
+        if (d.y == 50) {return 6;}
+        if (activepoint == this.index){return 8;}
+        else {return 30;}
+    })
+    .visible(function(d){
+        if (d.y == 50) {return true;}
+        if ( d.y == ymin || d.y == ymax){return true;}
+        if (activepoint == this.index){return true;}
+        else {return false;}
+    })
+    .fillStyle(function(d){
+        if (d.y == 50) {return "blue";}
+        if (d.y == ymin) {return "green";}
+        if (d.y == ymax) {return "red";}
+        else {return "grey";}
+    });
 
 vis.render();
 
