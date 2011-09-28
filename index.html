@@ -122,8 +122,9 @@
             })
             .title(function t(d) d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName)
             .anchor("right").add(pv.Label)
-            .text(function(n){return n.nodeName;})
-            .font("12px/14px Helvetica, Arial, Sans-serif");
+                .text(function(n){return n.nodeName;})
+                .font("12px/14px Helvetica, Arial, Sans-serif");
+            
             
         root.sort(nodeSort);
         
@@ -708,7 +709,6 @@
     }
     
     </script>
-    
     <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/jquery-ui-1.8.5.custom.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>

@@ -45,8 +45,8 @@ for (var i=0; i<dataArray.length; i++){
 //console.log(data);
 
 /* Sizing and scales. */
-var w = 1000,
-    h = 500,
+var w = 700,
+    h = 250,
     ymax = pv.max(data, function(d) d.y),
     ymin = pv.min(data, function(d) d.y),
     x = pv.Scale.linear(data, function(d) d.x).range(0+5, w-5),
@@ -60,9 +60,7 @@ var vis = new pv.Panel()
     .bottom(20)
     .left(30)
     .right(20)
-    .top(5)
-    .event("mousemove",
-        pv.Behavior.point(Infinity).collapse("y"));
+    .top(5);
 
 /* X-axis ticks. */
 vis.add(pv.Rule)
@@ -85,48 +83,10 @@ vis.add(pv.Rule)
   .anchor("left").add(pv.Label)
     .text(y.tickFormat);
 
-// The line.
-//vis.add(pv.Line)
-//    .data(data)
-//    .interpolate(null)
-//    .left(function(d) x(d.x))
-//    .bottom(function(d) y(d.y))
-//    .segmented(false)
-//    .lineWidth(1);
-//    
-//vis.add(pv.Dot)
-//    .data(data)
-//    .linewidth(1)
-//   .fillStyle(function(d){
-//        console.log(d.y);
-//        if (d.y == 50) { return "blue"};
-//        if (d.y > 50) { return "red"};
-//        if (d.y < 50) { return "green"};
-//    })
-//    
-//vis.add(pv.Line)
-//    .data(data)
-//    .interpolate(null)
-//    .lineWidth(1)
-//    .strokeStyle(function(d){
-//        if (d.y > 50) { return "red"};
-//        if (d.y < 50) { return "green"};
-//    })
-//    .left(function(d) x(d.x))
-//    .bottom(function(d) y(d.y))
-//  .add(pv.Dot)
-//    .lineWidth(0)
-//    .size(function(d){
-//        if (d.y == 50) { return "blue"};
-//        else { return 0};
-//    })
-//    .fillStyle(function(d){
-//        //console.log(d.y);
-//        if (d.y == 50) { return "blue"};
-//    }); /*
-//    
 
-var activepoint = 0;
+
+var maxydone = true, minydone = true;
+
 vis.add(pv.Line)
     .data(data)
     .interpolate(null)
@@ -135,29 +95,43 @@ vis.add(pv.Line)
     .strokeStyle("black")
     .left(function(d) x(d.x))
     .bottom(function(d) y(d.y))
-    .event("point", function() {
-        activepoint = this.index;
-        return vis;
-    })
   .add(pv.Dot)
     .lineWidth(0)
     .size(function(d){
         if (d.y == 50) {return 6;}
-        if (activepoint == this.index){return 8;}
-        else {return 30;}
+        else {return 15;}
     })
     .visible(function(d){
         if (d.y == 50) {return true;}
-        if ( d.y == ymin || d.y == ymax){return true;}
-        if (activepoint == this.index){return true;}
+        else if (d.y == ymin){
+            return true;
+        }
+        else if (d.y == ymax){
+            return true;
+        }
         else {return false;}
     })
     .fillStyle(function(d){
-        if (d.y == 50) {return "blue";}
-        if (d.y == ymin) {return "green";}
-        if (d.y == ymax) {return "red";}
-        else {return "grey";}
-    });
+        if (d.y == 50){ return "blue"; }
+        else if (d.y == ymin){ return "green"; }
+        else if (d.y == ymax){ return "red"; }
+        else { return "grey"; }
+    })
+    .anchor("left").add(pv.Label)
+        .text(function(d){
+            return d.y+" Hz";
+        })
+        .visible(function(d){
+            if (d.y == ymin && minydone){
+                minydone = false;
+                return true;
+            }
+            else if (d.y == ymax && maxydone){
+                maxydone = false;
+                return true;
+            }
+            else { return false; }
+        });
 
 vis.render();
 
