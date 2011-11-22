@@ -1,4 +1,4 @@
-       function buildTree(indexUrl, checked){
+       function buildTree(checked){
         //Get the sensor index file and build and display the sensor tree.
             sensors = getSensors(indexUrl,checked);
             tree(sensors,checked);
@@ -37,7 +37,7 @@
                     var key = "monthly-readings";
                     var avtot = 0;
                     var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
-                    var recentreading = getJson(config.sensorFilesUrl.value+sensorpath+elecsensors[i][key][0]);
+                    var recentreading = getJson("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     var avlength = recentreading.data.length;
                     //console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     for (var x = 0; x < avlength; x++){
@@ -72,10 +72,9 @@
                         //objmain[bld] = treeIndex.addNewItem(av);
                         //objmain.Main = objfloor;
                     }
-                    else if (elecsensors[i].sensor != "S-m41"){
+                    else { //if (elecsensors[i].sensor != "S-m27"){
                     
                         //add sensors to the overall averages nodes
-                        //console.log(sensorpath);
                         treeIndex.appendItemURL(path,objfloor.Average);
                         
                         //treeIndex.appendItemURL(path,objmain[bld]);
@@ -172,7 +171,6 @@
                             objsensor[description] = treeIndex.addNewItem(path);
                             objfloor[floor][corridor][room] = objsensor;
                         }
-                        
                     }
                     av = null;
                     
@@ -193,7 +191,7 @@
                     var key = "monthly-readings";
                     var avtot = 0;
                     var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
-                    var recentreading = getJson(config.sensorFilesUrl.value+sensorpath+elecsensors[i][key][0]);
+                    var recentreading = getJson("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     var avlength = recentreading.data.length;
                     //console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
                     for (var x = 0; x < avlength; x++){
@@ -212,7 +210,7 @@
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
-                    else if (elecsensors[i].sensor != "S-m36" && elecsensors[i].sensor != "S-m41"){
+                    else if (elecsensors[i].sensor != "S-m36" ){//&& elecsensors[i].sensor != "S-m27"){
                         treeIndex.appendItemURL(path, objcircuit.Average);
                         
                         //console.log(elecsensors[i]);

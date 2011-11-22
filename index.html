@@ -24,12 +24,13 @@
     <script type="text/javascript" src="libs/WeatherJSONBridge.js"></script>
     
     <script type="text/javascript+protovis">
-    var indexUrl = "http://www.cl.cam.ac.uk/~cce25/sensorindex.json";
+    var cache = new JSONCache();
+    var config = getJson("http://www.cl.cam.ac.uk/~cce25/config.json").config;
     
-    //Set plot colours
-    var linecolours = new Array("firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise");
     
-    var maxPlots = 10;
+    //var indexUrl = config.indexUrl.value;
+    //var linecolours = config.plotColour.value;
+    //var maxPlots = config.maxNumberPlots.value;
     
     //Date formats for chart tick labels
     var zoomDateFormat = pv.Format.date("%a %d %b");
@@ -37,24 +38,21 @@
     var overallDateFormat = pv.Format.date("%d %b '%y");
     
     //Vars for array of plots, and chart visulisation
-    var cache = new JSONCache();
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
-    var plotController = new PlotController(maxPlots,indexUrl);
-    var sensorAccess = new SensorAccessor(indexUrl);
-    var colourpool = new ColourPool(linecolours);
+    var plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value);
+    var sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
+    var colourpool = new ColourPool(config.plotColour.value);
     
     var vis;
     var sensors;
     
-    //var oldd1, oldd2;
-    var initialzoomx = 100, initialzoomdx = 200;
-    var datazoomx, datazoomdx;
-    var zoomx = 100, zoomdx = 200;
+    //var datazoomx, datazoomdx;
+    //var zoomx = 100, zoomdx = 200;
     
      $(document).ready(function() {
         checkCookie("WGBToolVisit");
-        buildTree("treeuse");
+        buildTree(config.indexUrl.value, "treeuse");
         var startplot = ["/elec/S-m257-"];
         colourpool.toggleColour(startplot);
         plotController.togglePlotByUrl(startplot);
@@ -327,7 +325,7 @@
         
         /* Interaction state. Focus scales will have domain set on-render. */
         
-        var i = {x:zoomx, dx:zoomdx};
+        var i = {x:config.zoomSize.value.zoomX, dx:config.zoomSize.value.zoomDX};
         var fx = pv.Scale.linear().range(0, w),
             fy = pv.Scale.linear().range(0, h1);
         
@@ -342,10 +340,10 @@
             .top(20);
         
         function datasel(id){
-            d1 = x.invert(zoomx);
-            zoomx = i.x;
-            d2 = x.invert(zoomx + zoomdx);
-            zoomdx = i.dx;
+            d1 = x.invert(config.zoomSize.value.zoomX);
+            config.zoomSize.value.zoomX = i.x;
+            d2 = x.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
+            config.zoomSize.value.zoomDX = i.dx;
             
             var dd = [];
             for(var j=0; j<data.length; j++){//for each line in the data array

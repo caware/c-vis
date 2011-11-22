@@ -1553,6 +1553,12 @@ a.menu:after, .dropdown-toggle:after {
 .dropdown.open .dropdown-menu {
   display: block;
 }
+.vistabs {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+  zoom: 1;
+}
 .tabs, .pills {
   margin: 0 0 20px;
   padding: 0;
@@ -1560,21 +1566,23 @@ a.menu:after, .dropdown-toggle:after {
   zoom: 1;
 }
 .tabs:before,
+.vistabs:before,
 .pills:before,
 .tabs:after,
+.vistabs:after,
 .pills:after {
   display: table;
   content: "";
   zoom: 1;
   *display: inline;
 }
-.tabs:after, .pills:after {
+.tabs:after, .vistabs:after, .pills:after {
   clear: both;
 }
-.tabs > li, .pills > li {
+.tabs > li, .vistabs > li, .pills > li {
   float: left;
 }
-.tabs > li > a, .pills > li > a {
+.tabs > li > a, .vistabs > li > a, .pills > li > a {
   display: block;
 }
 .tabs {
@@ -1582,7 +1590,16 @@ a.menu:after, .dropdown-toggle:after {
   width: 100%;
   border-bottom: 1px solid #ddd;
 }
+.vistabs {
+  float: left;
+  width: 100%;
+  border-bottom: 1px solid #ccc;
+}
 .tabs > li {
+  position: relative;
+  top: 1px;
+}
+.vistabs > li {
   position: relative;
   top: 1px;
 }
@@ -1595,15 +1612,35 @@ a.menu:after, .dropdown-toggle:after {
   -moz-border-radius: 4px 4px 0 0;
   border-radius: 4px 4px 0 0;
 }
+.vistabs > li > a {
+  padding: 15px 15px 5px 15px;
+  margin-right: 2px;
+  line-height: 36px;
+  border: 1px solid transparent;
+  -webkit-border-radius: 4px 4px 0 0;
+  -moz-border-radius: 4px 4px 0 0;
+  border-radius: 4px 4px 0 0;
+}
 .tabs > li > a:hover {
   text-decoration: none;
   background-color: #eee;
+  border-color: #eee #eee #ccc;
+}
+.vistabs > li > a:hover {
+  text-decoration: none;
+  background-color: #ddd;
   border-color: #eee #eee #ddd;
 }
 .tabs > li.active > a {
   color: #808080;
   background-color: #ffffff;
   border: 1px solid #ddd;
+  border-bottom-color: transparent;
+}
+.vistabs > li.active > a {
+  color: #909090;
+  background-color: #efefef;
+  border: 1px solid #ccc;
   border-bottom-color: transparent;
 }
 .tabs .menu-dropdown, .tabs .dropdown-menu {

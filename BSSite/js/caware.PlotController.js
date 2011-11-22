@@ -105,7 +105,7 @@ function PlotController(maximumplots, indexUrl) {
         
         ploturl = [];
         for (var x=0; x<sensorurl.length; x++){
-            ploturl[x] = config.sensorFilesUrl.value+sensorurl[x];
+            ploturl[x] = "http://www.cl.cam.ac.uk/meters"+sensorurl[x];
         }
         
         var plotline = {"id":0,"url":ploturl,"description":"","sensor":sensorurl,
@@ -309,7 +309,7 @@ function PlotController(maximumplots, indexUrl) {
                     //Add the json object of that array to the array in jsonArray
                     //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                    //console.log(plotArray[i].url+"Month:"+montharray);
+                    //console.log(montharray);
                     
                     
                     for (var t=0;t<montharray.length;t++){
