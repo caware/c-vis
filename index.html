@@ -737,9 +737,9 @@
     </div>
     <div style="float:left; width:350px; text-align:left;padding-left:20;">
         <label for="treegeo">Explore tree by: Geography</label>
-        <input name="treetype" id="treegeo" type="radio" onchange="buildTree('treegeo')">
+        <input name="treetype" id="treegeo" type="radio" onchange="buildTree(config.indexUrl.value, 'treegeo')">
         <label for="treeuse"> Function</label>
-        <input checked name="treetype" id="treeuse" type="radio" onchange="buildTree('treeuse')">
+        <input checked name="treetype" id="treeuse" type="radio" onchange="buildTree(config.indexUrl.value, 'treeuse')">
     </div>
     </div>
     <div id="diacontainer">

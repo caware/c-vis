@@ -34,21 +34,43 @@
                 //var objfloor = {};
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
-                    var key = "monthly-readings";
-                    var avtot = 0;
-                    var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
-                    var recentreading = getJson(config.sensorFilesUrl.value+sensorpath+elecsensors[i][key][0]);
-                    var avlength = recentreading.data.length;
+                    
+                    //var key = "monthly-readings";
+                    //var avtot = 0;
+                    //var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
+                    //var recentreading = getJson(config.sensorFilesUrl.value+sensorpath+elecsensors[i][key][0]);
+                    //var avlength = recentreading.data.length;
                     //console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
-                    for (var x = 0; x < avlength; x++){
-                        avtot += recentreading.data[x][1];
+                    //for (var x = 0; x < avlength; x++){
+                    //    avtot += recentreading.data[x][1];
+                    //}
+                    //if (avlength == 0){
+                    //    var av = 0;
+                    //}
+                    //else {
+                    //    var av = (avtot / avlength);
+                    //}
+                    //console.log("====");
+                    //console.log(path);
+                    //console.log(av);
+                    //console.log(sensorAccess.getLatestAverage(path));
+                    
+                    var sensorIgnored = false;
+                    for (var x = 0; x < config.sensorIgnore.value.length; x++){
+                        if (config.sensorIgnore.value[x] == elecsensors[i].sensor) {sensorIgnored = true; break;}
                     }
-                    if (avlength == 0){
-                        var av = 0;
+                    var sensorAverageIgnored = false;
+                    for (var x = 0; x < config.sensorNoAverage.value.length; x++){
+                        if (config.sensorNoAverage.value[x] == elecsensors[i].sensor) {
+                            sensorAverageIgnored = true;
+                            //av = 0;
+                            break;
+                        }
                     }
-                    else {
-                        var av = (avtot / avlength);
-                    }
+                    
+                    if (!sensorAverageIgnored){var av = sensorAccess.getLatestAverage(path);}
+                    else {var av = 0;}
+                    
                     
                     if (elecsensors[i].sensor == "S-m36"){
                         var bld = 'Building (S-m36)';
@@ -72,11 +94,12 @@
                         //objmain[bld] = treeIndex.addNewItem(av);
                         //objmain.Main = objfloor;
                     }
-                    else if (elecsensors[i].sensor != "S-m41"){
+                    
+                    else if (!sensorIgnored){
                     
                         //add sensors to the overall averages nodes
                         //console.log(sensorpath);
-                        treeIndex.appendItemURL(path,objfloor.Average);
+                        if (!sensorAverageIgnored){ treeIndex.appendItemURL(path,objfloor.Average); }
                         
                         //treeIndex.appendItemURL(path,objmain[bld]);
                     
@@ -97,7 +120,7 @@
                         //else { var recentaverage = 0; }
                         var floor="";
                         var corridor="";
-                        treeIndex.sumItemAverage(av, objfloor.Average);
+                        if (!sensorAverageIgnored){ treeIndex.sumItemAverage(av, objfloor.Average); }
                         
                         //Create holding objects for rooms and corridors
                         var objroom = new Object();
@@ -206,14 +229,26 @@
                         var av = (avtot / avlength);
                     }
                     
+                    var sensorIgnored = false;
+                    for (var x = 0; x < config.sensorIgnore.value.length; x++){
+                        if (config.sensorIgnore.value[x] == elecsensors[i].sensor) {sensorIgnored = true; break;}
+                    }
+                    var sensorAverageIgnored = false;
+                    for (var x = 0; x < config.sensorNoAverage.value.length; x++){
+                        if (config.sensorNoAverage.value[x] == elecsensors[i].sensor) {sensorAverageIgnored = true; break;}
+                    }
+                    
                     if (elecsensors[i].sensor == "S-m257"){
                         //get most vrecent reading,
                         //work out size and total thus.
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
-                    else if (elecsensors[i].sensor != "S-m36" && elecsensors[i].sensor != "S-m41"){
-                        treeIndex.appendItemURL(path, objcircuit.Average);
+                    
+                    else if (elecsensors[i].sensor != "S-m36" && !sensorIgnored){
+                        
+                        if (!sensorAverageIgnored){ treeIndex.appendItemURL(path, objcircuit.Average); }
+                        //treeIndex.appendItemURL(path, objcircuit.Average);
                         
                         //console.log(elecsensors[i]);
                         var roomArray = elecsensors[i].room.split("");
@@ -231,7 +266,8 @@
                         //if (datasize > 0){ var recentaverage = recenttotal / datasize; }
                         //else { var recentaverage = 0; }
                         var floor="";
-                        treeIndex.sumItemAverage(av, objcircuit.Average);
+                        //treeIndex.sumItemAverage(av, objcircuit.Average);
+                        if (!sensorAverageIgnored){ treeIndex.sumItemAverage(av, objcircuit.Average); }
                         
                         var objroom = new Object();
                         var objfloor = new Object();

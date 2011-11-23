@@ -8,20 +8,24 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 Change log:
 
 V1.9.7: In Development.
+    Added ability to ignore sensors, and/or to avoid them increasing the averages in the tree above.
     Improved code portability
     Added config file support.
     Improved SensorAccessor class.
     Ignores meter S-m41.
 
+
 V1.9.5:
     Now adds up and sorts multiple plots preventing plots repeating themselves.
     Started frequency testing.
+
 
 V.1.9:.
     Tool now deals with missing data files, presenting the earliest and latest files at max and min.
     Improved average code.
     Displays N/A in tree when sensors below have differing data dates for average calc.
     Restored S-m27.
+
 
 V1.8.6:
     Code clean up.
