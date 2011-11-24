@@ -213,21 +213,21 @@
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
-                    var key = "monthly-readings";
-                    var avtot = 0;
-                    var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
-                    var recentreading = getJson(config.sensorFilesUrl.value+sensorpath+elecsensors[i][key][0]);
-                    var avlength = recentreading.data.length;
+                    //var key = "monthly-readings";
+                    //var avtot = 0;
+                    //var sensorpath = elecsensors[i].path.match(/^.*\//)[0];
+                    //var recentreading = getJson(config.sensorFilesUrl.value+sensorpath+elecsensors[i][key][0]);
+                    //var avlength = recentreading.data.length;
                     //console.log("http://www.cl.cam.ac.uk/meters"+sensorpath+elecsensors[i][key][0]);
-                    for (var x = 0; x < avlength; x++){
-                        avtot += recentreading.data[x][1];
-                    }
-                    if (avlength == 0){
-                        var av = 0;
-                    }
-                    else {
-                        var av = (avtot / avlength);
-                    }
+                    //for (var x = 0; x < avlength; x++){
+                    //    avtot += recentreading.data[x][1];
+                    //}
+                    //if (avlength == 0){
+                    //    var av = 0;
+                    //}
+                    //else {
+                    //    var av = (avtot / avlength);
+                    //}
                     
                     var sensorIgnored = false;
                     for (var x = 0; x < config.sensorIgnore.value.length; x++){
@@ -237,6 +237,9 @@
                     for (var x = 0; x < config.sensorNoAverage.value.length; x++){
                         if (config.sensorNoAverage.value[x] == elecsensors[i].sensor) {sensorAverageIgnored = true; break;}
                     }
+                    
+                    if (!sensorAverageIgnored){var av = sensorAccess.getLatestAverage(path);}
+                    else {var av = 0;}
                     
                     if (elecsensors[i].sensor == "S-m257"){
                         //get most vrecent reading,

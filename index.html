@@ -58,7 +58,7 @@
         plotController.togglePlotByUrl(startplot);
         plotController.calculateData();
         refreshTree();
-        //console.log('done');
+        console.log('done');
     });
     
     function tree(sensortree,type){
@@ -129,8 +129,9 @@
         var today = new Date();
         var thismonth = today.toString("MMM")
         
-        //console.log('test');
+        console.log('test');
         var nodes = root.nodes();
+        console.log(nodes);
         for(var i=0; i<nodes.length;i++){
             var nm = nodes[i].nodeName
             if (nm=="Ground Floor"){nodes[i].toggle();}
@@ -176,7 +177,8 @@
             else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
             
             if (nm == "Average"){
-                //console.log(treeIndex.getItem(nodes[i].nodeValue)[1]);
+                console.log(nodes[i]);
+                console.log(treeIndex.getItem(nodes[i].nodeValue)[1]);
                 var url = treeIndex.getItem(nodes[i].nodeValue)[1];
                 //console.log(url);
                 var avmonth = 0;
@@ -196,6 +198,7 @@
                 if (avmonth == 0){
                     //console.log("NOVALID DATA");
                     nodes[i].nodeName = "Monitored Average - N/A";
+                    nodes[i].nodeValue = undefined;
                 }
                 else {
                     nodes[i].nodeName = "Monitored Average ("+avmonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
@@ -212,6 +215,7 @@
                 nodes[i].nodeName = nm+" Average ("+avmonth+") : "+Math.round(treeIndex.getItem(nodes[i].nodeValue)[0] * 100)/100+" kW";
             }
         }
+        
         
         treevis.render();
         
