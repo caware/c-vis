@@ -1,5 +1,9 @@
 {
     "config" : {
+        "name" : {
+            "description" : "Name displayed by the app.",
+            "value" : "Joule @ CL"
+        },
         "maxNumberPlots" : {
             "description" : "Maximum number of sensor plots Joule can show.",
             "value" : 10

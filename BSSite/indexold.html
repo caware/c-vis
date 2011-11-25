@@ -432,9 +432,9 @@
         var columns = [
             {id:"PlotColour", name:"Colour", field:"colour", width:47, formatter:GraphicalColourCellFormatter},
             {id:"Room", name:"Room", field:"room", width:45},
-            {id:"Description", name:"Description", field:"description", width:187},
-            {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:70},
-            {id:"EndMonthyear", name:"End", field:"endmonthyear", width:70},
+            {id:"Description", name:"Description", field:"description", width:170},
+            {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:100},
+            {id:"EndMonthyear", name:"End", field:"endmonthyear", width:100},
             {id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
             {id:"kWTotal", name:"Avg kW Total", field:"avgtotal", width:95},
             {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126},
@@ -794,7 +794,7 @@
             <li class="dropdown" data-dropdown="dropdown">
               <a href="#" class="dropdown-toggle">Deployments</a>
               <ul class="dropdown-menu">
-                <li class="active" ><a href="#WGB">William Gates Bld</a></li>
+                <li class="active"><a href="#WGB">William Gates Bld</a></li>
                 <li><a href="#SE18">SE18 Server Room</a></li>
               </ul>
             </li>
@@ -804,11 +804,11 @@
             <li class="dropdown" data-dropdown="dropdown">
               <a href="#" class="dropdown-toggle">Feedback</a>
               <ul class="dropdown-menu">
-                <li><a href="mailto:cce25@cl.cam.ac.uk?subject=Joule Feedback">Email</a></li>
-                <li><a href="https://github.com/caware/c-vis/issues" target="_blank">GitHub Bug Report</a></li>
+                <li><a href="#Email">Email</a></li>
+                <li><a href="#GitHub">GitHub Bug Report</a></li>
               </ul>
             </li>
-            <li><a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-Aware</a></li>
+            <li><a href="#about">C-Aware</a></li>
           </ul>
         </div>
       </div>
@@ -816,15 +816,28 @@
 
     <div class="container">
         <div class="content">
-            <div class="alert-bar">
+            <div class="alert-message warning">
+                <a class="close" href="#">x</a>
+                <p><strong>Holy guacamole!</strong> Best check yo self, you’re not looking too good.</p>
+            </div>
+            <div>
+                <ul class="vistabs">
+                    <li><a href="#"><p style="text-align:center;">^</p></a></li>
+                    <li class="active"><a href="#"><img src="images/vistest.jpg" width=200px height=170px /><p style="text-align:center;">Line Chart</p></a></li>
+                    <li><a href="#"><img src="images/vistest.jpg" width=200px height=170px /><p style="text-align:center;">Stack Chart</p></a></li>
+                    <li><a href="#"><img src="images/vistest.jpg" width=200px height=170px /><p style="text-align:center;">Streamgraph</p></a></li>
+                    <li><a href="#"><img src="images/vistest.jpg" width=200px height=170px /><p style="text-align:center;">Sunburst</p></a></li>
+                    <li><a href="#"><img src="images/vistest.jpg" width=200px height=170px /><p style="text-align:center;">Coxcomb Chart</p></a></li>
+                </ul>
             </div>
             <div id="diacontainer">
                 <div id="treecontainer">
-                    <div style="width: 160px; margin: auto;">
+                    <div style="float:left ;padding-left:20;">
                         <ul class="pills">
+                            <p>Tree: </p>
                             <li><a href="#" onclick="buildTree('treegeo');return false">Geographic</a></li>
                             <li><a href="#" onclick="buildTree('treeuse');return false">Functional</a></li>
-                            <!-- <li><a href="#" onclick="buildTree('treegeo');return false">Network</a></li> -->
+                            <li><a href="#" onclick="buildTree('treegeo');return false">Network</a></li>
                         </ul>
                     </div>
                     <div id="treediv">
@@ -843,7 +856,7 @@
             </div>
         </div>
         <footer>
-        <p>University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-AWARE Project</a></p>
+        <p>University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html">C-AWARE Project</a></p>
       </footer>
 
     </div> <!-- /container -->
