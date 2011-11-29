@@ -1,5 +1,8 @@
        function buildTree(checked){
         //Get the sensor index file and build and display the sensor tree.
+            console.log(checked);
+            $('#geobutton').toggleClass('active');
+            $('#functbutton').toggleClass('active'); 
             sensors = getSensors(indexUrl,checked);
             tree(sensors,checked);
         }

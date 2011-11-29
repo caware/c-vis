@@ -1,6 +1,6 @@
 function JouleUIController(){
     
-    this.e = new JouleError()
+    //this.e = new JouleError()
     
     this.treeNodeClick = function(){
     
@@ -20,7 +20,9 @@ function JouleUIController(){
     };
     
     this.changeTree = function(treetype){
-    
+        console.log(checked);
+            $('#geobutton').toggleClass('active');
+            $('#functbutton').toggleClass('active'); 
     };
     
     this.showError = function(error){
