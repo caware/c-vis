@@ -1,14 +1,6 @@
        function buildTree(indexUrl, checked){
         //Get the sensor index file and build and display the sensor tree.
-            console.log(checked);
-            if (checked == 'treegeo'){
-                $('#geobutton').addClass('active');
-                $('#functbutton').removeClass('active');
-            }
-            else if (checked == 'treeuse'){
-                $('#geobutton').removeClass('active');
-                $('#functbutton').addClass('active');
-            }
+            //console.log(checked);
             sensors = getSensors(indexUrl,checked);
             tree(sensors,checked);
         }
