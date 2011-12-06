@@ -15,19 +15,17 @@ function JouleUIController(){
     
     this.loadSpin = function(io, callback){
         if (io == "in"){
-            //var div = document.getElementById('divSpinner');
             this.spinner = new Spinner(this.spinVar).spin();
             $('#divSpinner').hide();
             $('#divSpinner').append(this.spinner.el);
             $('#divSpinner').fadeIn("fast", callback)
-            //div.appendChild(this.spinner.el);
         }
         else if (io == "out"){
             this.spinner.stop();
         }
     };
     
-    this.treeNodeClick = function(node, layout){
+    this.treeNodeClick = function(node, useri){
         var ploturl = new Array();
         var sensorurl = treeIndex.getItem(node.nodeValue)[1];
         colourpool.toggleColour(sensorurl);
@@ -38,36 +36,32 @@ function JouleUIController(){
             }
             
             plotController.calculateData();
-            ui.loadSpin("out");
+            useri.loadSpin("out");
         });
     };
     
-    this.addMonth = function(){
-        console.log("spun");
-        //this.loadSpin("in", function(){
-        //    plotController.addMonth();
-        //    plotController.calculateData();
-        //    this.loadSpin("out");
-        //});
-        //console.log("unspun");
-        this.loadSpin("in");
-        plotController.addMonth();
-        plotController.calculateData();
-        this.loadSpin("out");
+    this.addMonth = function(useri){
+        //console.log("spun");
+        this.loadSpin("in", function(){
+            plotController.addMonth();
+            //plotController.calculateData();
+            //console.log("spun");
+            useri.loadSpin("out");
+        });
     };
     
-    this.jouleFinishedLoading = function(){
-        this.loadSpin("in");
-        //checkCookie("WGBToolVisit");
-        $('#loading-message').fadeOut("fast");
-        this.changeTree(config.indexUrl.value, "treeuse");
-        var startplot = ["/elec/S-m257-"];
-        colourpool.toggleColour(startplot);
-        plotController.togglePlotByUrl(startplot);
-        plotController.calculateData();
-        refreshTree();
-        this.loadSpin("out");
-        console.log('done');
+    this.jouleFinishedLoading = function(useri){
+        this.loadSpin("in", function(){
+            //$('#loading-message').fadeOut("fast");
+            useri.changeTree(config.indexUrl.value, "treeuse");
+            var startplot = ["/elec/S-m257-"];
+            colourpool.toggleColour(startplot);
+            plotController.togglePlotByUrl(startplot);
+            plotController.calculateData();
+            refreshTree();
+            useri.loadSpin("out");
+            //console.log('done');
+        });
     };
     
     this.toggleTabs = function(){

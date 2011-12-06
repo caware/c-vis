@@ -177,14 +177,14 @@ function PlotController(maximumplots, indexUrl) {
                         //console.log(tmpendmax);
                         if (tmpstartmax.isBefore(this.viewrange.startdate)){
                             //If the sensors history goes back further than the view range, use the viewrange as the start
-                            console.log("sensor has more history data than view");
+                            //console.log("sensor has more history data than view");
                             this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                             this.plotarray[p].startmonth = this.viewrange.startdate.getMonth()+1;
                             this.plotarray[p].startmonth = this.plotarray[p].startmonth.toString();
                         }
                         else {
                             //Else, use the sensor's earliest data set
-                            console.log("sensor has less data than view, restricting start data to last possible.");
+                            //console.log("sensor has less data than view, restricting start data to last possible.");
                             this.plotarray[p].startyear = tmpstartmax.getFullYear().toString();
                             this.plotarray[p].startmonth = tmpstartmax.getMonth()+1;
                             this.plotarray[p].startmonth = this.plotarray[p].startmonth.toString();
@@ -198,7 +198,7 @@ function PlotController(maximumplots, indexUrl) {
                         }
                         else {
                             //Else, use the most recent data availible from the sensor.
-                            console.log("sensor has less data than view, restricting start data to earliest possible.");
+                            //console.log("sensor has less data than view, restricting start data to earliest possible.");
                             this.plotarray[p].endyear = tmpendmax.getFullYear().toString();
                             this.plotarray[p].endmonth = tmpendmax.getMonth()+1;
                             this.plotarray[p].endmonth = this.plotarray[p].endmonth.toString();
@@ -236,6 +236,7 @@ function PlotController(maximumplots, indexUrl) {
         
         for (var p in this.plotarray){
             if (this.plotarray.hasOwnProperty(p)){
+                
                 this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                 var tmpmonth = (this.viewrange.startdate.getMonth()+1);
                 if (tmpmonth < 10) tmpmonth = "0"+tmpmonth;
@@ -244,6 +245,25 @@ function PlotController(maximumplots, indexUrl) {
                 //FIXME: Shouldn't need this!
                 this.plotarray[p].startmonthyear = tmpmonth.toString()+'-'+this.viewrange.startdate.getFullYear().toString();
                 
+                //console.log(this.plotarray[p]);
+                
+                
+                for (var u=0; u< this.plotarray[p].url.length; u++){
+                    var noDataCount = 0;
+                    var tmpstr = this.plotarray[p].url[u].substring(30);
+                    //console.log(tmpstr);
+                    //console.log(this.viewrange.startdate);
+                    if (sensorAccess.checkReadingExists(tmpstr, this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString())){
+                        console.log("Reading OK");
+                    }
+                    else {
+                        console.log("No Reading for "+tmpstr);
+                        noDataCount++;
+                    }
+                }
+                if (this.plotarray[p].url.length == noDataCount){
+                    console.log("No Data Found");
+                }
                 
                 //var mnth = parseInt();
                 //var year = parseInt(;
@@ -309,7 +329,7 @@ function PlotController(maximumplots, indexUrl) {
                     //Add the json object of that array to the array in jsonArray
                     //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                    //console.log(plotArray[i].url+"Month:"+montharray);
+                    console.log(plotArray[i].url+"Month:"+montharray);
                     
                     
                     for (var t=0;t<montharray.length;t++){

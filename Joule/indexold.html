@@ -22,9 +22,10 @@
     <script type="text/javascript" src="js/spin.js"></script>
     
     <link rel="shortcut icon" href="images/favicon.ico">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <!-- <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    -->
     
 </head>
 <body>
@@ -71,9 +72,9 @@
                         <p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
                     </div>
                 </noscript>
-                <div class="alert-message info" id="loading-message">
+                <!-- <div class="alert-message info" id="loading-message">
                     <p><strong>Loading...</strong></p>
-                </div>
+                </div> -->
             </div>
             <div id="diacontainer">
                 <div id="treecontainer">
@@ -158,7 +159,7 @@
     //var zoomx = 100, zoomdx = 200;
     
      $(document).ready(function() {
-        ui.jouleFinishedLoading();
+        ui.jouleFinishedLoading(ui);
     });
     
     function tree(sensortree,type){
@@ -398,20 +399,8 @@
             
             //If the node clicked is a leaf node
             if ((typeof n.nodeValue != "undefined")){
-                ui.treeNodeClick(n, layout);
-                //Grab the URLs ascoiated with teh node, add the TLD to them and call plot
-                //var ploturl = new Array();
-                //var sensorurl = treeIndex.getItem(n.nodeValue)[1];
+                ui.treeNodeClick(n, ui);
                 
-                //console.log(sensorurl);
-                //console.log(sensorurl);
-                //colourpool.toggleColour(sensorurl);
-                
-                //if (plotController.togglePlotByUrl(sensorurl) < 0){
-                //    colourpool.toggleColour(sensorurl);
-                //}
-                
-                //plotController.calculateData();
                 refreshTree();
                 return layout.reset().root;
             }
@@ -804,7 +793,7 @@
             .lineWidth(3)
             .cursor("pointer")
             .events("all")
-            .event("click", function(){ui.addMonth();} );
+            .event("click", function(){ui.addMonth(ui);} );
         
         vis.render();
     }

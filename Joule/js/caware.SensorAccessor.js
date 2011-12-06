@@ -80,6 +80,7 @@ function SensorAccessor(indexUrl, sensorloc) {
         var indexentry = this.getIndexEntry(sensorurl);
         var key = "monthly-readings";
         var arr = indexentry[key];
+        //if (arr == undefined) {return false;}
         var found = false;
         for (var i=0;i<arr.length;i++){
             if (yearmonth == arr[i].match(/[0-9]{4}-[0-9]{2}/)[0]){
