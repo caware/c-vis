@@ -18,7 +18,7 @@ function JouleUIController(){
             this.spinner = new Spinner(this.spinVar).spin();
             $('#divSpinner').hide();
             $('#divSpinner').append(this.spinner.el);
-            $('#divSpinner').fadeIn("fast", callback)
+            $('#divSpinner').fadeIn("fast", callback())
         }
         else if (io == "out"){
             this.spinner.stop();
@@ -41,12 +41,15 @@ function JouleUIController(){
     };
     
     this.addMonth = function(useri){
-        //console.log("spun");
+        //console.log("One");
         this.loadSpin("in", function(){
+            //console.log("Two");
             plotController.addMonth();
-            //plotController.calculateData();
-            //console.log("spun");
+            //console.log("Three");
+            plotController.calculateData();
+            //console.log("Four");
             useri.loadSpin("out");
+            //console.log("Five");
         });
     };
     
