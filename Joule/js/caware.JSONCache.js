@@ -23,16 +23,24 @@ function JSONCache() {
             this.cachehits++;
             return jQuery.parseJSON(this.cache[url]);
         }
-        else{ 
-            var jsonfile = $.ajax({ type: "GET", url: url,async: false }).responseText;
-            this.cache[url] = jsonfile;
+        else{
+            var returnObj = {};
+            var jsonfile = $.ajax({ type: "GET", url: url,async: false, error: this.ajaxError, success: this.ajaxError});
+            console.log(jsonfile);
+            if (jsonfile.status == 200){
+                //if JSON also parses fine, return no error and JS obj
+                //if status fails, no file etc, report error,
+                //if JSON parse fails, report error.
+            }
+            this.cache[url] = jsonfile.responseText;
             this.cachemisses++;
-            return jQuery.parseJSON(jsonfile);
+            return jQuery.parseJSON(jsonfile.responseText);
         }
     };
     
-    this.refreshCache = function(value, valueindex){
-        return 0;
+    this.ajaxError = function(jqXHR, textStatus, errorThrown){
+        var error = {reqObj: jqXHR, status: textStatus, error: errorThrown };
+        console.log(error);
     };
     
     this.clearCache = function(){

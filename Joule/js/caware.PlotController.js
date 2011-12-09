@@ -143,7 +143,7 @@ function PlotController(maximumplots, indexUrl) {
             }
             else {
                 this.plotarray.push(plotline);
-                console.log(this.plotarray[0].endyear+"-01-"+this.plotarray[0].endmonth);
+                //Get starting dates from first plot in array, and iterate to find the earliest / latest dates.
                 var tmpstart = new Date.parse(this.plotarray[0].startyear+"-01-"+this.plotarray[0].startmonth);
                 var tmpend = new Date.parse(this.plotarray[0].endyear+"-01-"+this.plotarray[0].endmonth);
                 
@@ -152,8 +152,15 @@ function PlotController(maximumplots, indexUrl) {
                         //console.log(this.plotarray);
                         var plotstart = new Date.parse(this.plotarray[p].startyear+"-01-"+this.plotarray[p].startmonth);
                         var plotend = new Date.parse(this.plotarray[p].endyear+"-01-"+this.plotarray[p].endmonth);
-                        console.log("tmpstart: "+tmpstart);
-                        console.log("tmpend: "+tmpend);
+                        
+                        //for (var p in tmpstart){
+                        //    if (this.plotarray.hasOwnProperty(p)){
+                        //        console.log(tmpstart.p);
+                        //    }
+                        //}
+                        
+                        //console.log(tmpstart);
+                        //console.log(tmpend);
                         if (plotstart.isBefore(tmpstart)){
                             tmpstart = Date.parse(this.plotarray[p].startyear+"-01-"+this.plotarray[p].startmonth);
                         }
@@ -259,7 +266,7 @@ function PlotController(maximumplots, indexUrl) {
                         //at least one URL has data for the month so extend the plot date.
                         this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                         //var tmpmonth = (this.viewrange.startdate.getMonth()+1);
-                        if (tmpmonth < 10) tmpmonth = "0"+tmpmonth;
+                        //if (tmpmonth < 10) tmpmonth = "0"+tmpmonth;
                         this.plotarray[p].startmonth = tmpmonth.toString();
                         this.plotarray[p].startmonthyear = tmpmonth.toString()+'-'+this.viewrange.startdate.getFullYear().toString();
                     }
@@ -270,7 +277,7 @@ function PlotController(maximumplots, indexUrl) {
                     }
                 }
                 if (this.plotarray[p].url.length == noDataCount){
-                    console.log("No Data Found");
+                    console.log("No Data Found for plot "+this.plotarray[p].url);
                     noDataPlotCount++;
                 }
                 
@@ -287,7 +294,7 @@ function PlotController(maximumplots, indexUrl) {
             }
         }
         if (this.plotarray.length == noDataPlotCount){
-            console.log("No data for all plots!");
+            console.log("No data for all plots! Not extending viewport!");
             this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(1);
         }
     };

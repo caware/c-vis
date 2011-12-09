@@ -8,12 +8,12 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 Change log:
 
 V1.9.7: In Development.
-    UI tweaks.
+    Sensor data awareness, won't extend viewport when no data exists.
+    UI overhaul, using bootstrap from Twitter, including loading indicators.
     Added ability to ignore sensors, and/or to avoid them increasing the averages in the tree above.
     Improved code portability
     Added config file support.
     Improved SensorAccessor class, and make use of it
-    Ignores meter S-m41.
 
 
 V1.9.5:
