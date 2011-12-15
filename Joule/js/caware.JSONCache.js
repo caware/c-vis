@@ -21,7 +21,10 @@ function JSONCache() {
         
         if (found){
             this.cachehits++;
-            return jQuery.parseJSON(this.cache[url]);
+            var returnObj = {};
+            returnObj.error = false;
+            returnObj.result = jQuery.parseJSON(this.cache[url]);
+            return returnObj;
         }
         else{
             var returnObj = {};
@@ -40,11 +43,14 @@ function JSONCache() {
                 catch(e) {
                     //catch parse error
                     returnObj.error = e;
+                    returnObj.errorText = "JSON Parse Error when trying to parse '"+url+"'";
+                    returnObj.errorType = "warn";
                 }
             }
             else {
                 returnObj.error = jsonFile;
-                returnObj.errorText = jsonFile.statusText+" : "+jsonFile.status
+                returnObj.errorText = "HTTP "+jsonFile.statusText+" "+jsonFile.status+" when trying to access '"+url+"'";
+                returnObj.errorType = "error";
             }
             
             return returnObj;

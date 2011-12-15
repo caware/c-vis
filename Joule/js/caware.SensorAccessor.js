@@ -1,8 +1,8 @@
 function SensorAccessor(indexUrl, sensorloc) {
     // A Class for defining a controller object for plots
     
-    //var sensorindex = getJson(indexUrl);
-    this.elecsensors = getJson(indexUrl).sensors.elec;
+    //ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/config.json"]).config;
+    this.elecsensors = ui.catchError(ui, cache.getObject, [indexUrl]).sensors.elec;
     this.sensorlocation = sensorloc;
     
     
@@ -11,7 +11,8 @@ function SensorAccessor(indexUrl, sensorloc) {
         var sensorpath = indexentry.path.match(/^.*\//)[0];
         var key = "monthly-readings";
         var fullurl = this.sensorlocation+sensorpath+indexentry[key][0];
-        return getJson(fullurl);
+        //return getJson(fullurl);
+        return ui.catchError(ui, cache.getObject, fullurl);
     };
     
     this.getEarliestReading = function(sensorurl){
@@ -21,7 +22,7 @@ function SensorAccessor(indexUrl, sensorloc) {
         var monthlyreadings = indexentry[key];
         console.log(monthlyreadings);
         var fullurl = this.sensorlocation+sensorpath+monthlyreadings[monthlyreadings.length-1];
-        return getJson(fullurl);
+        return ui.catchError(ui, cache.getObject, fullurl);
     };
     
     this.getLatestReadingDate = function(sensorurl){
@@ -52,7 +53,7 @@ function SensorAccessor(indexUrl, sensorloc) {
             //console.log(monthlyreadings);
             var fullurl = this.sensorlocation+sensorpath+file;
             //console.log(sensorurl);
-            return this.getAverage(getJson(fullurl));
+            return this.getAverage(ui.catchError(ui, cache.getObject, fullurl));
         }
         else{
             return 0;

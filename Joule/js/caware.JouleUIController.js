@@ -1,5 +1,8 @@
 function JouleUIController(){
     
+    this.errorIds = [];
+    this.errorTimeout = 4;
+    
     this.spinVar = {
         lines: 12, // The number of lines to draw
         length: 5, // The length of each line
@@ -84,8 +87,48 @@ function JouleUIController(){
         
     };
     
-    this.showError = function(error){
+    this.showError = function(error, errorText, errorType, timeout, useri){
+        var id = new Date().getTime().toString();
+        var genHTML = "<div class=\"alert-message "+errorType+"\" id=\""+id+"\"><p><strong>";
+        switch(errorType) {
+        case "warn":
+            genHTML += "Warning ";
+            break;
+        case "error":
+            genHTML += "Error ";
+            break;
+        case "success":
+            genHTML += "Success ";
+            break;
+        case "info":
+            genHTML += "Info ";
+            break;
+        }
+        genHTML += "</strong> "+errorText+" </p></div>";
+        $('#notify-bar').prepend(genHTML);
+        var time = timeout*1000;
+        var t = setTimeout('ui.hideError('+id+')', time);
+        console.log(genHTML);
         // takes an error discription, and passes it to a class that generates the proper error text, class of error and timeout.
         // then recives text, and appends HTML to the errorbar div.
+    };
+    
+    this.hideError = function(id){
+        jQid = '#'+id;
+        $(jQid).hide("fast", function(){
+            $(jQid).remove();
+        });
+        //$(jQid).remove();
+    };
+    
+    this.catchError = function(useri, call, arg){
+        //console.log(call);
+        var obj = call(arg);
+        
+        if (obj.error){
+            useri.showError(obj.error, obj.errorText, obj.errorType, useri.errorTimeout, useri);
+        }
+        
+        return obj.result;
     };
 }

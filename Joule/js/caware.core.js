@@ -17,11 +17,11 @@
         
         function getSensors(indexfile,checked){
             //Get the sensor index file and build the JS object tree from it.
-            //var jsonData = $.ajax({ type: "GET", url: indexfile ,async: false }).responseText;
-            var sensorindex = getJson(indexfile)
+            //ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/config.json"]).config;
+            var elecsensors = ui.catchError(ui, cache.getObject, [indexfile]).sensors.elec;
             
             //Get array of sensors from index file, and create blank destination object
-            var elecsensors = sensorindex.sensors.elec;
+            //var elecsensors = sensorindex.sensors.elec;
             var treedata = new Object();
             var bld = 'Building';
             

@@ -1,12 +1,13 @@
-function PlotController(maximumplots, indexUrl) {
+function PlotController(maximumplots, indexUrl, useri) {
     // A Class for defining a controller object for plots
     
+    this.ui = useri;
     this.plotarray = new Array();
     this.maxplots = maximumplots;
     
     this.viewrange = {"startdate":new Date(),"enddate":new Date()};
     
-    var sensorindex = getJson(indexUrl);
+    var sensorindex = ui.catchError(ui, cache.getObject, indexUrl);
     
     
     this.getPlots = function(){
@@ -241,9 +242,9 @@ function PlotController(maximumplots, indexUrl) {
         this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(-1);
         //console.log(this.viewrange.startdate);
         var noDataPlotCount = 0;
+        
         for (var p in this.plotarray){
             if (this.plotarray.hasOwnProperty(p)){
-                
                 //this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                 var tmpmonth = (this.viewrange.startdate.getMonth()+1); // get current month
                 //console.log(tmpmonth);
@@ -258,6 +259,7 @@ function PlotController(maximumplots, indexUrl) {
                 
                 for (var u=0; u< this.plotarray[p].url.length; u++){
                     var noDataCount = 0;
+                    var noDataSensors = [];
                     var tmpstr = this.plotarray[p].url[u].substring(30);
                     //console.log(tmpstr);
                     //console.log(this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString());
@@ -271,14 +273,20 @@ function PlotController(maximumplots, indexUrl) {
                         this.plotarray[p].startmonthyear = tmpmonth.toString()+'-'+this.viewrange.startdate.getFullYear().toString();
                     }
                     else {
-                        console.log("No Reading for "+tmpstr);
+                        noDataSensors.push(tmpstr);
+                        //this.ui.showError("Error", "No Reading for "+tmpstr, "warn", 5, ui);
+                        //console.log("No Reading for "+tmpstr);
                         noDataCount++;
                         
                     }
                 }
                 if (this.plotarray[p].url.length == noDataCount){
-                    console.log("No Data Found for plot "+this.plotarray[p].url);
+                    //console.log("No Data Found for plot "+this.plotarray[p].url);
+                    this.ui.showError("Error", "No reading for "+tmpstr, "error", 5, ui);
                     noDataPlotCount++;
+                }
+                else if (noDataCount > 0){
+                    this.ui.showError("Warning", "No readings available for :"+noDataSensors.toString(), "warn", 5, ui);
                 }
                 
                 //var mnth = parseInt();
@@ -294,7 +302,8 @@ function PlotController(maximumplots, indexUrl) {
             }
         }
         if (this.plotarray.length == noDataPlotCount){
-            console.log("No data for all plots! Not extending viewport!");
+            //console.log("No data for all plots! Not extending viewport!");
+            this.ui.showError("Info", "No more history data availble for currently displayed sensors.", "info", 5, ui);
             this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(1);
         }
     };
@@ -363,12 +372,12 @@ function PlotController(maximumplots, indexUrl) {
                     for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             //console.log("1 T: "+t);
-                            jsonArray[i][k] = getJson(plotArray[i].url[k]+montharray[t]+".json");
+                            jsonArray[i][k] = ui.catchError(ui, cache.getObject, plotArray[i].url[k]+montharray[t]+".json");
                             //console.log("2 T: "+t);
                         }
                         else{
                             //console.log("3 T: "+t);
-                            var tjson = getJson(plotArray[i].url[k]+montharray[t]+".json");
+                            var tjson = ui.catchError(ui, cache.getObject, plotArray[i].url[k]+montharray[t]+".json");
                             //console.log("4 T: "+t);
                             jsonArray[i][k].data = jsonArray[i][k].data.concat(tjson.data);
                             //console.log("5 T: "+t);
@@ -458,12 +467,12 @@ function PlotController(maximumplots, indexUrl) {
                 for (var t=0;t<montharray.length;t++){
                         if (t == 0){
                             //console.log("getting JSONS");
-                            jsonArray[i][0] = getJson(plotArray[i].url[0]+montharray[t]+".json");
+                            jsonArray[i][0] = ui.catchError(ui, cache.getObject, plotArray[i].url[0]+montharray[t]+".json");
                             //console.log("A");
                         }
                         else{
                             //console.log("B");
-                            var tjson = getJson(plotArray[i].url[0]+montharray[t]+".json");
+                            var tjson = ui.catchError(ui, cache.getObject, plotArray[i].url[0]+montharray[t]+".json");
                             //console.log("C");
                             jsonArray[i][0].data = jsonArray[i][0].data.concat(tjson.data);
                             //console.log("D");

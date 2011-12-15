@@ -5,6 +5,10 @@ function getJson(url){
     //return jQuery.parseJSON(jsonData);
 }
 
+function capitaliseFirstLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 Array.prototype.compare = function(testArr) {
     if (this.length != testArr.length) return false;
     for (var i = 0; i < testArr.length; i++) {

@@ -66,7 +66,7 @@
     
      <div class="container">
         <div class="content">
-            <div class="alert-bar">
+            <div class="alert-bar" id="notify-bar">
                 <noscript>
                     <div class="alert-message error">
                         <p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
@@ -132,7 +132,10 @@
 
 <script type="text/javascript+protovis">
     var cache = new JSONCache();
-    var config = getJson("http://www.cl.cam.ac.uk/~cce25/config.json").config;
+    var ui = new JouleUIController();
+    var config = ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/config.json"]).config;
+    console.log(config);
+    //var config = file.result.config;
     
     
     //var indexUrl = config.indexUrl.value;
@@ -147,10 +150,9 @@
     //Vars for array of plots, and chart visulisation
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
-    var plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value);
+    var plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value,ui);
     var sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
     var colourpool = new ColourPool(config.plotColour.value);
-    var ui = new JouleUIController();
     
     var vis;
     var sensors;
