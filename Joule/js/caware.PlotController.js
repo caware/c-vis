@@ -242,6 +242,7 @@ function PlotController(maximumplots, indexUrl, useri) {
         this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(-1);
         //console.log(this.viewrange.startdate);
         var noDataPlotCount = 0;
+        var noDataSensors = [];
         
         for (var p in this.plotarray){
             if (this.plotarray.hasOwnProperty(p)){
@@ -259,7 +260,6 @@ function PlotController(maximumplots, indexUrl, useri) {
                 
                 for (var u=0; u< this.plotarray[p].url.length; u++){
                     var noDataCount = 0;
-                    var noDataSensors = [];
                     var tmpstr = this.plotarray[p].url[u].substring(30);
                     //console.log(tmpstr);
                     //console.log(this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString());
@@ -275,36 +275,32 @@ function PlotController(maximumplots, indexUrl, useri) {
                     else {
                         noDataSensors.push(tmpstr);
                         //this.ui.showError("Error", "No Reading for "+tmpstr, "warn", 5, ui);
-                        //console.log("No Reading for "+tmpstr);
+                        console.log("No Reading for "+tmpstr);
                         noDataCount++;
                         
                     }
                 }
                 if (this.plotarray[p].url.length == noDataCount){
                     //console.log("No Data Found for plot "+this.plotarray[p].url);
-                    this.ui.showError("Error", "No reading for "+tmpstr, "error", 5, ui);
+                    //this.ui.showError("Error", "No reading for "+tmpstr, "warn", 5, ui);
                     noDataPlotCount++;
                 }
                 else if (noDataCount > 0){
                     this.ui.showError("Warning", "No readings available for :"+noDataSensors.toString(), "warn", 5, ui);
                 }
                 
-                //var mnth = parseInt();
-                //var year = parseInt(;
-                //if (mnth > 1) mnth -= 1;
-                //else if (mnth = 1){
-                //    mnth = 12;
-                //    year -= 1;
-                //}
-                //if (mnth < 10) mnth = "0"+mnth;
-                //this.plotarray[p].startmonth = mnth.toString();
-                //this.plotarray[p].startyear = year.toString();
             }
         }
         if (this.plotarray.length == noDataPlotCount){
             //console.log("No data for all plots! Not extending viewport!");
             this.ui.showError("Info", "No more history data availble for currently displayed sensors.", "info", 5, ui);
             this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(1);
+        }
+        //else if (noDataSensors.length = 1){
+        //    this.ui.showError("Error", "No reading for "+noDataSensors[0], "warn", 5, ui);
+        //}
+        else if (noDataSensors.length > 0){
+            this.ui.showError("Warning", "No readings for "+noDataSensors.toString(), "warn", 5, ui);
         }
     };
     
