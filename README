@@ -10,6 +10,7 @@ Change log:
 V1.9.7: In Development.
     Sensor data awareness, won't extend viewport when no data exists.
     UI overhaul, using bootstrap from Twitter, including loading indicators.
+    Added Info, Warning and Error messages when files not found / no data to display etc.
     Added ability to ignore sensors, and/or to avoid them increasing the averages in the tree above.
     Improved code portability
     Added config file support.

@@ -32,6 +32,7 @@ function JouleUIController(){
         var ploturl = new Array();
         var sensorurl = treeIndex.getItem(node.nodeValue)[1];
         colourpool.toggleColour(sensorurl);
+        console.log(sensorurl);
         
         this.loadSpin("in", function(){
             if (plotController.togglePlotByUrl(sensorurl) < 0){

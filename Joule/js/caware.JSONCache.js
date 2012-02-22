@@ -8,7 +8,7 @@ function JSONCache() {
     
     this.getObject = function(url){
         //Fetches a json file from the cache, or downloads and inserts it if not already there.
-        
+        //url = encodeURI(url);
         var found = false;
         for (var c in this.cache){
             if (this.cache.hasOwnProperty(c)){

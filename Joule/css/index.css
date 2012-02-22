@@ -21,6 +21,10 @@ div#top{
     display: inline-block;
 }
 
+div.alert-bar{
+    min-height: 50px;
+}
+
 div#charttitle {
     width: 750px;
     margin-bottom: 5px;

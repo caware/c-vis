@@ -17,134 +17,82 @@
     <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" charset="utf-8"/>
     <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrapCustoms.css" rel="stylesheet">
     
-    <script type="text/javascript" src="js/spin.js"></script>
-    
-    <link rel="shortcut icon" href="images/favicon.ico">
-    <!-- <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
-    -->
-    
-</head>
-<body>
-    <!--[if IE]>
-        <div id="topbar">
-            <p class="alert">This tool does not support Internet Explorer. However you can use the tool if you install Google Chrome Frame within Internet Explorer. For more information: <a href="http://www.google.com/chromeframe">http://www.google.com/chromeframe</a>.</p>
-            <p class="alert">Alternatively you may use another broswer such as <a href="http://www.google.com/chrome/">Chrome</a>, <a href="http://www.mozilla.com/">Firefox</a> or <a href="http://www.apple.com/safari/">Safari</a>.</p>
-        </div>
-    <![endif]-->
-    
-    <div class="topbar">
-      <div class="fill">
-        <div class="container">
-          <a class="brand" href="/">Joule @ CL</a>
-          <ul class="nav">
-            <li class="dropdown" data-dropdown="dropdown">
-              <a href="#" class="dropdown-toggle">Deployments</a>
-              <ul class="dropdown-menu">
-                <li class="active" ><a href="#WGB">William Gates Bld</a></li>
-                <li><a href="#SE18">SE18 Server Room</a></li>
-              </ul>
-            </li>
-          </ul>
-          <ul class="nav secondary-nav">
-            <li><a href="#about">About</a></li>
-            <li class="dropdown" data-dropdown="dropdown">
-              <a href="#" class="dropdown-toggle">Feedback</a>
-              <ul class="dropdown-menu">
-                <li><a href="mailto:cce25@cl.cam.ac.uk?subject=Joule Feedback">Email</a></li>
-                <li><a href="https://github.com/caware/c-vis/issues" target="_blank">GitHub Bug Report</a></li>
-              </ul>
-            </li>
-            <li><a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-Aware</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    
-     <div class="container">
-        <div class="content">
-            <div style="height:120px;">
-            <ul id="v-menu" class="tabs">
-                <li style="width:215px; text-align:center" class='active'><a href="index.html">Line<img src='images/lineS.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="stacked.html">Stacked<img src='images/vistest.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="sunburst.html">Sunburst<img src='images/vistest.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="sensorinfo.html">Sensor Info<img src='images/infoS.jpg'/></a></li>
-            </ul>
-            </div>
-            
-            <div class="alert-bar" id="notify-bar">
-                <noscript>
-                    <div class="alert-message error">
-                        <p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
-                    </div>
-                </noscript>
-                <!-- <div class="alert-message info" id="loading-message">
-                    <p><strong>Loading...</strong></p>
-                </div> -->
-            </div>
-            <div id="diacontainer">
-                <div id="treecontainer">
-                    <div id="divSpinner" style="width: 30px; float:left; padding: 20px 0px 0px 30px;">
-                        
-                    </div>
-                    <div style="width: 160px; margin: auto;">
-                    
-                        <ul class="pills">
-                            <li id="geobutton"><a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treegeo'); return false">Geographic</a></li>
-                            <li id="functbutton"><a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treeuse'); return false">Functional</a></li>
-                            <!-- <li><a href="#" onclick="buildTree('treegeo');return false">Network</a></li> -->
-                        </ul>
-                    </div>
-                    <div id="treediv">
-                        
-                    </div>
-                </div>
-                
-                <div id="chartcontainer">
-                    <div id="chartdiv">
-                    </div>
-                </div>
-                <div id="chartinfo">
-                    <div id="myGrid">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <footer>
-        <p>University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-AWARE Project</a></p>
-      </footer>
+    <style type="text/css">
+      /* Override some defaults */
+      html, body {
+        background-color: #eee;
+      }
+      body {
+        padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+      }
+      .container > footer p {
+        text-align: center; /* center align it with the container */
+      }
+      .container {
+        width: 1220px; /* downsize our container to make the content feel a bit tighter and more cohesive. NOTE: this removes two full columns from the grid, meaning you only go to 14 columns and not 16. */
+      }
 
-    </div> <!-- /container -->
+      /* The white background content wrapper */
+      .content {
+        background-color: #fff;
+        padding: 20px;
+        margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+        -webkit-border-radius: 0 0 6px 6px;
+           -moz-border-radius: 0 0 6px 6px;
+                border-radius: 0 0 6px 6px;
+        -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+           -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+                box-shadow: 0 1px 2px rgba(0,0,0,.15);
+        min-height: 750px;
+      }
 
-<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
-    <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
-    <script type="text/javascript" src="js/jquery.event.drag-2.0.min.js"></script>
-    <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
-    <script type="text/javascript" src="js/protovis-d3.2.js"></script>
-    <script type="text/javascript" src="js/date-en-GB.js"></script>
-    <script type="text/javascript" src="js/slick.core.js"></script>
-    <script type="text/javascript" src="js/slick.grid.js"></script>
-    <script type="text/javascript" src="js/slick.editors.js"></script>
-    <script type="text/javascript" src="js/slick.dataview.js"></script>
-    <script type="text/javascript" src="js/caware.ColourPool.js"></script>
-    <script type="text/javascript" src="js/caware.IntValueStore.js"></script>
-    <script type="text/javascript" src="js/caware.PlotController.js"></script>
-    <script type="text/javascript" src="js/caware.SensorAccessor.js"></script>
-    <script type="text/javascript" src="js/caware.util.js"></script>
-    <script type="text/javascript" src="js/caware.core.js"></script>
-    <script type="text/javascript" src="js/caware.JSONCache.js"></script>
-    <script type="text/javascript" src="js/WeatherJSONBridge.js"></script>
-    <script type="text/javascript" src="js/caware.JouleUIController.js"></script>
+      /* Page header tweaks */
+      .page-header {
+        background-color: #f5f5f5;
+        padding: 20px 20px 10px;
+        margin: -20px -20px 20px;
+      }
 
-<script type="text/javascript+protovis">
+      /* Styles you shouldn't keep as they are for displaying this base example only */
+      .content .span10,
+      .content .span4 {
+        min-height: 500px;
+      }
+      /* Give a quick and non-cross-browser friendly divider */
+      .content .span4 {
+        margin-left: 0;
+        padding-left: 19px;
+        border-left: 1px solid #eee;
+      }
+
+      .topbar .btn {
+        border: 0;
+      }
+
+    </style>
+    
+    <script type="text/javascript" src="libs/jquery-1.5.1.min.js"></script>
+    <script type="text/javascript" src="libs/jquery-ui-1.8.14.custom.min.js"></script>
+    <script type="text/javascript" src="libs/jquery.event.drag-2.0.min.js"></script>
+    <script type="text/javascript" src="libs/protovis-d3.2.js"></script>
+    <script type="text/javascript" src="libs/date-en-GB.js"></script>
+    <script type="text/javascript" src="libs/slick.core.js"></script>
+    <script type="text/javascript" src="libs/slick.grid.js"></script>
+    <script type="text/javascript" src="libs/slick.editors.js"></script>
+    <script type="text/javascript" src="libs/slick.dataview.js"></script>
+    <script type="text/javascript" src="libs/caware.ColourPool.js"></script>
+    <script type="text/javascript" src="libs/caware.IntValueStore.js"></script>
+    <script type="text/javascript" src="libs/caware.PlotController.js"></script>
+    <script type="text/javascript" src="libs/caware.SensorAccessor.js"></script>
+    <script type="text/javascript" src="libs/caware.util.js"></script>
+    <script type="text/javascript" src="libs/caware.core.js"></script>
+    <script type="text/javascript" src="libs/caware.JSONCache.js"></script>
+    <script type="text/javascript" src="libs/WeatherJSONBridge.js"></script>
+    
+    <script type="text/javascript+protovis">
     var cache = new JSONCache();
-    var ui = new JouleUIController();
-    var config = ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/indextest/config.json"]).config;
-    console.log(config);
-    //var config = file.result.config;
+    var config = getJson("http://www.cl.cam.ac.uk/~cce25/config.json").config;
     
     
     //var indexUrl = config.indexUrl.value;
@@ -159,7 +107,7 @@
     //Vars for array of plots, and chart visulisation
     var plotArray = new Array();
     var treeIndex = new IntValueStore();
-    var plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value,ui);
+    var plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value);
     var sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
     var colourpool = new ColourPool(config.plotColour.value);
     
@@ -170,7 +118,14 @@
     //var zoomx = 100, zoomdx = 200;
     
      $(document).ready(function() {
-        ui.jouleFinishedLoading(ui);
+        checkCookie("WGBToolVisit");
+        buildTree(config.indexUrl.value, "treeuse");
+        var startplot = ["/elec/S-m257-"];
+        colourpool.toggleColour(startplot);
+        plotController.togglePlotByUrl(startplot);
+        plotController.calculateData();
+        refreshTree();
+        console.log('done');
     });
     
     function tree(sensortree,type){
@@ -241,9 +196,9 @@
         var today = new Date();
         var thismonth = today.toString("MMM")
         
-        //console.log('test');
+        console.log('test');
         var nodes = root.nodes();
-        //console.log(nodes);
+        console.log(nodes);
         for(var i=0; i<nodes.length;i++){
             var nm = nodes[i].nodeName
             if (nm=="Ground Floor"){nodes[i].toggle();}
@@ -289,8 +244,8 @@
             else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
             
             if (nm == "Average"){
-                //console.log(nodes[i]);
-                //console.log(treeIndex.getItem(nodes[i].nodeValue)[1]);
+                console.log(nodes[i]);
+                console.log(treeIndex.getItem(nodes[i].nodeValue)[1]);
                 var url = treeIndex.getItem(nodes[i].nodeValue)[1];
                 //console.log(url);
                 var avmonth = 0;
@@ -410,15 +365,22 @@
             
             //If the node clicked is a leaf node
             if ((typeof n.nodeValue != "undefined")){
-                ui.treeNodeClick(n, ui);
+                //Grab the URLs ascoiated with teh node, add the TLD to them and call plot
+                var ploturl = new Array();
+                var sensorurl = treeIndex.getItem(n.nodeValue)[1];
                 
-                refreshTree();
-                return layout.reset().root;
+                //console.log(sensorurl);
+                //console.log(sensorurl);
+                colourpool.toggleColour(sensorurl);
+                
+                if (plotController.togglePlotByUrl(sensorurl) < 0){
+                    colourpool.toggleColour(sensorurl);
+                }
+                
+                plotController.calculateData();
             }
-            else{
-                refreshTree();
-                return layout.reset().root;
-            }
+            refreshTree();
+            return layout.reset().root;
         }
     }
     
@@ -470,15 +432,15 @@
         var grid;
         
         var columns = [
-            {id:"PlotColour", name:"Colour", field:"colour", width:46, formatter:GraphicalColourCellFormatter},
+            {id:"PlotColour", name:"Colour", field:"colour", width:47, formatter:GraphicalColourCellFormatter},
             {id:"Room", name:"Room", field:"room", width:45},
             {id:"Description", name:"Description", field:"description", width:170},
-            {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:79},
-            {id:"EndMonthyear", name:"End", field:"endmonthyear", width:79},
+            {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:100},
+            {id:"EndMonthyear", name:"End", field:"endmonthyear", width:100},
             {id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
             {id:"kWTotal", name:"Avg kW Total", field:"avgtotal", width:95},
             {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126},
-            //{id:"Data", name:"Raw Data", field:"rawdata", width:50},
+            //{id:"Data", name:"Raw Data", field:"rawdata", width50},
         ];
         
         var options = {
@@ -800,16 +762,73 @@
             .shape("triangle")
             .angle(Math.PI*0.5)
             .size(110)
-            .strokeStyle("#0069d6")
-            .lineWidth(3)
+            .strokeStyle("darkgrey")
+            .lineWidth(2)
             .cursor("pointer")
             .events("all")
-            .event("click", function(){console.log("Click!"); ui.addMonth(ui);} );
+            .event("mousedown", addMonth);
         
         vis.render();
     }
     
+    function addMonth(){
+        plotController.addMonth();
+        plotController.calculateData();
+        //console.log(plotController.getPlots());
+    }
+    
     </script>
-
-  </body>
+</head>
+<body>
+    <div id="content">
+    <div id="top">
+    <!--[if IE]>
+        <div id="topbar">
+            <p class="alert">This tool does not support Internet Explorer. However you can use the tool if you install Google Chrome Frame within Internet Explorer. For more information: <a href="http://www.google.com/chromeframe">http://www.google.com/chromeframe</a>.</p>
+            <p class="alert">Alternatively you may use another broswer such as <a href="http://www.google.com/chrome/">Chrome</a>, <a href="http://www.mozilla.com/">Firefox</a> or <a href="http://www.apple.com/safari/">Safari</a>.</p>
+        </div>
+    <![endif]-->
+    <noscript>
+        <div id="topbar">
+            <p class="alert">Your browser either does not support Javascript or it is not enabled. Please enable JavaScript for full functionality.</p>
+        </div>
+    </noscript>
+    <!--[if !IE]>
+    <div id="firstvisit">
+        <p class="alert">This tool is still under development. If things stop working a page reload is often the best remedy!</p>
+    </div>
+    <![endif]-->
+    <div style="text-align:center;"><h2>William Gates Building Energy Usage V1.9.5 Alpha</h2></div>
+    <div style="text-align:center;"><p>Graphic visualisation of the energy use currently and historically used by the Computer Laboratory.</p></div>
+    <div style="float:right; width:400px; text-align:right;padding-right:20;">
+    </div>
+    <div style="float:left; width:350px; text-align:left;padding-left:20;">
+        <label for="treegeo">Explore tree by: Geography</label>
+        <input name="treetype" id="treegeo" type="radio" onchange="buildTree(config.indexUrl.value, 'treegeo')">
+        <label for="treeuse"> Function</label>
+        <input checked name="treetype" id="treeuse" type="radio" onchange="buildTree(config.indexUrl.value, 'treeuse')">
+    </div>
+    </div>
+    <div id="diacontainer">
+    <div id="treecontainer">
+    <div id="treediv">
+    
+    </div>
+    </div>
+    <div id="charttitle">
+        <p id="charttitletext"></p>
+    </div>
+    <div id="chartcontainer">
+        <div id="chartdiv">
+        </div>
+    </div>
+    <div id="chartinfo">
+        <p class="chartinformation" id="averagekwh"></p>
+        <p class="chartinformation" id="overallavgkwh"></p>
+        <p class="chartinformation" id="overalltotkwh"></p>
+    <div id="myGrid">
+    </div>
+    </div>
+    </div>
+</body>
 </html>

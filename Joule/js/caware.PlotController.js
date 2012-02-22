@@ -4,6 +4,7 @@ function PlotController(maximumplots, indexUrl, useri) {
     this.ui = useri;
     this.plotarray = new Array();
     this.maxplots = maximumplots;
+    this.badUrls = [];
     
     this.viewrange = {"startdate":new Date(),"enddate":new Date()};
     
@@ -243,6 +244,7 @@ function PlotController(maximumplots, indexUrl, useri) {
         //console.log(this.viewrange.startdate);
         var noDataPlotCount = 0;
         var noDataSensors = [];
+        //this.badUrls = [];
         
         for (var p in this.plotarray){
             if (this.plotarray.hasOwnProperty(p)){
@@ -275,7 +277,11 @@ function PlotController(maximumplots, indexUrl, useri) {
                     else {
                         noDataSensors.push(tmpstr);
                         //this.ui.showError("Error", "No Reading for "+tmpstr, "warn", 5, ui);
+                        //this.badUrls.push(config.sensorFilesUrl.value+tmpstr+this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString());
+                        var badstr = config.sensorFilesUrl.value+tmpstr+this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString();
                         console.log("No Reading for "+tmpstr);
+                        this.badUrls.push(badstr);
+                        //console.log(this.badUrls);
                         noDataCount++;
                         
                     }
@@ -286,22 +292,24 @@ function PlotController(maximumplots, indexUrl, useri) {
                     noDataPlotCount++;
                 }
                 else if (noDataCount > 0){
-                    this.ui.showError("Warning", "No readings available for :"+noDataSensors.toString(), "warn", 5, ui);
+                    this.ui.showError("Warning:", "No readings available for :"+noDataSensors.toString(), "warn", 5, ui);
                 }
                 
             }
         }
         if (this.plotarray.length == noDataPlotCount){
             //console.log("No data for all plots! Not extending viewport!");
-            this.ui.showError("Info", "No more history data availble for currently displayed sensors.", "info", 5, ui);
+            this.ui.showError("Info:", "No more history data availble for currently displayed sensors.", "info", 5, ui);
             this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(1);
         }
         //else if (noDataSensors.length = 1){
         //    this.ui.showError("Error", "No reading for "+noDataSensors[0], "warn", 5, ui);
         //}
         else if (noDataSensors.length > 0){
-            this.ui.showError("Warning", "No readings for "+noDataSensors.toString(), "warn", 5, ui);
+            this.ui.showError("Warning:", "No readings for "+noDataSensors.toString(), "warn", 5, ui);
         }
+        console.log("Bad URLS:");
+        console.log(this.badUrls);
     };
     
     this.removeMonth = function(){
@@ -327,20 +335,7 @@ function PlotController(maximumplots, indexUrl, useri) {
         
         var plotArray = this.plotarray;
         
-        //var earlieststartdate;
-        //for (var i=0; i<plotArray.length;i++){
-        //    if (i==0){
-        //        earlieststartdate = new Date(plotArray[i].startyear, plotArray[i].startmonth, 0,0,0,0,0);
-        //    }
-        //    else{
-        //        var plotarraydate = new Date(plotArray[i].startyear, plotArray[i].startmonth, 0,0,0,0,0);
-        //        
-        //        if (plotarraydate.getTime() < earlieststartdate.getTime()){
-        //            earlieststartdate = plotarraydate;
-        //            plotarraydate = null;
-        //        }
-        //    }
-        //}
+        //FIXME:  if a file DL fails, substitute with zero'ed data.
         
         //console.log('Earliest date:');
         //console.log(earlieststartdate);
@@ -366,7 +361,7 @@ function PlotController(maximumplots, indexUrl, useri) {
                     
                     
                     for (var t=0;t<montharray.length;t++){
-                        if (t == 0){
+                        if (t == 0 ){
                             //console.log("1 T: "+t);
                             jsonArray[i][k] = ui.catchError(ui, cache.getObject, plotArray[i].url[k]+montharray[t]+".json");
                             //console.log("2 T: "+t);
