@@ -9,13 +9,13 @@ function capitaliseFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-Array.prototype.compare = function(testArr) {
-    if (this.length != testArr.length) return false;
-    for (var i = 0; i < testArr.length; i++) {
-        if (this[i].compare) { 
-            if (!this[i].compare(testArr[i])) return false;
+function cmpArray(a, b){
+    if (a.length != b.length) return false;
+    for (var i = 0; i < b.length; i++) {
+        if (a.compare) { 
+            if (!a[i].compare(b[i])) return false;
         }
-        if (this[i] !== testArr[i]) return false;
+        if (a[i] !== b[i]) return false;
     }
     return true;
 }

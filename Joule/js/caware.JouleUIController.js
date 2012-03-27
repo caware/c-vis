@@ -3,6 +3,8 @@ function JouleUIController(){
     this.errorIds = [];
     this.errorTimeout = 4;
     
+    this.useWeather = false;
+    
     this.spinVar = {
         lines: 12, // The number of lines to draw
         length: 5, // The length of each line
@@ -39,7 +41,7 @@ function JouleUIController(){
                 colourpool.toggleColour(sensorurl);
             }
             
-            plotController.calculateData();
+            plotController.calculateData(useri.useWeather);
             useri.loadSpin("out");
         });
     };
@@ -50,25 +52,53 @@ function JouleUIController(){
             //console.log("Two");
             plotController.addMonth();
             //console.log("Three");
-            plotController.calculateData();
+            plotController.calculateData(useri.useWeather);
             //console.log("Four");
             useri.loadSpin("out");
             //console.log("Five");
         });
     };
     
+    //console.log(this.useWeather);
+    
     this.jouleFinishedLoading = function(useri){
         this.loadSpin("in", function(){
+            weather = new WeatherJSONBridge();
+            plotArray = new Array();
+            treeIndex = new IntValueStore();
+            plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value,ui,weather);
+            sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
+            colourpool = new ColourPool(config.plotColour.value);
+            
             //$('#loading-message').fadeOut("fast");
             useri.changeTree(config.indexUrl.value, "treeuse");
             var startplot = ["/elec/S-m257-"];
             colourpool.toggleColour(startplot);
             plotController.togglePlotByUrl(startplot);
-            plotController.calculateData();
+            console.log(useri.useWeather);
+            plotController.calculateData(useri.useWeather);
             refreshTree();
             useri.loadSpin("out");
-            //console.log('done');
         });
+    };
+    
+    this.jouleStopLoading = function(useri){
+        useri.loadSpin("out");
+    };
+    
+    this.jouleTempToggle = function(useri){
+        if (useri.useWeather == true){
+            //$('#temperButton').addClass('Default');
+            $('#temperButton').removeClass('success');
+            useri.useWeather = false;
+        }
+        else if (useri.useWeather == false){
+            $('#temperButton').addClass('success');
+            //$('#temperButton').addClass('Default');
+            useri.useWeather = true
+        }
+        plotController.calculateData(useri.useWeather);
+        useri.loadSpin("out");
     };
     
     this.toggleTabs = function(){

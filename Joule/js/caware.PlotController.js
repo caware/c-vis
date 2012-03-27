@@ -1,6 +1,8 @@
-function PlotController(maximumplots, indexUrl, useri) {
+function PlotController(maximumplots, indexUrl, useri, weather) {
     // A Class for defining a controller object for plots
     
+    
+    this.weather = weather;
     this.ui = useri;
     this.plotarray = new Array();
     this.maxplots = maximumplots;
@@ -130,7 +132,7 @@ function PlotController(maximumplots, indexUrl, useri) {
         
         for (var i in this.plotarray){
             if (this.plotarray.hasOwnProperty(i)){
-                if (plotline.url.compare(this.plotarray[i].url)){
+                if (cmpArray(plotline.url, this.plotarray[i].url)){
                     found = true;
                     this.plotarray.splice(i,1);
                     //console.log("Removed: "+plotline.url);
@@ -317,7 +319,7 @@ function PlotController(maximumplots, indexUrl, useri) {
         return false
     };
     
-    this.calculateData = function(){
+    this.calculateData = function(useWeather){
         //console.log("Calc");
         // Calculate and return the data points, start, end and maximum values used for drawing the plots.
         
@@ -326,6 +328,7 @@ function PlotController(maximumplots, indexUrl, useri) {
         for (var x=0;x<this.maxplots;x++){
             jsonArray.push([]);
         }
+        
         
         //console.log("initialised");
         
@@ -554,8 +557,47 @@ function PlotController(maximumplots, indexUrl, useri) {
         //console.log("14 working length");
         
         var chartcount = plotArray.length;
+        
+        if (useWeather){
+            console.log('Using Weather');
+            //console.log(dataArray);
+            console.log(start);
+            console.log(end);
+            //console.log(chartmax);
+            var sDate = new Date(start);
+            var eDate = new Date(end);
+            
+            var fin = true;
+            var days = 0;
+            var weatherarr = [];
+            while (fin){
+                if (Date.compare(sDate.clearTime(), eDate.clearTime()) > 0){
+                    fin = false;
+                }
+                else{
+                    var weatherString = sDate.getFullYear().toString()+'-';
+                    weatherString += (sDate.getMonth()).toString()+'-';
+                    weatherString += sDate.getDate().toString();
+                    //if (days === 0){
+                    var temp = weather.getTemp(weatherString);
+                    for (datum in temp.data){
+                        var wrk = temp.data[datum];
+                        weatherarr.push({'x':wrk[0],'y':parseInt(wrk[1], 10)});
+                    }
+
+                days++;
+                sDate.add(1).days();
+                }
+            
+            }
+            console.log("Days: "+days.toString());
+            //console.log(weatherobj);
+            //weather
+        }
+        
+        
         //console.log("15 working length");
-        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours);
+        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr);
         //console.log("16 chart!");
     };
     

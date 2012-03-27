@@ -42,7 +42,7 @@ _.jsonreport = (function(){
 
     $.each = function(arr, fn) { $each.call(arr, fn); };
 
-    var splitCase = function(t) { return typeof t != 'string' ? t : t.replace(/([A-Z]|[0-9]+)/g, ' $1').replace(/_/g,' '); },
+    var splitCase = function(t) { return typeof t != 'string' ? t : t.replace(/([A-Z]|[0-9]+)/g, '$1').replace(/_/g,' '); },
         uniqueKeys = function(m){ var h={}; for (var i=0,len=m.length; i<len; i++) for (var k in m[i]) h[k] = k; return h; },
         keys = function(o){ var a=[]; for (var k in o) a.push(k); return a; }
     var tbls = [];

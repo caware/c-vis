@@ -105,35 +105,69 @@
         
         
         var sensorList = ui.catchError(ui, cache.getObject, [config.indexUrl.value]).sensors.elec;
+        var errorList = ui.catchError(ui, cache.getObject, [config.errorUrl.value]);
         
         var dReadings = 'daily-readings';
-        var noDReadings = 'Daily readings';
+        var noDReadings = '# Days';
         var mReadings = 'monthly-readings';
-        var noMReadings = 'Monthly readings';
-        var sensorField = 'sensor';
+        var noMReadings = '# Months';
+        var sensorField = 'Meter';
         var mostRecent = 'Last Updated';
-        var leastRecent = 'History Started';
-        var sensorName = 'Sensor S-m';
+        var leastRecent = 'Started';
+        //var sensorName = 'Sensor S-m';
+        var url = 'url';
         var roomName = '';
+        var errors = 'Errors';
+        //var warnings = '# Warnings';
+        var sensorloc = 'Meter Location';
         
         for (i in sensorList){
             var sen = sensorList[i];
+            var url = sen.path.split("S-m")[0];
             
-            sen[sensorName] = sen.sensor.split("m")[1];
+            //sen[Sensor] = sen.sensorField;//.split("m")[1];
+            sen[sensorField] = sen.sensor;
             
             sen.Description = sen.description;
-            sen.Room = sen.room;
-            sen.Path = sen.path;
+            sen[sensorloc] = sen.room;
+            sen.Path = '<a href="'+config.sensorFilesUrl.value+url+'">'+url+'</a>';
             sen.Coverage = sen.coverage;
             
             sen[noDReadings] = sen[dReadings].length;
             var noMonths = sen[mReadings].length;
             sen[noMReadings] = noMonths;
-            //sen[sensorField] = 
+            
             var tmp = sen[mReadings][noMonths-1].split("-");
             sen[leastRecent] = tmp[3].split(".")[0]+"/"+tmp[2];
             var tmp = sen[mReadings][0].split("-");
-            sen[mostRecent] = tmp[3].split(".")[0]+"/"+tmp[2]
+            sen[mostRecent] = tmp[3].split(".")[0]+"/"+tmp[2];
+            
+            //sen.test = {'Day Readings':sen[dReadings], 'Month Readings':sen[mReadings]};
+            var totalErrors = 0;
+            if (sen.sensor in errorList){
+                var errArray = errorList[sen.sensor];
+                for (x in errArray){
+                    var err = errArray[x];
+                    totalErrors += err.errors.length
+                }
+            }
+            
+            if (totalErrors !== 0){
+                sen.errors = totalErrors.toString()+' <a href="errorinfo.html?sensor='+sen.sensor+'">[info]</a>';
+            }
+            else {
+                sen.errors = totalErrors;
+            }
+            //'<a href="'+config.sensorFilesUrl.value+url+'">'+url+'</a>';
+            //sen[errors] = '<a href="errorinfo.html?'+str(totalErrors);
+            //var tmpkey = 'Errors';
+            //var tmp = errorList[sen.sensor];
+            //if (typeof(tmp) != 'undefined'){
+            //    sen[errors] = tmp[tmpkey];
+            //    console.log(tmp[tmpkey]);
+            //}
+            
+            
             delete sen.coverage;
             delete sen.path;
             delete sen.room;
@@ -142,6 +176,7 @@
             delete sen[dReadings];
             delete sen[mReadings];
         }
+        console.log(errorList);
         
         var html = _.jsonreport(JSON.stringify(sensorList));
         

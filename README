@@ -7,7 +7,7 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 
 Change log:
 
-V1.9.7: In Development.
+V2.0: In Development.
     Sensor data awareness, won't extend viewport when no data exists.
     UI overhaul, using bootstrap from Twitter, including loading indicators.
     Added Info, Warning and Error messages when files not found / no data to display etc.
@@ -15,6 +15,10 @@ V1.9.7: In Development.
     Improved code portability
     Added config file support.
     Improved SensorAccessor class, and make use of it
+    Fixed page resizing errors
+    Added external temperature plotting support
+    Added Multiple visualisation support
+    Added Sensor Info Panel
 
 
 V1.9.5:

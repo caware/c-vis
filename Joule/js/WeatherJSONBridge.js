@@ -1,6 +1,7 @@
 function WeatherJSONBridge(url) {
     
-    this.tempurl = url;
+    if (url) { this.tempurl = url; }
+    else this.tempurl = 'http://www.cl.cam.ac.uk/research/dtg/weather/daily-text.cgi?'
     
     this.getTemp = function (tempdate){
         
@@ -13,6 +14,8 @@ function WeatherJSONBridge(url) {
         
         theurl = this.tempurl+tempdate;
         var readings = $.ajax({ type: "GET", url: theurl,async: false }).responseText.split('\n');
+        
+        //console.log(readings);
         
         readobj.units = readings[7].split('\t')[1];
         

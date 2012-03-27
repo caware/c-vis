@@ -91,4 +91,13 @@ function SensorAccessor(indexUrl, sensorloc) {
         }
         return found;
     };
+    
+    this.getSensorPath = function(sensor){
+        for (var i=0;i<this.elecsensors.length;i++){
+            if (this.elecsensors[i].sensor === sensor){
+                return this.elecsensors[i].path;
+            }
+        }
+        return false;
+    };
 }
