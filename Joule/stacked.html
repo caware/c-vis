@@ -69,7 +69,7 @@
             <div style="height:120px;">
             <ul id="v-menu" class="tabs">
                 <li style="width:215px; text-align:center"><a href="index.html">Line<img src='images/lineS.jpg'/></a></li>
-                <li style="width:215px; text-align:center" class='active'><a href="stacked.html">Stacked<img src='images/vistest.jpg'/></a></li>
+                <li style="width:215px; text-align:center" class='active'><a href="stacked.html">Stacked<img src='images/StackedS.jpg'/></a></li>
                 <li style="width:215px; text-align:center"><a href="sunburst.html">Sunburst<img src='images/vistest.jpg'/></a></li>
                 <li style="width:215px; text-align:center"><a href="sensorinfo.html">Sensor Info<img src='images/infoS.jpg'/></a></li>
             </ul>
@@ -168,9 +168,11 @@
     
     //var datazoomx, datazoomdx;
     //var zoomx = 100, zoomdx = 200;
+    //ui.loadSpin("in", function(){});
     
      $(document).ready(function() {
-        ui.jouleFinishedLoading(ui);
+        ui.jouleFinishedLoading(ui, 'stacked');
+        //ui.loadSpin("out");
     });
     
     function tree(sensortree,type){
@@ -422,15 +424,22 @@
         }
     }
     
-    function actuallyChart(dataArray,start,end,chartmax,chartcount,plotcol){
+    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol){
         var data = dataArray;
+        var chartmax = 0.0;
+        for (tmpMax in maxArr){
+          chartmax += maxArr[tmpMax];
+        }
+        //console.log(chartmax);
+        //console.log(maxArr);
+        
         /* Scales and sizing. */
         var w = 700,
             h1 = 310,
             h2 = 50,
             x = pv.Scale.linear(start, end).range(0, w),
             //y = pv.Scale.linear(0, pv.max(data, function(d) d.y)).range(0, h2);
-            y = pv.Scale.linear(0, chartmax).range(0, h2);
+            y = pv.Scale.linear(0, chartmax+1).range(0, h2);
         
         /* Interaction state. Focus scales will have domain set on-render. */
         
@@ -461,7 +470,10 @@
                 pv.search.index(data[j], d2, function(d) d.x) + 1));
             }
             fx.domain(d1, d2);
-            if (typeof id == 'undefined') return dd;
+            if (typeof id == 'undefined'){
+              //console.log(dd);
+              return dd;
+            }
             else {
                 return dd[id];
             }
@@ -642,96 +654,24 @@
         
         /* Focus area chart. */
         
-        panel = focus.add(pv.Panel);
-            //.overflow("hidden");
+        panel = focus.add(pv.Panel)
+            .overflow("hidden");
         
-        //console.log('------------------');
-        //switch (chartcount) {
-//         switch (1) {
-//             case 10:
-//                 panel.add(pv.Line)
-//                     .data(function(){ return datasel(9); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[9])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 9:
-//                 panel.add(pv.Line)
-//                     .data(function(){ return datasel(8); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[8])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 8:
-//                 panel.add(pv.Line)
-//                     .data(function(){ return datasel(7); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[7])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 7:
-//                 panel.add(pv.Line)
-//                     .data(function(){ return datasel(6); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[6])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 6:
-//                 panel.add(pv.Line)
-//                     .data(function(){ return datasel(5); })
-//                     .left(function(d){ return fx(d.x); }) 
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[5])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 5:
-//                 panel.add(pv.Line)
-//                     .data(function(){ return datasel(4); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[4])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 4:
-//                 panel.add(pv.Layout.Stack)
-//                     .data(function(){ return datasel(3); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[3])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 3:
-//                 panel.add(pv.Layout.Stack)
-//                     .data(function(){ return datasel(2); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[2])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 2:
-//                 panel.add(pv.Layout.Stack)
-//                     .data(function(){ return datasel(1); })
-//                     .left(function(d){ return fx(d.x); })
-//                     .bottom(function(d){ return fy(d.y); })
-//                     .strokeStyle(plotcol[1])
-//                     .interpolate(null)
-//                     .lineWidth(2);
-//             case 1:
-                console.log(datasel());
-                panel.add(pv.Layout.Stack)
-                    .layers(function(){ return datasel(); })
-                    .x(function(d){ return fx(d.x); })
-                    .y(function(d){ return fy(d.y); })
-                    //.strokeStyle(plotcol)
-                  .layer.add(pv.Area);
-                    //.strokeStyle(plotcol[0])
-                    //.interpolate(null) //"step-before"
-                    //.lineWidth(2);
-        //}
+        var colVar = 0;
+        console.log(datasel());
+        panel.add(pv.Layout.Stack)
+          .layers(function(){ return datasel(); })
+          .x(function(d){ return fx(d.x); })
+          .y(function(d){ return fy(d.y); })
+        .layer.add(pv.Area)
+          .fillStyle(function(d){
+            //colVar++;
+            //console.log(colVar);
+            if (colVar >= plotcol.length){
+              colVar = 0;
+            }
+            return plotcol[colVar++];
+          });
         
         /* Context panel (zoomed out). */
         var context = vis.add(pv.Panel)

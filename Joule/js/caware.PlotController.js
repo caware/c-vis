@@ -515,16 +515,16 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
         var dataArray = new Array();
         var start = null;
         var end = null;
-        var chartmax = 0;
+        var chartmax = [];
         var plotcolours = [];
         //console.log("14 set colours");
         
         for (var i=0; i<plotArray.length; i++){
+            //console.log('i: '+i);
             plotcolours[i] = plotArray[i].colour;
             if (i == 0){
                 start = new Date(plotArray[0].data[0].x);
                 end = new Date(plotArray[0].data[plotArray[0].data.length - 1].x);
-                chartmax = plotArray[0].data[0].y
             }
             else {
                 if (plotArray[i].data[0].x < start){
@@ -534,13 +534,18 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                     end = new Date(plotArray[i].data[plotArray[i].data.length - 1].x);
                 }
             }
+            chartmax[i] = plotArray[i].data[0].y
             for (var j=0; j<plotArray[i].data.length; j++){
-                if (plotArray[i].data[j].y > chartmax){
-                    chartmax = plotArray[i].data[j].y;
+                if (plotArray[i].data[j].y > chartmax[i]){
+                    chartmax[i] = plotArray[i].data[j].y;
                 }
             }
+            //console.log('chartmax[i]: '+chartmax[i]);
+            //console.log('chartmax: '+chartmax);
             dataArray.push(plotArray[i].data);
         }
+        
+        //calculate average , and order plots in that average. (Remember colours.
         
         //else if (type == "multiple"){
         //console.log(plotline);

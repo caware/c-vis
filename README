@@ -17,8 +17,9 @@ V2.0: In Development.
     Improved SensorAccessor class, and make use of it
     Fixed page resizing errors
     Added external temperature plotting support
-    Added Multiple visualisation support
-    Added Sensor Info Panel
+    Added multiple visualisation support
+    Added sensor info panel
+    Added sensor error index
 
 
 V1.9.5:

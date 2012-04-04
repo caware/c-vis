@@ -69,7 +69,7 @@
             <div style="height:120px;">
             <ul id="v-menu" class="tabs">
                 <li style="width:215px; text-align:center" class='active'><a href="index.html">Line<img src='images/lineS.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="stacked.html">Stacked<img src='images/vistest.jpg'/></a></li>
+                <li style="width:215px; text-align:center"><a href="stacked.html">Stacked<img src='images/StackedS.jpg'/></a></li>
                 <li style="width:215px; text-align:center"><a href="sunburst.html">Sunburst<img src='images/vistest.jpg'/></a></li>
                 <li style="width:215px; text-align:center"><a href="sensorinfo.html">Sensor Info<img src='images/infoS.jpg'/></a></li>
             </ul>
@@ -170,7 +170,7 @@
     //var zoomx = 100, zoomdx = 200;
     
      $(document).ready(function() {
-        ui.jouleFinishedLoading(ui);
+        ui.jouleFinishedLoading(ui, 'line');
         ui.jouleStopLoading(ui);
     });
     
@@ -288,8 +288,9 @@
                 nodes[i].nodeName = "Machine Room Power and A/C";
             }
             else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
-            else if (nm=="????"){nodes[i].toggle();}
+            else if (nm=="Lifts"){nodes[i].toggle();}
             else if (nm=="Chiller"){nodes[i].toggle();}
+            else if (nm=="Emergency Lighting"){nodes[i].toggle();}
             else if (nm=="Condensor"){
             	nodes[i].toggle();
             	nodes[i].nodeName = "Condenser";
@@ -448,8 +449,15 @@
     //		return a.x - b.x;
     //}
     
-    function actuallyChart(dataArray,start,end,chartmax,chartcount,plotcol,weather){
+    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol,weather){
         var data = dataArray;
+        
+        var chartmax = 0.0;
+        for (tmpMax in maxArr){
+        	if (maxArr[tmpMax] > chartmax){
+          	chartmax = maxArr[tmpMax];
+          }
+        }
         
         if (weather){
         	console.log('Using Weather');
@@ -475,7 +483,7 @@
             h2 = 50,
             x = pv.Scale.linear(start, end).range(0, w),
             //y = pv.Scale.linear(0, pv.max(data, function(d) d.y)).range(0, h2);
-            y = pv.Scale.linear(0, chartmax).range(0, h2);
+            y = pv.Scale.linear(0, chartmax+1).range(0, h2);
             
         if (weather){    
         	var tempery = pv.Scale.linear(pv.min(weather, function(d) d.y), pv.max(weather, function(d) d.y)).range(0, h1);
@@ -806,7 +814,7 @@
                 .left(function(d){ return fx(d.x); })
                 .bottom(function(d){ return ft(d.y); })
                 .strokeStyle('black')
-                .interpolate('linear') //"step-before"
+                //.interpolate('linear') //"step-before"
                 .lineWidth(1);
         }
         

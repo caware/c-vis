@@ -21,11 +21,12 @@ function JouleUIController(){
     this.loadSpin = function(io, callback){
         if (io == "in"){
             this.spinner = new Spinner(this.spinVar).spin();
-            $('#divSpinner').hide();
+            //$('#divSpinner').hide();
             $('#divSpinner').append(this.spinner.el);
             $('#divSpinner').fadeIn("fast", callback())
         }
         else if (io == "out"){
+            $('#divSpinner').hide();
             this.spinner.stop();
         }
     };
@@ -61,7 +62,7 @@ function JouleUIController(){
     
     //console.log(this.useWeather);
     
-    this.jouleFinishedLoading = function(useri){
+    this.jouleFinishedLoading = function(useri, uiType){
         this.loadSpin("in", function(){
             weather = new WeatherJSONBridge();
             plotArray = new Array();
@@ -70,14 +71,34 @@ function JouleUIController(){
             sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
             colourpool = new ColourPool(config.plotColour.value);
             
-            //$('#loading-message').fadeOut("fast");
-            useri.changeTree(config.indexUrl.value, "treeuse");
-            var startplot = ["/elec/S-m257-"];
-            colourpool.toggleColour(startplot);
-            plotController.togglePlotByUrl(startplot);
-            console.log(useri.useWeather);
-            plotController.calculateData(useri.useWeather);
-            refreshTree();
+            switch (uiType) {
+              case 'line':   
+                useri.changeTree(config.indexUrl.value, "treeuse");
+                var startplot = ["/elec/S-m257-"];
+                colourpool.toggleColour(startplot);
+                plotController.togglePlotByUrl(startplot);
+                //console.log(useri.useWeather);
+                plotController.calculateData(useri.useWeather);
+                refreshTree();
+                break;
+              case 'stacked':
+                useri.changeTree(config.indexUrl.value, "treeuse");
+                var startplot = ["/elec/primary-condensor/S-m43-"];
+                colourpool.toggleColour(startplot);
+                plotController.togglePlotByUrl(startplot);
+                //console.log(useri.useWeather);
+                //plotController.calculateData(useri.useWeather);
+                
+                var startplot = ["/elec/primary-smb1/mcc05/S-m37-"]
+                colourpool.toggleColour(startplot);
+                plotController.togglePlotByUrl(startplot);
+                //console.log(useri.useWeather);
+                plotController.calculateData(useri.useWeather);
+                
+                refreshTree();
+                break;
+            }
+               
             useri.loadSpin("out");
         });
     };
@@ -87,6 +108,7 @@ function JouleUIController(){
     };
     
     this.jouleTempToggle = function(useri){
+      this.loadSpin("in", function(){});
         if (useri.useWeather == true){
             //$('#temperButton').addClass('Default');
             $('#temperButton').removeClass('success');
@@ -99,7 +121,9 @@ function JouleUIController(){
         }
         plotController.calculateData(useri.useWeather);
         useri.loadSpin("out");
+      //});
     };
+      
     
     this.toggleTabs = function(){
     
