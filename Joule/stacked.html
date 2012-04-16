@@ -264,7 +264,15 @@
                 nodes[i].toggle();
                 nodes[i].nodeName = "Lighting and A/C";
             }
-            else if (nm=="Lighting"){nodes[i].toggle();}
+            else if (nm=="Lighting"){
+              var childs = nodes[i].childNodes;
+              childs[1].toggle();
+              childs[2].toggle();
+              childs[3].toggle();
+            }
+            else if (nm=="Condensor"){nodes[i].toggle();}
+            else if (nm=="MCC"){nodes[i].toggle();}
+            else if (nm=="Plant"){nodes[i].toggle();}
             else if (nm=="Sockets"){nodes[i].toggle();}
             else if (nm=="Power"){nodes[i].toggle();}
             else if (nm=="Lighting and sockets"){

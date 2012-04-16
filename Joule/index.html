@@ -516,29 +516,50 @@
             config.zoomSize.value.zoomX = i.x;
             d2 = x.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
             config.zoomSize.value.zoomDX = i.dx;
-            
-            
+            fx.domain(d1, d2);
             var dd = [];
-            for(var j=0; j<data.length; j++){//for each line in the data array
+            
+            if (id === 'temps'){
+            	if (weather){
+            		temper = (weather.slice(Math.max(0, pv.search.index(weather, d1, function(d) d.x) - 1),
+          	  	pv.search.index(weather, d2, function(d) d.x) + 1));
+          	  	//console.log(weather);
+        			}
+            	return temper;
+            }
+            else if (typeof id == 'undefined'){
+            	for(var j=0; j<data.length; j++){//for each line in the data array
                 dd[j] = [];
                 dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
                 pv.search.index(data[j], d2, function(d) d.x) + 1));
+            	}
+            	return dd;
+            }
+            else {
+              return (data[id].slice(Math.max(0, pv.search.index(data[id], d1, function(d) d.x) - 1),
+              	pv.search.index(data[id], d2, function(d) d.x) + 1));
             }
             
-            if (weather){
-            	temper = (weather.slice(Math.max(0, pv.search.index(weather, d1, function(d) d.x) - 1),
-          	  pv.search.index(weather, d2, function(d) d.x) + 1));
-          	  console.log(weather);
-        		}
+            //for(var j=0; j<data.length; j++){//for each line in the data array
+            //    dd[j] = [];
+            //    dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
+            //    pv.search.index(data[j], d2, function(d) d.x) + 1));
+            //}
+            
+            //if (weather){
+            //	temper = (weather.slice(Math.max(0, pv.search.index(weather, d1, function(d) d.x) - 1),
+          	//  pv.search.index(weather, d2, function(d) d.x) + 1));
+          	//  console.log(weather);
+        		//}
         		
         	
-            fx.domain(d1, d2);
+            //fx.domain(d1, d2);
             
-            if (id === 'temps') return temper;
-            else if (typeof id == 'undefined') return dd;
-            else {
-                return dd[id];
-            }
+            //if (id === 'temps') return temper;
+            //else if (typeof id == 'undefined') return dd;
+            //else {
+            //    return dd[id];
+            //}
         }
         
         var grid;
@@ -556,7 +577,7 @@
         ];
         
         var options = {
-            //enableCellNavigation: true,
+            enableCellNavigation: false,
             enableColumnReorder: false,
             //asyncEditorLoading: true,
             editable: true

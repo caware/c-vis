@@ -32,22 +32,21 @@ div#charttitle {
 
 div#content {
     width: 1200px ;
-    min-height:720px;
+    min-height:800px;
     margin-left: auto ;
     margin-right: auto ;
 }
 
 div#chartinfo {
     width: 750px;
+    min-height: 250px;
     margin-top: 15px;
-    height: 250px;
-    display: inline-block;
     float: right;
 }
 
 div#myGrid {
     width:755px;
-    min-height:150px;
+    min-height:250px;
 }
 
 div#topbar {

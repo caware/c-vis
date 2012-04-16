@@ -83,15 +83,15 @@ function JouleUIController(){
                 
               case 'stacked':
                 useri.changeTree(config.indexUrl.value, "treeuse");
-                var startplot = ["/elec/primary-condensor/S-m43-"];
+                var startplot = ["/elec/primary-cs2-riser/F-lighting/S-m15-", "/elec/primary-cs1-riser/F-lighting/S-m23-", "/elec/primary-cs4-riser/F-lighting/S-m30-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
                 
-                var startplot = ["/elec/primary-smb1/mcc05/S-m37-"];
+                var startplot = ["/elec/primary-cs2-riser/G-lighting/S-m17-", "/elec/primary-G-exr/S-m20-", "/elec/primary-cs1-riser/G-lighting/S-m22-", "/elec/primary-cs4-riser/G-lighting/S-m34-", "/elec/primary-smb2/G-lighting/S-m33-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
                 
-                var startplot = ["/elec/primary-smb2/mcc07/S-m38-", "/elec/primary-mcc01/S-m46-", "/elec/primary-mcc04/S-m47-", "/elec/primary-mcc03/S-m50-", "/elec/primary-mcc02/S-m51-"];
+                var startplot = ["/elec/primary-cs3-riser/S-lighting/S-m11-", "/elec/primary-cs2-riser/S-lighting/S-m13-", "/elec/primary-cs1-riser/S-lighting/S-m42-", "/elec/primary-cs4-riser/S-lighting/S-m28-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
                 

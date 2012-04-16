@@ -119,7 +119,7 @@
         var specSen = false;
         
         if ('sensor' in opts){
-            for (i in errorList){
+            for (var i in errorList){
                 if (i === opts['sensor']){
                     specSen = i;
                 }
@@ -132,13 +132,13 @@
             sensors[sensor.toString()] = {};
             for (var x=0; x < errs.length; x++){
                 var file = errs[x];
-                var path = sensorAccess.getSensorPath(i).split("S-m")[0];
+                var path = sensorAccess.getSensorPath(sensor).split("S-m")[0];
                 var filename = '<a href="'+config.sensorFilesUrl.value+path+file.filename+'">'+file.filename+'</a>';
                 sensors[sensor][filename] = file.errors;
             }
         }
         else {
-            for (i in errorList){
+            for (var i in errorList){
                 var errs = errorList[i];
                 var sensor = i;
                 sensors[sensor.toString()] = {};
