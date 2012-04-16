@@ -70,7 +70,7 @@
             <ul id="v-menu" class="tabs">
                 <li style="width:215px; text-align:center"><a href="index.html">Line<img src='images/lineS.jpg'/></a></li>
                 <li style="width:215px; text-align:center" class='active'><a href="stacked.html">Stacked<img src='images/StackedS.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="sunburst.html">Sunburst<img src='images/vistest.jpg'/></a></li>
+                
                 <li style="width:215px; text-align:center"><a href="sensorinfo.html">Sensor Info<img src='images/infoS.jpg'/></a></li>
             </ul>
             </div>
@@ -90,13 +90,12 @@
                     <div id="divSpinner" style="width: 30px; float:left; padding: 20px 0px 0px 30px;">
                         
                     </div>
-                    <div style="width: 160px; margin: auto;">
-                    
-                        <ul class="pills">
-                            <li id="geobutton"><a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treegeo'); return false">Geographic</a></li>
-                            <li id="functbutton"><a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treeuse'); return false">Functional</a></li>
+                    <div style="width: 260px; margin: auto;">
+                        <a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treegeo'); return false"><button class="btn" id="geobutton">Geographic</button></a>
+                        <a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treeuse'); return false"><button class="btn" id="functbutton">Functional</button></a>
+                        
                             <!-- <li><a href="#" onclick="buildTree('treegeo');return false">Network</a></li> -->
-                        </ul>
+                        
                     </div>
                     <div id="treediv">
                         
@@ -289,6 +288,22 @@
                 nodes[i].nodeName = "Machine Room Power and A/C";
             }
             else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
+            else if (nm=="Chiller"){nodes[i].toggle();}
+            else if (nm=="Emergency Lighting"){nodes[i].toggle();}
+            else if (nm=="Fire alarm and security"){
+              nodes[i].toggle();
+              nodes[i].nodeName = "Fire Alarm and Security";
+            }
+            else if (nm=="Lifts"){nodes[i].toggle();}
+            else if (nm=="Machine room UPS"){
+              nodes[i].toggle();
+              nodes[i].nodeName = "Machine Room UPS";
+            }
+            else if (nm=="PABX"){nodes[i].toggle();}
+            else if (nm=="a/c"){
+              nodes[i].toggle();
+              nodes[i].nodeName = "A/C";
+            }
             
             if (nm == "Average"){
                 //console.log(nodes[i]);
@@ -692,7 +707,7 @@
             })
             .strokeStyle("#aaa")
             .anchor("bottom").add(pv.Label)
-                .text(function(x){ return overallDateFormat.format(x); });
+                .text(function(l){ return overallDateFormat.format(l); });
         
         /* Y-axis ticks. */
         context.add(pv.Rule)
@@ -713,14 +728,30 @@
             }
         }
         
-        for(var j=0; j<data.length; j++){
-            context.add(pv.Line)
-                .data(totdata[j])
-                .left(function(d) x(d.x))
-                .bottom(function(d) y(d.y))
-                .strokeStyle(plotcol[j])
-                .lineWidth(2);
-        }
+        //for(var j=0; j<data.length; j++){
+        //    context.add(pv.Line)
+        //        .data(totdata[j])
+        //        .left(function(d) x(d.x))
+        //        .bottom(function(d) y(d.y))
+        //        .strokeStyle(plotcol[j])
+        //        .lineWidth(2);
+        //}
+        
+        var colVar = 0;
+        //console.log(datasel());
+        context.add(pv.Layout.Stack)
+          .layers(function(){ return totdata; })
+          .x(function(d){ return x(d.x); })
+          .y(function(d){ return y(d.y); })
+        .layer.add(pv.Area)
+          .fillStyle(function(d){
+            //colVar++;
+            //console.log(colVar);
+            if (colVar >= plotcol.length){
+              colVar = 0;
+            }
+            return plotcol[colVar++];
+          });
         
         
         /* The selectable, draggable focus region. */

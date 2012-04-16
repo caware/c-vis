@@ -77,24 +77,25 @@ function JouleUIController(){
                 var startplot = ["/elec/S-m257-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
-                //console.log(useri.useWeather);
                 plotController.calculateData(useri.useWeather);
                 refreshTree();
                 break;
+                
               case 'stacked':
                 useri.changeTree(config.indexUrl.value, "treeuse");
                 var startplot = ["/elec/primary-condensor/S-m43-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
-                //console.log(useri.useWeather);
-                //plotController.calculateData(useri.useWeather);
                 
-                var startplot = ["/elec/primary-smb1/mcc05/S-m37-"]
+                var startplot = ["/elec/primary-smb1/mcc05/S-m37-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
-                //console.log(useri.useWeather);
-                plotController.calculateData(useri.useWeather);
                 
+                var startplot = ["/elec/primary-smb2/mcc07/S-m38-", "/elec/primary-mcc01/S-m46-", "/elec/primary-mcc04/S-m47-", "/elec/primary-mcc03/S-m50-", "/elec/primary-mcc02/S-m51-"];
+                colourpool.toggleColour(startplot);
+                plotController.togglePlotByUrl(startplot);
+                
+                plotController.calculateData(useri.useWeather);
                 refreshTree();
                 break;
             }
@@ -131,12 +132,12 @@ function JouleUIController(){
     
     this.changeTree = function(indexUrl,treeType){
         if (treeType == 'treegeo'){
-            $('#geobutton').addClass('active');
-            $('#functbutton').removeClass('active');
+            $('#geobutton').addClass('success');
+            $('#functbutton').removeClass('success');
         }
         else if (treeType == 'treeuse'){
-            $('#geobutton').removeClass('active');
-            $('#functbutton').addClass('active');
+            $('#geobutton').removeClass('success');
+            $('#functbutton').addClass('success');
         }
         buildTree(indexUrl, treeType);
         

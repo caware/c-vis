@@ -69,8 +69,8 @@
             <div style="height:120px;">
             <ul id="v-menu" class="tabs">
                 <li style="width:215px; text-align:center" class='active'><a href="index.html">Line<img src='images/lineS.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="stacked.html">Stacked<img src='images/vistest.jpg'/></a></li>
-                <li style="width:215px; text-align:center"><a href="sunburst.html">Sunburst<img src='images/vistest.jpg'/></a></li>
+                <li style="width:215px; text-align:center"><a href="stacked.html">Stacked<img src='images/StackedS.jpg'/></a></li>
+                
                 <li style="width:215px; text-align:center"><a href="sensorinfo.html">Sensor Info<img src='images/infoS.jpg'/></a></li>
             </ul>
             </div>
@@ -90,13 +90,16 @@
                     <div id="divSpinner" style="width: 30px; float:left; padding: 20px 0px 0px 30px;">
                         
                     </div>
-                    <div style="width: 160px; margin: auto;">
-                    
-                        <ul class="pills">
+                    <div style="width: 260px; margin: auto;">
+                    <a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treegeo'); return false"><button class="btn" id="geobutton">Geographic</button></a>
+                    <a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treeuse'); return false"><button class="btn" id="functbutton">Functional</button></a>
+                        <!--<ul class="pills">
                             <li id="geobutton"><a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treegeo'); return false">Geographic</a></li>
                             <li id="functbutton"><a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treeuse'); return false">Functional</a></li>
-                            <!-- <li><a href="#" onclick="buildTree('treegeo');return false">Network</a></li> -->
+                            <li><a href="#" onclick="buildTree('treegeo');return false">Network</a></li>
                         </ul>
+                        -->
+                        
                     </div>
                     <div id="treediv">
                         
@@ -104,6 +107,7 @@
                 </div>
                 
                 <div id="chartcontainer">
+                	<a href="#" onclick="ui.jouleTempToggle(ui)"><button class="btn" id="temperButton">Show Temperature</button></a>
                     <div id="chartdiv">
                     </div>
                 </div>
@@ -157,11 +161,9 @@
     var overallDateFormat = pv.Format.date("%d %b '%y");
     
     //Vars for array of plots, and chart visulisation
-    var plotArray = new Array();
-    var treeIndex = new IntValueStore();
-    var plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value,ui);
-    var sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
-    var colourpool = new ColourPool(config.plotColour.value);
+    
+    
+    
     
     var vis;
     var sensors;
@@ -171,6 +173,7 @@
     
      $(document).ready(function() {
         ui.jouleFinishedLoading(ui, 'line');
+        ui.jouleStopLoading(ui);
     });
     
     function tree(sensortree,type){
@@ -287,6 +290,28 @@
                 nodes[i].nodeName = "Machine Room Power and A/C";
             }
             else if (nm=="Lighting and server A/C"){nodes[i].toggle();}
+            else if (nm=="Lifts"){nodes[i].toggle();}
+            else if (nm=="Chiller"){nodes[i].toggle();}
+            else if (nm=="Emergency Lighting"){nodes[i].toggle();}
+            else if (nm=="Condensor"){
+            	nodes[i].toggle();
+            	nodes[i].nodeName = "Condenser";
+            }
+            else if (nm=="Fire alarm and security"){
+            	nodes[i].toggle();
+            	nodes[i].nodeName = "Fire Alarm and Security";
+            }
+            else if (nm=="MCC"){nodes[i].toggle();}
+            else if (nm=="Machine room UPS"){
+            	nodes[i].toggle();
+            	nodes[i].nodeName = "Machine Room UPS";
+            }
+            else if (nm=="PABX"){nodes[i].toggle();}
+            else if (nm=="Plant"){nodes[i].toggle();}
+            else if (nm=="a/c"){
+            	nodes[i].toggle();
+            	nodes[i].nodeName = "A/C";
+            }            
             
             if (nm == "Average"){
                 //console.log(nodes[i]);
@@ -422,21 +447,59 @@
         }
     }
     
-    function actuallyChart(dataArray,start,end,chartmax,chartcount,plotcol){
+    //function cmpPoints(a,b){
+    //		return a.x - b.x;
+    //}
+    
+    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol,weather){
         var data = dataArray;
+        
+        var chartmax = 0.0;
+        for (tmpMax in maxArr){
+        	if (maxArr[tmpMax] > chartmax){
+          	chartmax = maxArr[tmpMax];
+          }
+        }
+        
+        if (weather){
+        	console.log('Using Weather');
+        	console.log(pv.max(weather, function(d) d.y));
+        	//for (xyz in weather){
+        	//	console.log(xyz.toString()+'  '+Object.prototype.toString.call(weather[xyz].y));
+        	//
+        	//}
+        	//weather.sort(cmpPoints);
+        	//weather = weather.data;
+        	//data.push(weather);
+        	//var test = [{x:1,y:2}, {x:3,y:4}];
+        	//console.log(test);
+        	//console.log(weather);
+        	//console.log(pv.max(test, function(d){ return d.y;}));
+        	//console.log(pv.max(weather, function(d){ return d.y;}));
+        }
+        //console.log(data);
+        
         /* Scales and sizing. */
         var w = 700,
             h1 = 310,
             h2 = 50,
             x = pv.Scale.linear(start, end).range(0, w),
             //y = pv.Scale.linear(0, pv.max(data, function(d) d.y)).range(0, h2);
-            y = pv.Scale.linear(0, chartmax).range(0, h2);
+            y = pv.Scale.linear(0, chartmax+1).range(0, h2);
+            
+        if (weather){    
+        	var tempery = pv.Scale.linear(pv.min(weather, function(d) d.y), pv.max(weather, function(d) d.y)).range(0, h1);
+        	console.log(tempery);
+        }
+        
+        //console.log(tempery);
         
         /* Interaction state. Focus scales will have domain set on-render. */
         
         var i = {x:config.zoomSize.value.zoomX, dx:config.zoomSize.value.zoomDX};
         var fx = pv.Scale.linear().range(0, w),
-            fy = pv.Scale.linear().range(0, h1);
+            fy = pv.Scale.linear().range(0, h1),
+            ft = pv.Scale.linear().range(0, h1);
         
         /* Root panel. */
         vis = new pv.Panel()
@@ -454,14 +517,25 @@
             d2 = x.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
             config.zoomSize.value.zoomDX = i.dx;
             
+            
             var dd = [];
             for(var j=0; j<data.length; j++){//for each line in the data array
                 dd[j] = [];
                 dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
                 pv.search.index(data[j], d2, function(d) d.x) + 1));
             }
+            
+            if (weather){
+            	temper = (weather.slice(Math.max(0, pv.search.index(weather, d1, function(d) d.x) - 1),
+          	  pv.search.index(weather, d2, function(d) d.x) + 1));
+          	  console.log(weather);
+        		}
+        		
+        	
             fx.domain(d1, d2);
-            if (typeof id == 'undefined') return dd;
+            
+            if (id === 'temps') return temper;
+            else if (typeof id == 'undefined') return dd;
             else {
                 return dd[id];
             }
@@ -600,6 +674,9 @@
                 //else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
                 //else if (scaleoriginal.checked){ 
                 fy.domain(y.domain());
+                if (weather) {
+                	ft.domain(tempery.domain());
+                }
                 //}
                 
                 date2 = new Date();
@@ -631,7 +708,7 @@
             .strokeStyle("rgba(255,255,255,0)")
             .anchor("top").add(pv.Label)
                 .text(function(fx){ return zoomDateFormat.format(fx);});
-        
+        //if(ft){console.log(ft);}
         /* Y-axis ticks. */
         focus.add(pv.Rule)
             .data(function() fy.ticks(7))
@@ -639,6 +716,18 @@
             .strokeStyle(function(d) d ? "#aaa" : "#000")
             .anchor("left").add(pv.Label)
             .text(fy.tickFormat);
+        if (weather) {   
+        	focus.add(pv.Rule)
+            .data(function() ft.ticks(7))
+            .bottom(ft)
+            .strokeStyle("#000")
+            .lineWidth(function(d) d === 0 ? 0.5 : 0)
+            .anchor("right").add(pv.Label)
+            //.text(function(d) d < 0 ? "-"+d.toString() : d.toString());
+            .text(function(d){ return d.toString();});
+            
+          //console.log(ft.tickFormat);
+        }
         
         /* Focus area chart. */
         
@@ -647,6 +736,7 @@
         
         //console.log('------------------');
         switch (chartcount) {
+        //switch (11){
             case 10:
                 panel.add(pv.Line)
                     .data(function(){ return datasel(9); })
@@ -727,6 +817,15 @@
                     .strokeStyle(plotcol[0])
                     .interpolate(null) //"step-before"
                     .lineWidth(2);
+        }
+        if(weather){
+        	panel.add(pv.Line)
+            	.data(function(){ return datasel('temps'); })
+                .left(function(d){ return fx(d.x); })
+                .bottom(function(d){ return ft(d.y); })
+                .strokeStyle('black')
+                //.interpolate('linear') //"step-before"
+                .lineWidth(1);
         }
         
         /* Context panel (zoomed out). */

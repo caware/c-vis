@@ -601,7 +601,7 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
         }
         
         
-        //console.log("15 working length");
+        //console.log("s / e"+start.toString()+end.toString());
         actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr);
         //console.log("16 chart!");
     };
