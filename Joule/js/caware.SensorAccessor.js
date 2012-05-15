@@ -20,7 +20,7 @@ function SensorAccessor(indexUrl, sensorloc) {
         var sensorpath = indexentry.path.match(/^.*\//)[0];
         var key = "monthly-readings";
         var monthlyreadings = indexentry[key];
-        console.log(monthlyreadings);
+        //console.log(monthlyreadings);
         var fullurl = this.sensorlocation+sensorpath+monthlyreadings[monthlyreadings.length-1];
         return ui.catchError(ui, cache.getObject, fullurl);
     };

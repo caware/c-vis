@@ -101,13 +101,21 @@
                         -->
                         
                     </div>
+                    <hr class="topHR">
                     <div id="treediv">
                         
                     </div>
                 </div>
                 
                 <div id="chartcontainer">
-                	<a href="#" onclick="ui.jouleTempToggle(ui)"><button class="btn" id="temperButton">Show Temperature</button></a>
+                	<a style="margin-left: 10px;" href="#" onclick="ui.jouleTempToggle(ui)"><button class="btn" id="temperButton">Show Temperature</button></a>
+                	<div style="margin-right: 10px; margin-left: 10px; float: right;">
+                		Y Axis Scale:
+                	    <a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'all')"><button class="btn" id="scaleAllButton">All Data</button></a>
+                		<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'scale')"><button class="btn success" id="scaleSelectionButton">Selection</button></a>
+                		<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'zoom')"><button class="btn" id="zoomButton">Zoom Selection</button></a>
+                    </div>
+                    <hr  class="topHR">
                     <div id="chartdiv">
                     </div>
                 </div>
@@ -147,7 +155,7 @@
     var cache = new JSONCache();
     var ui = new JouleUIController();
     var config = ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/indextest/config.json"]).config;
-    console.log(config);
+    //console.log(config);
     //var config = file.result.config;
     
     
@@ -451,7 +459,7 @@
     //		return a.x - b.x;
     //}
     
-    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol,weather){
+    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol,weather,missingArr){
         var data = dataArray;
         
         var chartmax = 0.0;
@@ -462,8 +470,8 @@
         }
         
         if (weather){
-        	console.log('Using Weather');
-        	console.log(pv.max(weather, function(d) d.y));
+        	//console.log('Using Weather');
+        	//console.log(pv.max(weather, function(d) d.y));
         	//for (xyz in weather){
         	//	console.log(xyz.toString()+'  '+Object.prototype.toString.call(weather[xyz].y));
         	//
@@ -489,7 +497,7 @@
             
         if (weather){    
         	var tempery = pv.Scale.linear(pv.min(weather, function(d) d.y), pv.max(weather, function(d) d.y)).range(0, h1);
-        	console.log(tempery);
+        	//console.log(tempery);
         }
         
         //console.log(tempery);
@@ -517,6 +525,9 @@
             d2 = x.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
             config.zoomSize.value.zoomDX = i.dx;
             fx.domain(d1, d2);
+            
+            //pv.max(dd, function(d) d.y) ;
+            //fy.domain(0, pv.max(dd, function(d) d.y));
             var dd = [];
             
             if (id === 'temps'){
@@ -527,17 +538,29 @@
         			}
             	return temper;
             }
-            else if (typeof id == 'undefined'){
+            //else if (typeof id == 'undefined'){
+            else {
+            	//var tmpYMax = [];
             	for(var j=0; j<data.length; j++){//for each line in the data array
                 dd[j] = [];
                 dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) d.x) - 1),
                 pv.search.index(data[j], d2, function(d) d.x) + 1));
+                //tmpYMax[j] = pv.max(dd[j], function(d) d.y);
             	}
-            	return dd;
-            }
-            else {
-              return (data[id].slice(Math.max(0, pv.search.index(data[id], d1, function(d) d.x) - 1),
-              	pv.search.index(data[id], d2, function(d) d.x) + 1));
+            	//console.log(tmpYMax);
+            	//fy.domain(0, pv.max(tmpYMax));
+            	
+            	if (typeof id == 'undefined'){
+            		return dd;
+            	}
+            	else {
+            		
+              //dd = (data[id].slice(Math.max(0, pv.search.index(data[id], d1, function(d) d.x) - 1),
+              	//pv.search.index(data[id], d2, function(d) d.x) + 1));
+              	//console.log("single");
+              	//fy.domain(0, pv.max(dd, function(d) d.y));
+              return dd[id];
+              }
             }
             
             //for(var j=0; j<data.length; j++){//for each line in the data array
@@ -687,14 +710,30 @@
                     
                     plotController.updateAvgByIndex(a, roundavg);
                 }
+                
+                //console.log(maxy+" : "+miny);
                     
                 //$('#averagekwh').text('Average power for selected region: '+roundavg+" kW.");
                 drawgrid();
+				
+				//console.log(ui.scaleSelection);
+            	switch (ui.scaleSelection) {
+            		case 'all':
+            			fy.domain(y.domain())
+            			break;
+            		case 'scale':
+            			fy.domain(0, maxy + 5);
+            			break;
+            		case 'zoom':
+            			fy.domain(miny - 5, maxy + 5);
+            			break;
+            	}
                 
-                //if (scalefit.checked){ fy.domain([0, maxy]); }
+                //if (scalefit.checked){ 
+                //fy.domain(0, maxy); //}
                 //else if (scalezoomed.checked){ fy.domain([miny, maxy]); }
                 //else if (scaleoriginal.checked){ 
-                fy.domain(y.domain());
+                //fy.domain(y.domain());
                 if (weather) {
                 	ft.domain(tempery.domain());
                 }
@@ -736,13 +775,16 @@
             .bottom(fy)
             .strokeStyle(function(d) d ? "#aaa" : "#000")
             .anchor("left").add(pv.Label)
-            .text(fy.tickFormat);
+            	.text(fy.tickFormat);
+            
         if (weather) {   
         	focus.add(pv.Rule)
             .data(function() ft.ticks(7))
             .bottom(ft)
             .strokeStyle("#000")
             .lineWidth(function(d) d === 0 ? 0.5 : 0)
+            .segmented(true)
+            .strokeDasharray('2,2')
             .anchor("right").add(pv.Label)
             //.text(function(d) d < 0 ? "-"+d.toString() : d.toString());
             .text(function(d){ return d.toString();});
@@ -764,6 +806,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[9])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 9:
@@ -772,6 +816,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[8])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 8:
@@ -780,6 +826,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[7])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 7:
@@ -788,6 +836,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[6])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 6:
@@ -796,6 +846,8 @@
                     .left(function(d){ return fx(d.x); }) 
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[5])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 5:
@@ -804,6 +856,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[4])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 4:
@@ -812,6 +866,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[3])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 3:
@@ -820,14 +876,18 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[2])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 2:
                 panel.add(pv.Line)
                     .data(function(){ return datasel(1); })
-                    .left(function(d){ return fx(d.x); })
-                    .bottom(function(d){ return fy(d.y); })
+                    .left(function(d){ return fx(d.x);})
+                    .bottom(function(d){return fy(d.y);})
                     .strokeStyle(plotcol[1])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null)
                     .lineWidth(2);
             case 1:
@@ -836,6 +896,8 @@
                     .left(function(d){ return fx(d.x); })
                     .bottom(function(d){ return fy(d.y); })
                     .strokeStyle(plotcol[0])
+                    .segmented(true)
+                    .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                     .interpolate(null) //"step-before"
                     .lineWidth(2);
         }
@@ -845,7 +907,6 @@
                 .left(function(d){ return fx(d.x); })
                 .bottom(function(d){ return ft(d.y); })
                 .strokeStyle('black')
-                //.interpolate('linear') //"step-before"
                 .lineWidth(1);
         }
         
@@ -895,6 +956,8 @@
                 .left(function(d) x(d.x))
                 .bottom(function(d) y(d.y))
                 .strokeStyle(plotcol[j])
+                .segmented(true)
+                .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                 .lineWidth(2);
         }
         
@@ -924,7 +987,7 @@
             .lineWidth(3)
             .cursor("pointer")
             .events("all")
-            .event("click", function(){console.log("Click!"); ui.addMonth(ui);} );
+            .event("click", function(){ui.addMonth(ui);} );
         
         vis.render();
     }

@@ -1,0 +1,84 @@
+div#chartcontainer {
+    float: right;
+    width: 750px;
+
+}
+
+div#treecontainer {
+    float: left;
+    width: 380px;
+    height:500px;
+}
+
+div#diacontainer{
+    width: 1200px;
+    height: 500px;
+    display: inline-block;
+}
+
+div#top{
+    width: 1200px;
+    display: inline-block;
+}
+
+div#charttitle {
+    width: 750px;
+    margin-bottom: 5px;
+    height: 50px;
+    display: inline-block;
+    float: right;
+}
+
+div#content {
+    width: 1200px ;
+    height:720px;
+    margin-left: auto ;
+    margin-right: auto ;
+}
+
+div#chartinfo {
+    width: 750px;
+    margin-top: 15px;
+    height: 250px;
+    display: inline-block;
+    float: right;
+}
+div#myGrid {
+    width:755px;
+    height:300px;
+    display:none;
+}
+
+div#topbar {
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #ffd324;
+    border-bottom: 2px solid #ffd324;
+    text-align:center
+}
+
+p#charttitletext {
+    text-align: center;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+p.chartinformation {
+    text-align: left;
+    padding-left: 20;
+}
+
+div#firstvisit {
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #ffd324;
+    border-bottom: 2px solid #ffd324;
+    text-align:center;
+}
+
+/*p.alert {
+background: #fff6bf url(image_folder/exclamation_mark.gif) center no-repeat;
+background-position: 15px 50%;
+text-align: left;
+padding: 5px 20px 5px 45px;
+border-top: 2px solid #ffd324;
+border-bottom: 2px solid #ffd324;
+}*/

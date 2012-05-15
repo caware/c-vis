@@ -1,7 +1,7 @@
 var cache = new JSONCache();
 var ui = new JouleUIController();
 var config = ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/indextest/config.json"]).config;
-console.log(config);
+//console.log(config);
 //var config = file.result.config;
     
     
@@ -375,10 +375,10 @@ var arc = d3.svg.arc()
 //d3.json("http://mbostock.github.com/d3/data/flare.json", function(json) {
 d3.json(JSON.stringify(myTree), function(json) {
   //var path = vis.data([json]).selectAll("path")
-  console.log(json);
-  console.log(myTree);
-  console.log(vis.data([json]).selectAll("path").data(partition.nodes));
-  console.log(vis.data([myTree]).selectAll("path").data(partition.nodes));
+  //console.log(json);
+  //console.log(myTree);
+  //console.log(vis.data([json]).selectAll("path").data(partition.nodes));
+  //console.log(vis.data([myTree]).selectAll("path").data(partition.nodes));
   var path = vis.data([json]).selectAll("path")
       .data(partition.nodes)
     .enter().append("path")

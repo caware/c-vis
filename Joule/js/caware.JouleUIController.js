@@ -4,6 +4,7 @@ function JouleUIController(){
     this.errorTimeout = 4;
     
     this.useWeather = false;
+    this.scaleSelection = 'scale';
     
     this.spinVar = {
         lines: 12, // The number of lines to draw
@@ -35,7 +36,7 @@ function JouleUIController(){
         var ploturl = new Array();
         var sensorurl = treeIndex.getItem(node.nodeValue)[1];
         colourpool.toggleColour(sensorurl);
-        console.log(sensorurl);
+        //console.log(sensorurl);
         
         this.loadSpin("in", function(){
             if (plotController.togglePlotByUrl(sensorurl) < 0){
@@ -67,14 +68,15 @@ function JouleUIController(){
             weather = new WeatherJSONBridge();
             plotArray = new Array();
             treeIndex = new IntValueStore();
-            plotController = new PlotController(config.maxNumberPlots.value,config.indexUrl.value,ui,weather);
+            plotController = new PlotController(config,ui,weather);
             sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
+            errorList = useri.catchError(useri, cache.getObject, [config.errorUrl.value]);
             colourpool = new ColourPool(config.plotColour.value);
             
             switch (uiType) {
               case 'line':   
                 useri.changeTree(config.indexUrl.value, "treeuse");
-                var startplot = ["/elec/S-m257-"];
+                var startplot = ["/elec/S-m36-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
                 plotController.calculateData(useri.useWeather);
@@ -124,6 +126,30 @@ function JouleUIController(){
         useri.loadSpin("out");
       //});
     };
+    
+    this.jouleScaleSelectionToggle = function(useri, scaleType){
+        switch (scaleType) {
+            case 'all': 
+                $('#scaleAllButton').addClass('success');
+                $('#scaleSelectionButton').removeClass('success');
+                $('#zoomButton').removeClass('success');
+                useri.scaleSelection = 'all';
+                break;
+            case 'scale':
+                $('#scaleAllButton').removeClass('success');
+                $('#scaleSelectionButton').addClass('success');
+                $('#zoomButton').removeClass('success');
+                useri.scaleSelection = 'scale'
+                break;
+            case 'zoom':
+                $('#scaleAllButton').removeClass('success');
+                $('#scaleSelectionButton').removeClass('success');
+                $('#zoomButton').addClass('success');
+                useri.scaleSelection = 'zoom'
+                break;
+        }
+        plotController.calculateData(useri.useWeather);
+    };
       
     
     this.toggleTabs = function(){
@@ -164,7 +190,7 @@ function JouleUIController(){
         $('#notify-bar').prepend(genHTML);
         var time = timeout*1000;
         var t = setTimeout('ui.hideError('+id+')', time);
-        console.log(genHTML);
+        //console.log(genHTML);
         // takes an error discription, and passes it to a class that generates the proper error text, class of error and timeout.
         // then recives text, and appends HTML to the errorbar div.
     };

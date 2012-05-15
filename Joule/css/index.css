@@ -22,6 +22,10 @@ div.alert-bar{
     min-height: 50px;
 }
 
+hr.topHR{
+    margin: 3px;
+}
+
 div#charttitle {
     width: 750px;
     margin-bottom: 5px;

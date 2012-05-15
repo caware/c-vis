@@ -1,0 +1,39 @@
+{
+    "config" : {
+        "name" : {
+            "description" : "Name displayed by the app.",
+            "value" : "Joule @ CL"
+        },
+        "maxNumberPlots" : {
+            "description" : "Maximum number of sensor plots Joule can show.",
+            "value" : 10
+        },
+        "plotColour" : {
+            "description" : "Array of SVG colours for the individual plots. Must be same length as max-number-plots.",
+            "value" : ["firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise"]
+        },
+        "sensorNoAverage" : {
+            "description" : "Array of sensors not to add to average calculations.",
+            "value" : ["S-m41"]
+        },
+        "sensorIgnore" : {
+            "description" : "Array of sensors to completely ignore.",
+            "value" : ["S-m41"]
+        },
+        "zoomSize" : {
+            "description" : "Width of the zoomed section.",
+            "value" : {
+                "zoomX" : 100,
+                "zoomDX" : 200
+            }
+        },
+        "indexUrl" : {
+            "description" : "URL of the JSON index file for the sensors.",
+            "value" : "http://www.cl.cam.ac.uk/~cce25/sensorindex.json"
+        },
+        "sensorFilesUrl" : {
+            "description" : "URL of the root of the dir structure containing the sensor data.",
+            "value" : "http://www.cl.cam.ac.uk/meters"
+        }
+    }
+}

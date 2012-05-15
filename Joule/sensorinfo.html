@@ -124,9 +124,13 @@
         //var warnings = '# Warnings';
         var sensorloc = 'Meter Location';
         
+        console.log(sensorList);
+        
         for (i in sensorList){
             var sen = sensorList[i];
             var url = sen.path.split("S-m")[0];
+            
+            
             
             //sen[Sensor] = sen.sensorField;//.split("m")[1];
             sen[sensorField] = sen.sensor;
@@ -179,7 +183,7 @@
             delete sen[dReadings];
             delete sen[mReadings];
         }
-        console.log(errorList);
+        //console.log(errorList);
         
         var html = _.jsonreport(JSON.stringify(sensorList));
         
@@ -190,7 +194,7 @@
             $('#sensorinfo').append(html);
         //    //console.log();
         //    console.log(html);
-            console.log('ok!');
+            //console.log('ok!');
         });
     </script>
     

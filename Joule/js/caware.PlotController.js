@@ -1,16 +1,16 @@
-function PlotController(maximumplots, indexUrl, useri, weather) {
+function PlotController(config, useri, weather) {
     // A Class for defining a controller object for plots
     
-    
+    this.autoFilter = config.autoFilter.value;
     this.weather = weather;
     this.ui = useri;
     this.plotarray = new Array();
-    this.maxplots = maximumplots;
+    this.maxplots = config.maxNumberPlots.value;
     this.badUrls = [];
     
     this.viewrange = {"startdate":new Date(),"enddate":new Date()};
     
-    var sensorindex = ui.catchError(ui, cache.getObject, indexUrl);
+    var sensorindex = ui.catchError(ui, cache.getObject, config.indexUrl.value);
     
     
     this.getPlots = function(){
@@ -268,7 +268,7 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                     //console.log(tmpstr);
                     //console.log(this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString());
                     if (sensorAccess.checkReadingExists(tmpstr, this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString())){
-                        console.log("Reading OK");
+                        //console.log("Reading OK");
                         //at least one URL has data for the month so extend the plot date.
                         this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                         //var tmpmonth = (this.viewrange.startdate.getMonth()+1);
@@ -293,23 +293,35 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                     //this.ui.showError("Error", "No reading for "+tmpstr, "warn", 5, ui);
                     noDataPlotCount++;
                 }
-                else if (noDataCount > 0){
-                    this.ui.showError("Warning:", "No readings available for :"+noDataSensors.toString(), "warn", 5, ui);
+                else if (noDataSensors.length > 0){
+                    var sensorString = "";
+                    for (warn in noDataSensors){
+                        if (noDataSensors.hasOwnProperty(warn)){
+                            sensorString += noDataSensors[warn].split("/S-")[1].split("-")[0]+", ";
+                        }
+                    }
+                    this.ui.showError("Warning:", "No readings available for sensors "+sensorString, "warn", 8, ui);
                 }
                 
             }
         }
         if (this.plotarray.length == noDataPlotCount){
             //console.log("No data for all plots! Not extending viewport!");
-            this.ui.showError("Info:", "No more history data availble for currently displayed sensors.", "info", 5, ui);
+            this.ui.showError("Info:", "No more history data availble for currently displayed sensors.", "info", 8, ui);
             this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(1);
         }
         //else if (noDataSensors.length = 1){
         //    this.ui.showError("Error", "No reading for "+noDataSensors[0], "warn", 5, ui);
         //}
-        else if (noDataSensors.length > 0){
-            this.ui.showError("Warning:", "No readings for "+noDataSensors.toString(), "warn", 5, ui);
-        }
+        //else if (noDataSensors.length > 0){
+        //    var sensorString = "";
+        //   for (warn in noDataSensors){
+        //        if (noDataSensors.hasOwnProperty(warn)){
+        //            sensorString += noDataSensors[warn].split("/S-")[1].split("-")[0]+", ";
+        //       }
+        //    }
+        //    this.ui.showError("Warning:", "No readings for sensors "+sensorString, "warn", 8, ui);
+        //}
         console.log("Bad URLS:");
         console.log(this.badUrls);
     };
@@ -329,16 +341,32 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
             jsonArray.push([]);
         }
         
+        //for each plot, sift through URLs and remove badLiusted ones?
+        
         
         //console.log("initialised");
         
         if (this.plotarray.length == 0) return 0;
         
-        //console.log("not returned");
+        //console.log(plotArray);
         
         var plotArray = this.plotarray;
-        
+        console.log("plot URLs:");
+        var errorArr = [];
         //FIXME:  if a file DL fails, substitute with zero'ed data.
+        
+        this.testURL = function(url){
+            for (item in this.badUrls){
+                if (this.badUrls.hasOwnProperty(item)){
+                    if (url === this.badUrls[item]+".json"){
+                        console.log('bad item stopped');
+                        console.log(url);
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
         
         //console.log('Earliest date:');
         //console.log(earlieststartdate);
@@ -354,6 +382,8 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                 var totaldata = new Array();
                 var totalobj = {};
                 //For each URL belonging to the plot
+                //console.log(plotArray[i].url.length);
+                //console.log(i)
                 for (var k=0; k<plotArray[i].url.length; k++){
                     //console.log("url worked: "+k);
                     //console.log(plotArray[i].url.length);
@@ -362,19 +392,66 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     //console.log(plotArray[i].url+"Month:"+montharray);
                     
-                    
+                    var initialised = false;
                     for (var t=0;t<montharray.length;t++){
-                        if (t == 0 ){
-                            //console.log("1 T: "+t);
-                            jsonArray[i][k] = ui.catchError(ui, cache.getObject, plotArray[i].url[k]+montharray[t]+".json");
+                        if (!initialised){
+                            var tmpURL = plotArray[i].url[k]+montharray[t]+".json";
+                            if (this.testURL(tmpURL)){
+                                var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+                                var fileName = "S-m"+plotArray[i].url[k].split("/S-m")[1]+montharray[t]+".json";
+                                //console.log(fileName);
+                                for (var sen in errorList){
+                                    if(errorList.hasOwnProperty(sen)){
+                                        for (var z=0; z<errorList[sen].length; z++){
+                                            var error = errorList[sen][z];
+                                            //console.log(error);
+                                            if(fileName === error.filename){
+                                                //console.log(fileName+" has errors!");
+                                                //console.log(error);
+                                                for (var err in error.errors){
+                                                    var str = "Data Index";
+                                                    var dI = error.errors[err][str];
+                                                    tempJSON.data[dI][1] = "BAD:"+tempJSON.data[dI][1].toString();
+                                                    //console.log(tempJSON.data[dI]);
+                                                }
+                                            }
+                                        } 
+                                    }
+                                }
+                                jsonArray[i][k] = tempJSON
+                                initialised = true;
+                            }
                             //console.log("2 T: "+t);
                         }
                         else{
                             //console.log("3 T: "+t);
-                            var tjson = ui.catchError(ui, cache.getObject, plotArray[i].url[k]+montharray[t]+".json");
-                            //console.log("4 T: "+t);
-                            jsonArray[i][k].data = jsonArray[i][k].data.concat(tjson.data);
-                            //console.log("5 T: "+t);
+                            var tmpURL = plotArray[i].url[k]+montharray[t]+".json";
+                            if (this.testURL(tmpURL)){
+                                var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+                                //console.log(tempJSON);
+                                var fileName = "S-m"+plotArray[i].url[k].split("/S-m")[1]+montharray[t]+".json";
+                                //console.log(fileName)
+                                for (var sen in errorList){
+                                    if(errorList.hasOwnProperty(sen)){
+                                        for (var z=0; z<errorList[sen].length; z++){
+                                            var error = errorList[sen][z];
+                                            //console.log(error);
+                                            if(fileName === error.filename){
+                                                //console.log(fileName+" has errors!");
+                                                //console.log(error);
+                                                for (var err in error.errors){
+                                                    var str = "Data Index";
+                                                    var dI = error.errors[err][str];
+                                                    tempJSON.data[dI][1] = "BAD:"+tempJSON.data[dI][1].toString();
+                                                    //console.log(tempJSON.data[dI]);
+                                                }
+                                            }
+                                        } 
+                                    }
+                                }
+                                jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
+							}
+							//console.log("5 T: "+t);
                         }
                     }
                     //Add the room to the description
@@ -394,53 +471,83 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                     //console.log(jsonArray[i][0].coverage);
                     
                     
-                    if(k == 0){
-                        //in the first iteration, just copy the first sensor data accross.
-                        totaldata = jsonArray[i][k].data;
-                        //console.log("7 copied first data across");
-                    }
-                    else{
-                        //For each datum in the data array of the sensor
-                        for(var m=0; m<jsonArray[i][k].data.length; m++){
-                            //for the first lot of data initailise to zero first so we can add to it
-                            
-                            //Add each data point to the exsisting one in the total data array
-                            //totaldata[m] += jsonArray[i][k].data[m][1];
-                            if(m+1 > jsonArray[i][0].data.length){
-                                //console.log('Not all sensors similar length, request update?');
-                                //push new data onto the totaldata array
-                                //totaldata.splice(m,0,jsonArray[i][0].data[m]);
-                                totaldata.push(jsonArray[i][k].data[m]);
-                            }
-                            else{
-                                totaldata[m][1] += jsonArray[i][k].data[m][1];
-                            }
-                        }
-                        //console.log("8 added data across");
-                    }
+                    // Go through the array, add up sums of meters if their TS already exist, or add them
+                    // at the end if not (we sort them later)
+//                     if(k == 0){
+//                         //in the first iteration, just copy the first sensor data accross.
+//                         totaldata = jsonArray[i][k].data;
+//                     }
+//                     else{
+//                         //For each datum in the data array of the sensor
+//                         for(var m=0; m<jsonArray[i][k].data.length; m++){
+//                             if(m+1 > jsonArray[i][0].data.length){
+//                                 // If the array we are trying to add is larger, add the extra item on the end
+//                                 totaldata.push(jsonArray[i][k].data[m]);
+//                             }
+//                             else{
+//                                 // If we are adding energy amounts together, if they are bad, change to numbers to
+//                                 // do summation, and add bad indicator on again afterwards.
+//                                 var bad = false;
+//                                 if (typeof totaldata[m][1] == "string"){
+//                                     console.log(totaldata[m][1]);
+//                                     totaldata[m][1] = parseFloat(totaldata[m][1].split(':')[1]);
+//                                     console.log(totaldata[m][1]);
+//                                     bad = true;
+//                                 }
+//                                 if (typeof jsonArray[i][k].data[m][1] == "string"){
+//                                     console.log(jsonArray[i][k].data[m][1]);
+//                                     jsonArray[i][k].data[m][1] = parseFloat(jsonArray[i][k].data[m][1].split(':')[1]);
+//                                     console.log(jsonArray[i][k].data[m][1]);
+//                                     bad = true;
+//                                 }
+//                                 
+//                                 //if (bad) {console.log(jsonArray[i][k].data[m][1]);}
+//                                 totaldata[m][1] += jsonArray[i][k].data[m][1];
+//                                 //if (bad) {console.log(jsonArray[i][k].data[m][1]);}
+//                                 
+//                                 if (bad){
+//                                     jsonArray[i][k].data[m][1] = "BAD:"+jsonArray[i][k].data[m][1].toString()
+//                                 }
+//                             }
+//                         }
+//                     }
                     
+                    
+                    //go through dataset, and add in any dates we found that aren't in the
+                    //total data set, and initialise them to 0.
                     var tmpdata = jsonArray[i][k].data;
                     for(var p=0; p<tmpdata.length; p++){
                         var key = tmpdata[p][0];
-                        //console.log(tmpdata[p][1]);
+                        
                         if (!totalobj.hasOwnProperty(key)){
-                            //console.log("New date: "+new Date(key));
                             totalobj[key] = 0;
                         }
+                        
+                        var bad = false;
+                        if (typeof totalobj[key] == "string"){
+                            bad = true;
+                            totalobj[key] = parseFloat(totalobj[key].split(':')[1]);
+                        }
+                        if (typeof tmpdata[p][1] == "string"){
+                            bad = true;
+                            tmpdata[p][1] = parseFloat(tmpdata[p][1].split(':')[1]);
+                        }
+                        
                         totalobj[key]+=tmpdata[p][1];
+                        
+                        if (bad){
+                            totalobj[key] = "BAD:"+totalobj[key].toString();
+                        }
                     }
-                    
-                    //console.log("9");
                 }
                 
+                // Convert string of epoch date into int, and sort dates.
                 var totalarr = [];
                 for (var dat in totalobj){
                     totalarr.push([parseInt(dat, 10),totalobj[dat]]);
-                    //console.log(dat);
                 }
                 totalarr.sort(sortArrayNum);
-                //console.log(totalarr);
-                //console.log("10 sorted");
+                
                 for (var dat in totalarr){
                     var tmpdate = new Date(totalarr[dat][0]);
                     //console.log(tmpdate+" - "+totalarr[dat][1]);
@@ -458,49 +565,152 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                 //jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
                 montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                 //console.log("mntharray= "+montharray);
+                var initialised = false;
                 for (var t=0;t<montharray.length;t++){
-                        if (t == 0){
+                        if (!initialised){
                             //console.log("getting JSONS");
-                            jsonArray[i][0] = ui.catchError(ui, cache.getObject, plotArray[i].url[0]+montharray[t]+".json");
-                            //console.log("A");
+                            var tmpURL = plotArray[i].url[0]+montharray[t]+".json";
+                            if (this.testURL(tmpURL)){
+                                var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+                                var fileName = "S-m"+plotArray[i].url[0].split("/S-m")[1]+montharray[t]+".json";
+                                
+                                for (var sen in errorList){
+                                    if(errorList.hasOwnProperty(sen)){
+                                        for (var e=0; e<errorList[sen].length; e++){
+                                            var error = errorList[sen][e];
+                                            //console.log(error);
+                                            if(fileName === error.filename){
+                                                //console.log(fileName+" has errors!");
+                                                //console.log(error);
+                                                for (var err in error.errors){
+                                                    var str = "Data Index";
+                                                    var dI = error.errors[err][str];
+                                                    tempJSON.data[dI][1] = "BAD:"+tempJSON.data[dI][1].toString();
+                                                    //console.log(tempJSON.data[dI]);
+                                                }
+                                            }
+                                        } 
+                                    }
+                                }
+                                jsonArray[i][0] = tempJSON;
+                                initialised = true;
+                            }
                         }
                         else{
                             //console.log("B");
-                            var tjson = ui.catchError(ui, cache.getObject, plotArray[i].url[0]+montharray[t]+".json");
-                            //console.log("C");
-                            jsonArray[i][0].data = jsonArray[i][0].data.concat(tjson.data);
-                            //console.log("D");
+                            var tmpURL = plotArray[i].url[0]+montharray[t]+".json";
+                            if (this.testURL(tmpURL)){
+                                var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+                                var fileName = "S-m"+plotArray[i].url[0].split("/S-m")[1]+montharray[t]+".json";
+                                
+                                for (var sen in errorList){
+                                    if(errorList.hasOwnProperty(sen)){
+                                        for (var e=0; e<errorList[sen].length; e++){
+                                            var error = errorList[sen][e];
+                                            //console.log(error);
+                                            if(fileName === error.filename){
+                                                //console.log(fileName+" has errors!");
+                                                //console.log(error);
+                                                for (var err in error.errors){
+                                                    var str = "Data Index";
+                                                    var dI = error.errors[err][str];
+                                                    tempJSON.data[dI][1] = "BAD:"+tempJSON.data[dI][1].toString();
+                                                    //console.log(tempJSON.data[dI]);
+                                                }
+                                            }
+                                        } 
+                                    }
+                                }
+                                jsonArray[i][0].data = jsonArray[i][0].data.concat(tempJSON.data);
+                                //console.log("D");
+                            }
                         }
                     }
             }
             //console.log("E");
-            
+            //console.log(jsonArray);
             var tmptotal = 0;
-            var tmpdata = new Array();                
+            var tmpdata = new Array();
+            //console.log("i:"+i);
+            //console.log(plotArray);
+            //console.log(jsonArray);
             plotArray[i].description = jsonArray[i][0].description;
             plotArray[i].room = jsonArray[i][0].room;
-            //plotArray[i].colour = plotColours[i];
-            //plotArray[i].colour = colourpool.getColour(plotArray[i].sensor);
-            //this.plotarray[i].colour = plotColours[i];
-            //console.log("12 calc");
+            
+            var plotBadData = false;
+            var badPoints = 0;
+            
             for (var j=0; j<jsonArray[i][0].data.length; j++){
                 var tmpx = jsonArray[i][0].data[j][0];
                 var tmpy = jsonArray[i][0].data[j][1];
-                tmptotal += tmpy;
+                var bad = false;
+                
+                if (!plotBadData){
+                    if (typeof tmpy == "number"){
+                        if (tmpy > this.autoFilter.maxY) bad = true;
+                        else if (tmpy < this.autoFilter.minY) bad = true;
+                    }
+                }
+                if (typeof tmpy == "string"){
+                    //console.log(parseFloat(tmpy.split(':')[1]));
+                    tmpy = parseFloat(tmpy.split(':')[1]);
+                    var bad = true;
+                }
+                
+                if (!bad) tmptotal += tmpy;
+                
                 if (tmpdata.length == 0){
                     plotArray[i].maxtime = tmpx;
                     plotArray[i].mintime = tmpx;
-                    plotArray[i].maxenergy = tmpy;
-                    plotArray[i].minenergy = tmpy;
+                    if (!bad){
+                        plotArray[i].maxenergy = tmpy;
+                        plotArray[i].minenergy = tmpy;
+                    }
+                    else{
+                        plotArray[i].maxenergy = 0;
+                        plotArray[i].minenergy = 0;
+                    }
                 }
                 else {
                     if (tmpx > plotArray[i].maxtime){plotArray[i].maxtime = tmpx;}
                     else if (tmpx < plotArray[i].mintime){plotArray[i].mintime = tmpx;}
-                    if (tmpy > plotArray[i].maxenergy){plotArray[i].maxenergy = tmpy;}
-                    else if (tmpy < plotArray[i].minenergy){plotArray[i].minenergy = tmpy;}
+                    if (!bad){
+                        if (tmpy > plotArray[i].maxenergy){plotArray[i].maxenergy = tmpy;}
+                        else if (tmpy < plotArray[i].minenergy){plotArray[i].minenergy = tmpy;}
+                    }
                 }
                 
-                tmpdata.push({x:new Date(tmpx),y: tmpy});
+                var tmpDataPoint = {x:new Date(tmpx), y: tmpy};
+                
+                //if(tmpy < 6){
+                //    console.log('tmpy: '+tmpy);
+                //    console.log('bad: '+bad);
+                //    console.log('j: '+j);
+                //    if (j>0) console.log(tmpdata[j-badPoints-1]);
+                //}
+                
+                if(bad){
+                    if(plotBadData){
+                        //console.log("Plotting Bad data!");
+                        tmpDataPoint.bad = true;
+                        tmpdata.push(tmpDataPoint);
+                    }
+                    else{
+                        //console.log("Bad data!");
+                        //console.log(tmpDataPoint);
+                        //onsole.log(j);
+                        if(j>0){
+                            tmpdata[j-badPoints-1].bad = true;
+                            //console.log('not added, and labeled last point bad.');
+                            //tmpdata.push(tmpDataPoint);
+                            //tmpdata[0].bad = true;
+                        }
+                    }
+                    ++badPoints;
+                }
+                else{
+                    tmpdata.push(tmpDataPoint);
+                }
             }
             //console.log("13 max min");
             //console.log('sensor '+plotArray[i].description+' datalen:'+tmpdata.length+' total:'+tmptotal);
@@ -564,10 +774,10 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
         var chartcount = plotArray.length;
         
         if (useWeather){
-            console.log('Using Weather');
+            //console.log('Using Weather');
             //console.log(dataArray);
-            console.log(start);
-            console.log(end);
+            //console.log(start);
+            //console.log(end);
             //console.log(chartmax);
             var sDate = new Date(start);
             var eDate = new Date(end);
@@ -595,14 +805,18 @@ function PlotController(maximumplots, indexUrl, useri, weather) {
                 }
             
             }
-            console.log("Days: "+days.toString());
+            //console.log("Days: "+days.toString());
             //console.log(weatherobj);
             //weather
         }
         
+        //2D array of points where bad data starts
+        
+        
+        //console.log(dataArray);
         
         //console.log("s / e"+start.toString()+end.toString());
-        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr);
+        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr,errorArr);
         //console.log("16 chart!");
     };
     

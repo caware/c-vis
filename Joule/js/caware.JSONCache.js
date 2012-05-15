@@ -59,7 +59,7 @@ function JSONCache() {
     
     this.ajaxError = function(jqXHR, textStatus, errorThrown){
         var error = {reqObj: jqXHR, status: textStatus, error: errorThrown };
-        console.log(error);
+        //console.log(error);
     };
     
     this.clearCache = function(){
