@@ -75,7 +75,7 @@
                     
                     if (elecsensors[i].sensor == "S-m36"){
                         var bld = 'Building (S-m36)';
-                        objfloor[bld] = null;
+                        //objfloor[bld] = null;
                         //If sensor = main power, assign its total to the toplevel total
                         //var av = (elecsensors[i].recenttotal / elecsensors[i].datasize);
                         //objfloor.Average = treeIndex.addNewItem(av);
@@ -239,17 +239,18 @@
                         if (config.sensorNoAverage.value[x] == elecsensors[i].sensor) {sensorAverageIgnored = true; break;}
                     }
                     
-                    if (!sensorAverageIgnored){var av = sensorAccess.getLatestAverage(path);}
-                    else {var av = 0;}
+                    //if (!sensorAverageIgnored){
+                    var av = sensorAccess.getLatestAverage(path);//}
+                    //else {var av = 0;}
                     
-                    if (elecsensors[i].sensor == "S-m257"){
+                    if (elecsensors[i].sensor == "S-m36"){
                         //get most vrecent reading,
                         //work out size and total thus.
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
                     }
                     
-                    else if (elecsensors[i].sensor != "S-m36" && !sensorIgnored){
+                    else if (elecsensors[i].sensor != "S-m257" && !sensorIgnored){
                         
                         if (!sensorAverageIgnored){ treeIndex.appendItemURL(path, objcircuit.Average); }
                         //treeIndex.appendItemURL(path, objcircuit.Average);

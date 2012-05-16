@@ -4,6 +4,7 @@ function JouleUIController(){
     this.errorTimeout = 4;
     
     this.useWeather = false;
+    this.showDiff = false;
     this.scaleSelection = 'scale';
     
     this.spinVar = {
@@ -43,7 +44,7 @@ function JouleUIController(){
                 colourpool.toggleColour(sensorurl);
             }
             
-            plotController.calculateData(useri.useWeather);
+            plotController.calculateData(useri.useWeather, useri.showDiff);
             useri.loadSpin("out");
         });
     };
@@ -54,7 +55,7 @@ function JouleUIController(){
             //console.log("Two");
             plotController.addMonth();
             //console.log("Three");
-            plotController.calculateData(useri.useWeather);
+            plotController.calculateData(useri.useWeather, useri.showDiff);
             //console.log("Four");
             useri.loadSpin("out");
             //console.log("Five");
@@ -69,7 +70,7 @@ function JouleUIController(){
             plotArray = new Array();
             treeIndex = new IntValueStore();
             plotController = new PlotController(config,ui,weather);
-            sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
+            sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value,config);
             errorList = useri.catchError(useri, cache.getObject, [config.errorUrl.value]);
             colourpool = new ColourPool(config.plotColour.value);
             
@@ -79,7 +80,7 @@ function JouleUIController(){
                 var startplot = ["/elec/S-m36-"];
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
-                plotController.calculateData(useri.useWeather);
+                plotController.calculateData(useri.useWeather, useri.showDiff);
                 refreshTree();
                 break;
                 
@@ -97,7 +98,7 @@ function JouleUIController(){
                 colourpool.toggleColour(startplot);
                 plotController.togglePlotByUrl(startplot);
                 
-                plotController.calculateData(useri.useWeather);
+                plotController.calculateData(useri.useWeather, useri.showDiff);
                 refreshTree();
                 break;
             }
@@ -122,7 +123,24 @@ function JouleUIController(){
             //$('#temperButton').addClass('Default');
             useri.useWeather = true
         }
-        plotController.calculateData(useri.useWeather);
+        plotController.calculateData(useri.useWeather, useri.showDiff);
+        useri.loadSpin("out");
+      //});
+    };
+    
+    this.jouleShowDiff = function(useri){
+      this.loadSpin("in", function(){});
+        if (useri.showDiff == true){
+            //$('#temperButton').addClass('Default');
+            $('#showDiffButton').removeClass('success');
+            useri.showDiff = false;
+        }
+        else if (useri.showDiff == false){
+            $('#showDiffButton').addClass('success');
+            //$('#temperButton').addClass('Default');
+            useri.showDiff = true
+        }
+        plotController.calculateData(useri.useWeather, useri.showDiff);
         useri.loadSpin("out");
       //});
     };
@@ -148,7 +166,7 @@ function JouleUIController(){
                 useri.scaleSelection = 'zoom'
                 break;
         }
-        plotController.calculateData(useri.useWeather);
+        plotController.calculateData(useri.useWeather, useri.showDiff);
     };
       
     

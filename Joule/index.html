@@ -109,6 +109,7 @@
                 
                 <div id="chartcontainer">
                 	<a style="margin-left: 10px;" href="#" onclick="ui.jouleTempToggle(ui)"><button class="btn" id="temperButton">Show Temperature</button></a>
+                	<a style="margin-left: 10px;" href="#" onclick="ui.jouleShowDiff(ui)"><button class="btn" id="showDiffButton">Show Monitored Difference</button></a>
                 	<div style="margin-right: 10px; margin-left: 10px; float: right;">
                 		Y Axis Scale:
                 	    <a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'all')"><button class="btn" id="scaleAllButton">All Data</button></a>
@@ -135,7 +136,7 @@
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.event.drag-2.0.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
-    <script type="text/javascript" src="js/protovis-d3.2.js"></script>
+    <script type="text/javascript" src="js/protovis-d3.4.js"></script>
     <script type="text/javascript" src="js/date-en-GB.js"></script>
     <script type="text/javascript" src="js/slick.core.js"></script>
     <script type="text/javascript" src="js/slick.grid.js"></script>
@@ -455,11 +456,15 @@
         }
     }
     
-    //function cmpPoints(a,b){
-    //		return a.x - b.x;
-    //}
+    function cmpPoints(a,b){
+    		return a.x - b.x;
+    }
     
-    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol,weather,missingArr){
+    function actuallyChart(dataArray,start,end,maxArr,chartcount,plotcol,weather,missingArr,diffArr){
+    	if(diffArr){
+    		diffArr = diffArr[0];
+    		console.log(diffArr[0]);
+    	}
         var data = dataArray;
         
         var chartmax = 0.0;
@@ -469,23 +474,14 @@
           }
         }
         
-        if (weather){
-        	//console.log('Using Weather');
-        	//console.log(pv.max(weather, function(d) d.y));
-        	//for (xyz in weather){
-        	//	console.log(xyz.toString()+'  '+Object.prototype.toString.call(weather[xyz].y));
-        	//
-        	//}
-        	//weather.sort(cmpPoints);
-        	//weather = weather.data;
-        	//data.push(weather);
-        	//var test = [{x:1,y:2}, {x:3,y:4}];
-        	//console.log(test);
-        	//console.log(weather);
-        	//console.log(pv.max(test, function(d){ return d.y;}));
-        	//console.log(pv.max(weather, function(d){ return d.y;}));
+        if (diffArr){
+        	console.log('used diffArr maxes too');
+        	for (tmpMax in diffArr){
+        		if (diffArr[tmpMax].y > chartmax){
+          			chartmax = diffArr[tmpMax];
+          		}
+        	}
         }
-        //console.log(data);
         
         /* Scales and sizing. */
         var w = 700,
@@ -533,12 +529,20 @@
             if (id === 'temps'){
             	if (weather){
             		temper = (weather.slice(Math.max(0, pv.search.index(weather, d1, function(d) d.x) - 1),
-          	  	pv.search.index(weather, d2, function(d) d.x) + 1));
-          	  	//console.log(weather);
-        			}
+          	  		pv.search.index(weather, d2, function(d) d.x) + 1));
+          	  		//console.log(weather);
+        		}
             	return temper;
             }
-            //else if (typeof id == 'undefined'){
+            else if (id === 'diffs'){
+            	if (diffArr){
+            		console.log('hit datasel');
+            		diff = (diffArr.slice(Math.max(0, pv.search.index(diffArr, d1, function(d) d.x) - 1),
+          	  		pv.search.index(diffArr, d2, function(d) d.x) + 1));
+          	  		//console.log(weather);
+        		}
+            	return diff;
+            }
             else {
             	//var tmpYMax = [];
             	for(var j=0; j<data.length; j++){//for each line in the data array
@@ -705,6 +709,9 @@
                             if(tmp[b].y < miny){miny = tmp[b].y;}
                         }
                     };
+                    
+                    //add check for overall diff chart mins n maxs here
+                    
                     var avg = tot / tmp.length;
                     var roundavg = Math.round(avg*1000)/1000;
                     
@@ -909,6 +916,15 @@
                 .strokeStyle('black')
                 .lineWidth(1);
         }
+        if(diffArr){
+        	panel.add(pv.Line)
+            	.data(function(){ return datasel('diffs'); })
+                .left(function(d){ return fx(d.x); })
+                .bottom(function(d){ return fy(d.y); })
+                .strokeStyle('darkgrey')
+                .strokeDasharray('4,2')
+                .lineWidth(2);
+        }
         
         /* Context panel (zoomed out). */
         var context = vis.add(pv.Panel)
@@ -956,8 +972,8 @@
                 .left(function(d) x(d.x))
                 .bottom(function(d) y(d.y))
                 .strokeStyle(plotcol[j])
-                .segmented(true)
-                .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
+                //.segmented(true)
+                //.strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                 .lineWidth(2);
         }
         

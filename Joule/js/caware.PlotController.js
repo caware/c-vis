@@ -331,8 +331,27 @@ function PlotController(config, useri, weather) {
         return false
     };
     
-    this.calculateData = function(useWeather){
-        //console.log("Calc");
+    this.calculateData = function(useWeather, showDiff){
+        //console.log("show Diff:");
+        //console.log(showDiff);
+        
+        if (showDiff){
+            var diffArr = [];
+            var stYear = this.viewrange.startdate.getFullYear().toString();
+            var endYear = this.viewrange.enddate.getFullYear().toString();
+            var stMonth = (this.viewrange.startdate.getMonth()+1);
+            var endMonth = (this.viewrange.enddate.getMonth()+1);
+            if (stMonth < 10) stMonth = "0"+stMonth;
+            if (endMonth < 10) endMonth = "0"+endMonth;
+            
+            var monthArray = getMonthsBetween(stMonth,stYear,endMonth,endYear);
+            for (mnth in monthArray){
+                if (monthArray.hasOwnProperty(mnth)){
+                    diffArr.push(sensorAccess.getMissingMonitored(monthArray[mnth]));
+                }
+            }
+            //diffArr.sort(cmpPoints);
+        }
         // Calculate and return the data points, start, end and maximum values used for drawing the plots.
         
         //  Create and initialise an array for storing the json data from the sensors
@@ -351,7 +370,7 @@ function PlotController(config, useri, weather) {
         //console.log(plotArray);
         
         var plotArray = this.plotarray;
-        console.log("plot URLs:");
+        //console.log("plot URLs:");
         var errorArr = [];
         //FIXME:  if a file DL fails, substitute with zero'ed data.
         
@@ -816,7 +835,7 @@ function PlotController(config, useri, weather) {
         //console.log(dataArray);
         
         //console.log("s / e"+start.toString()+end.toString());
-        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr,errorArr);
+        actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr,errorArr,diffArr);
         //console.log("16 chart!");
     };
     

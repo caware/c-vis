@@ -1,9 +1,11 @@
-function SensorAccessor(indexUrl, sensorloc) {
+function SensorAccessor(indexUrl, sensorloc, config) {
     // A Class for defining a controller object for plots
     
     //ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/config.json"]).config;
     this.elecsensors = ui.catchError(ui, cache.getObject, [indexUrl]).sensors.elec;
     this.sensorlocation = sensorloc;
+    this.config = config;
+    this.diffObj = {};
     
     
     this.getLatestReading = function(sensorurl){
@@ -77,14 +79,14 @@ function SensorAccessor(indexUrl, sensorloc) {
         return 0;
     };
     
-    this.checkReadingExists = function(sensorurl,yearmonth){
+    this.checkReadingExists = function(sensorurl,yearMonth){
         var indexentry = this.getIndexEntry(sensorurl);
         var key = "monthly-readings";
         var arr = indexentry[key];
         //if (arr == undefined) {return false;}
         var found = false;
         for (var i=0;i<arr.length;i++){
-            if (yearmonth == arr[i].match(/[0-9]{4}-[0-9]{2}/)[0]){
+            if (yearMonth == arr[i].match(/[0-9]{4}-[0-9]{2}/)[0]){
                 found = arr[i];
                 break;
             }
@@ -99,5 +101,92 @@ function SensorAccessor(indexUrl, sensorloc) {
             }
         }
         return false;
+    };
+    
+    this.getMissingMonitored = function(yearMonth){
+        if (this.diffObj[yearMonth]) return this.diffObj[yearMonth];
+        var overall = [];
+        var monitored = [];
+        for(var sen in this.elecsensors){
+            if (this.elecsensors.hasOwnProperty(sen)){
+                var sense = this.elecsensors[sen];
+                var ignoreSensor = false;
+                
+                for(var ig in this.config.sensorNoAverage.value){
+                    if (sense.sensor === this.config.sensorNoAverage.value[ig]){
+                        ignoreSensor = true;
+                    }
+                }
+                
+                for(var ig in this.config.sensorIgnore.value){
+                    if (sense.sensor === this.config.sensorIgnore.value[ig]){
+                        ignoreSensor = true;
+                    }
+                }
+                
+                if (!ignoreSensor){ 
+                    var key = "monthly-readings";
+                    var found = false;
+                    for (var i=0;i<sense[key].length;i++){
+                        if (yearMonth == sense[key][i].match(/[0-9]{4}-[0-9]{2}/)[0]){
+                            found = sense[key][i];
+                            break;
+                        }
+                    }
+                    if(found){
+                        //console.log(found);
+                        var sensorpath = sense.path.match(/^.*\//)[0];
+                        var fullurl = this.sensorlocation+sensorpath+found;
+                        //console.log(fullurl);
+                        var file = ui.catchError(ui, cache.getObject, fullurl);
+                        
+                        if (sense.sensor === "S-m36"){
+                            for(var d in file.data){
+                                if (file.data.hasOwnProperty(d)){
+                                    overall.push({"x":file.data[d][0], "y":file.data[d][1]})
+                                }
+                            }
+                        }
+                        else if (sense.sensor !== "S-m257"){
+                            for(var d in file.data){
+                                if (file.data.hasOwnProperty(d)){
+                                    var alreadyHere = false
+                                    for (var m in monitored){
+                                        if (monitored.hasOwnProperty(m)){
+                                            if (monitored[m].x === file.data[d][0]){
+                                                monitored[m].y += file.data[d][1];
+                                                alreadyHere = true;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    if (!alreadyHere){
+                                        monitored.push({"x":file.data[d][0], "y":file.data[d][1]});
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //console.log(overall);  
+        //console.log(monitored);
+        var diff = [];
+        for (var m in monitored){
+            if (monitored.hasOwnProperty(m)){
+                for (var o in overall){
+                    if (overall.hasOwnProperty(o)){
+                        if (overall[o].x === monitored[m].x){
+                            var diffY = overall[o].y - monitored[m].y;
+                            diff.push({"x":overall[o].x, "y":diffY});
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        this.diffObj[yearMonth] = diff;
+        return diff;
     };
 }
