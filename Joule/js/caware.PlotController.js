@@ -34,7 +34,7 @@ function PlotController(config, useri, weather) {
     this.updateAvgSelected = function(ploturl, avgsel){
         for (var i in this.plotarray){
             if (this.plotarray.hasOwnProperty(i)){
-                if (ploturl.compare(this.plotarray[i].url)){
+                if (ploturl.compare(this.plotarray[i].sensor)){
                     found = true;
                     this.plotarray[i].avgselected = avgsel;
                     break;
@@ -52,6 +52,14 @@ function PlotController(config, useri, weather) {
     this.togglePlotByUrl = function(sensorurl){
         // Adds a new plot to the store from an array of ploturls
         //var todaydate = new Date();
+        //console.log(type);
+        //console.log(sensorurl);\
+        var colourCopy = sensorurl.slice(0);
+        if (sensorurl[0] === "dataDiff"){
+            sensorurl.splice(0, 1);
+            var statType = "dataDiff"
+            console.log('removed!');
+        }
         //console.log(sensorurl);
         //var year = this.viewrange.startdate.getFullYear();
         //var month = (this.viewrange.startdate.getMonth()+1);
@@ -60,6 +68,37 @@ function PlotController(config, useri, weather) {
         //var endyear = this.viewrange.enddate.getFullYear();
         //var endmonth = (this.viewrange.enddate.getMonth()+1);
         //if (endmonth<10) endmonth = "0"+endmonth;
+        
+        // var Normsensorurl=["/elec/primary-se18/S-m27-", "/elec/primary-smb1/mcc05/S-m37-", "/elec/primary-cs3-riser/S-sockets/S-m10-", "/elec/primary-cs3-riser/S-lighting/S-m11-", "/elec/primary-cs2-riser/S-sockets/S-m12-", "/elec/primary-cs2-riser/S-lighting/S-m13-", "/elec/primary-cs2-riser/F-sockets/S-m14-", "/elec/primary-cs2-riser/F-lighting/S-m15-", "/elec/primary-cs2-riser/G-sockets/S-m16-", "/elec/primary-cs2-riser/G-lighting/S-m17-", "/elec/primary-cr2/S-m18-", "/elec/primary-cr-ac/S-m19-", "/elec/primary-G-exr/S-m20-", "/elec/primary-cs1-riser/G-sockets/S-m21-", "/elec/primary-cs1-riser/G-lighting/S-m22-", "/elec/primary-cs1-riser/F-lighting/S-m23-", "/elec/primary-cs1-riser/F-sockets/S-m24-", "/elec/primary-cs1-riser/S-lighting/S-m42-", "/elec/primary-cs1-riser/S-sockets/S-m26-", "/elec/primary-cs1-riser/SW00-ac/S-m52-", "/elec/primary-cs4-riser/S-lighting/S-m28-", "/elec/primary-cs4-riser/F-sockets/S-m31-", "/elec/primary-cs4-riser/F-lighting/S-m30-", "/elec/primary-cs4-riser/G-lighting/S-m34-", "/elec/primary-cs4-riser/G-sockets/S-m35-", "/elec/primary-cs4-riser/S-sockets/S-m29-", "/elec/primary-smb2/G-sockets/S-m32-", "/elec/primary-smb2/G-lighting/S-m33-", "/elec/primary-smb2/emerglight/S-m40-", "/elec/primary-smb2/mcc07/S-m38-", "/elec/primary-smb2/lifts/S-m39-", "/elec/primary-condensor/S-m43-", "/elec/primary-chiller/S-m44-", "/elec/primary-mcc01/S-m46-", "/elec/primary-mcc04/S-m47-", "/elec/primary-cr/pwr/S-m48-", "/elec/primary-mcc03/S-m50-", "/elec/primary-mcc02/S-m51-", "/elec/primary-fire-sec/S-m45-", "/elec/primary-pabx/S-m49-"];
+// 
+//         
+//         if (sensorurl[0] === "dataDiff"){
+//             console.log("negative data!");
+//             console.log(sensorurl[0]);
+//             //for(var z=0;z<sensorurl.length;z++){
+//             //    console.log(sensorurl[z]);
+//             //}
+//             sensorurl.splice(0, 1);
+//             //for(var z=0;z<sensorurl.length;z++){
+//             //    console.log(sensorurl[z]);
+//             //}
+//             var plotType = "dataDiff";
+//         }
+//         
+//         var same = true;
+//         for(var z=0;z<sensorurl.length;z++){
+//             if (!(sensorurl[z] === Normsensorurl[z])){
+//                 console.log(sensorurl[z]);
+//                 console.log(Normsensorurl[z]);
+//                 same = false;
+//                 break;
+//             }
+//         }
+//         if (same) console.log("all good yo!");
+        
+        //var sensorurl=["/elec/primary-se18/S-m27-", "/elec/primary-smb1/mcc05/S-m37-", "/elec/primary-cs3-riser/S-sockets/S-m10-", "/elec/primary-cs3-riser/S-lighting/S-m11-", "/elec/primary-cs2-riser/S-sockets/S-m12-", "/elec/primary-cs2-riser/S-lighting/S-m13-", "/elec/primary-cs2-riser/F-sockets/S-m14-", "/elec/primary-cs2-riser/F-lighting/S-m15-", "/elec/primary-cs2-riser/G-sockets/S-m16-", "/elec/primary-cs2-riser/G-lighting/S-m17-", "/elec/primary-cr2/S-m18-", "/elec/primary-cr-ac/S-m19-", "/elec/primary-G-exr/S-m20-", "/elec/primary-cs1-riser/G-sockets/S-m21-", "/elec/primary-cs1-riser/G-lighting/S-m22-", "/elec/primary-cs1-riser/F-lighting/S-m23-", "/elec/primary-cs1-riser/F-sockets/S-m24-", "/elec/primary-cs1-riser/S-lighting/S-m42-", "/elec/primary-cs1-riser/S-sockets/S-m26-", "/elec/primary-cs1-riser/SW00-ac/S-m52-", "/elec/primary-cs4-riser/S-lighting/S-m28-", "/elec/primary-cs4-riser/F-sockets/S-m31-", "/elec/primary-cs4-riser/F-lighting/S-m30-", "/elec/primary-cs4-riser/G-lighting/S-m34-", "/elec/primary-cs4-riser/G-sockets/S-m35-", "/elec/primary-cs4-riser/S-sockets/S-m29-", "/elec/primary-smb2/G-sockets/S-m32-", "/elec/primary-smb2/G-lighting/S-m33-", "/elec/primary-smb2/emerglight/S-m40-", "/elec/primary-smb2/mcc07/S-m38-", "/elec/primary-smb2/lifts/S-m39-", "/elec/primary-condensor/S-m43-", "/elec/primary-chiller/S-m44-", "/elec/primary-mcc01/S-m46-", "/elec/primary-mcc04/S-m47-", "/elec/primary-cr/pwr/S-m48-", "/elec/primary-mcc03/S-m50-", "/elec/primary-mcc02/S-m51-", "/elec/primary-fire-sec/S-m45-", "/elec/primary-pabx/S-m49-"];
+
+        
         
         var elecsensors = sensorindex.sensors.elec;
         //var valid = false;
@@ -112,27 +151,37 @@ function PlotController(config, useri, weather) {
             ploturl[x] = config.sensorFilesUrl.value+sensorurl[x];
         }
         
-        var plotline = {"id":0,"url":ploturl,"description":"","sensor":sensorurl,
+        var plotline = {"id":0,"url":ploturl,"description":"","sensor":colourCopy,
                         "startmonth":month.toString(), "startyear":year.toString(),
                         "endmonth":endmonth.toString(), "endyear":endyear.toString(),
                         "startmonthyear":month.toString()+'-'+year.toString(),
                         "endmonthyear":endmonth.toString()+'-'+endyear.toString(),
                         "startmax":startmax, "endmax":endmax,
-                        "colour":colourpool.getColour(sensorurl), "sensor":"Sensor", "room":"Room",
+                        "room":"Room",
                         "circuit":"Circuit", "avgselected":10.0,
                         "avgtotal":15.0, "totalenergy":20.0,
                         "maxtime":0, "mintime":0,
                         "maxenergy":0.0, "minenergy":0.0,
                         "data":new Array()}
+                        
+        if (statType){
+            plotline["colour"] = colourpool.getColour(colourCopy.toString());
+            plotline["stat"] = statType;
+        }
+        else{
+            plotline["colour"] = colourpool.getColour(sensorurl.toString());
+            plotline["stat"] = "none";
+        }
         var found = false;
         
         //console.log(plotline);
+        //console.log(this.plotarray);
         
         //return -1;
         
         for (var i in this.plotarray){
             if (this.plotarray.hasOwnProperty(i)){
-                if (cmpArray(plotline.url, this.plotarray[i].url)){
+                if (cmpArray(plotline.sensor, this.plotarray[i].sensor)){
                     found = true;
                     this.plotarray.splice(i,1);
                     //console.log("Removed: "+plotline.url);
@@ -140,6 +189,8 @@ function PlotController(config, useri, weather) {
                 }
             }
         }
+        
+        //console.log("found: "+found);
         
         if (!found){
             if (this.plotarray.length == this.maxplots){
@@ -346,9 +397,12 @@ function PlotController(config, useri, weather) {
             
             var monthArray = getMonthsBetween(stMonth,stYear,endMonth,endYear);
             for (mnth in monthArray){
+                var date1 = new Date();
                 if (monthArray.hasOwnProperty(mnth)){
                     diffArr.push(sensorAccess.getMissingMonitored(monthArray[mnth]));
                 }
+                var date2 = new Date();
+                console.log(date2 - date1);
             }
             //diffArr.sort(cmpPoints);
         }
@@ -410,7 +464,7 @@ function PlotController(config, useri, weather) {
                     //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     //console.log(plotArray[i].url+"Month:"+montharray);
-                    
+                    var positiveFlip = false;
                     var initialised = false;
                     for (var t=0;t<montharray.length;t++){
                         if (!initialised){
@@ -437,7 +491,25 @@ function PlotController(config, useri, weather) {
                                         } 
                                     }
                                 }
-                                jsonArray[i][k] = tempJSON
+                                
+                                var sensorSName = "S-m"+plotArray[i].url[k].split("/S-m")[1];
+                                if(plotArray[i].stat === 'dataDiff' && sensorSName === "S-m36-"){
+                                    console.log("S-m36 diff plot Found!");
+                                    positiveFlip = true;
+                                    //console.log("S-m"+plotArray[i].url[k].split("/S-m")[1]);
+                                    // if sensor is sm36, make all power vals negative
+                                    // store i for turning positive later?
+                                    for (var d=0; d<tempJSON.data.length; d++){
+                                        if(typeof(tempJSON.data[d][1]) === "number"){
+                                            //tempJSON.data[d][1] =- tempJSON.data[d][1];
+                                        }
+                                        //console.log(tempJSON.data[d][1]);
+                                    }
+                                    jsonArray[i][k] = tempJSON;
+                                }
+                                else{
+                                    jsonArray[i][k] = tempJSON;
+                                }
                                 initialised = true;
                             }
                             //console.log("2 T: "+t);
@@ -468,7 +540,25 @@ function PlotController(config, useri, weather) {
                                         } 
                                     }
                                 }
-                                jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
+                                var sensorSName = "S-m"+plotArray[i].url[k].split("/S-m")[1];
+                                if(plotArray[i].stat === 'dataDiff' && sensorSName === "S-m36-"){
+                                    console.log("s-m36 diff plot Found!");
+                                    positiveFlip = true;
+                                    //console.log("S-m"+plotArray[i].url[k].split("/S-m")[1]);
+                                    
+                                    for (var d=0; d<tempJSON.data.length; d++){
+                                        if(typeof(tempJSON.data[d][1]) === "number"){
+                                            //tempJSON.data[d][1] =- tempJSON.data[d][1];
+                                        }
+                                        //console.log(tempJSON.data[d][1]);
+                                    }
+                                    
+                                    jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
+                                }
+                                else{
+                                    jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
+                                }
+                                //jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
 							}
 							//console.log("5 T: "+t);
                         }
@@ -486,50 +576,6 @@ function PlotController(config, useri, weather) {
                     if (!coveravail){
                         jsonArray[i][0].description += ", "+jsonArray[i][k].room;
                     }
-                    //console.log("6 Coverage: "+jsonArray[i][0].coverage);
-                    //console.log(jsonArray[i][0].coverage);
-                    
-                    
-                    // Go through the array, add up sums of meters if their TS already exist, or add them
-                    // at the end if not (we sort them later)
-//                     if(k == 0){
-//                         //in the first iteration, just copy the first sensor data accross.
-//                         totaldata = jsonArray[i][k].data;
-//                     }
-//                     else{
-//                         //For each datum in the data array of the sensor
-//                         for(var m=0; m<jsonArray[i][k].data.length; m++){
-//                             if(m+1 > jsonArray[i][0].data.length){
-//                                 // If the array we are trying to add is larger, add the extra item on the end
-//                                 totaldata.push(jsonArray[i][k].data[m]);
-//                             }
-//                             else{
-//                                 // If we are adding energy amounts together, if they are bad, change to numbers to
-//                                 // do summation, and add bad indicator on again afterwards.
-//                                 var bad = false;
-//                                 if (typeof totaldata[m][1] == "string"){
-//                                     console.log(totaldata[m][1]);
-//                                     totaldata[m][1] = parseFloat(totaldata[m][1].split(':')[1]);
-//                                     console.log(totaldata[m][1]);
-//                                     bad = true;
-//                                 }
-//                                 if (typeof jsonArray[i][k].data[m][1] == "string"){
-//                                     console.log(jsonArray[i][k].data[m][1]);
-//                                     jsonArray[i][k].data[m][1] = parseFloat(jsonArray[i][k].data[m][1].split(':')[1]);
-//                                     console.log(jsonArray[i][k].data[m][1]);
-//                                     bad = true;
-//                                 }
-//                                 
-//                                 //if (bad) {console.log(jsonArray[i][k].data[m][1]);}
-//                                 totaldata[m][1] += jsonArray[i][k].data[m][1];
-//                                 //if (bad) {console.log(jsonArray[i][k].data[m][1]);}
-//                                 
-//                                 if (bad){
-//                                     jsonArray[i][k].data[m][1] = "BAD:"+jsonArray[i][k].data[m][1].toString()
-//                                 }
-//                             }
-//                         }
-//                     }
                     
                     
                     //go through dataset, and add in any dates we found that aren't in the
@@ -552,13 +598,36 @@ function PlotController(config, useri, weather) {
                             tmpdata[p][1] = parseFloat(tmpdata[p][1].split(':')[1]);
                         }
                         
-                        totalobj[key]+=tmpdata[p][1];
+                        if(positiveFlip){
+                            totalobj[key] -= tmpdata[p][1];
+                            //totalobj[key] =- totalobj[key];
+                            console.log("flipped!");
+                        }
+                        else{
+                            totalobj[key] += tmpdata[p][1];
+                        }
                         
                         if (bad){
                             totalobj[key] = "BAD:"+totalobj[key].toString();
                         }
                     }
+                    
+                    if (positiveFlip){
+                        console.log(totalobj);
+                        for (var somethingbig in totalobj){
+                        //    if (totalobj.hasOwnProperty(bob)){
+                                console.log(totalobj[somethingbig]);
+                                console.log(Math.abs(totalobj[somethingbig]));
+                                //totalobj[somethingbig] = Math.abs(totalobj[somethingbig])
+                        //    }
+                        }
+                        //console.log(totalobj);
+                    }
+                    positiveFlip = false;
+                    
+                    //positiveFlip = false;
                 }
+                
                 
                 // Convert string of epoch date into int, and sort dates.
                 var totalarr = [];
@@ -656,7 +725,7 @@ function PlotController(config, useri, weather) {
             plotArray[i].description = jsonArray[i][0].description;
             plotArray[i].room = jsonArray[i][0].room;
             
-            var plotBadData = false;
+            var plotBadData = true;
             var badPoints = 0;
             
             for (var j=0; j<jsonArray[i][0].data.length; j++){
@@ -668,6 +737,7 @@ function PlotController(config, useri, weather) {
                     if (typeof tmpy == "number"){
                         if (tmpy > this.autoFilter.maxY) bad = true;
                         else if (tmpy < this.autoFilter.minY) bad = true;
+                        //FIXME: filter bad total data here too
                     }
                 }
                 if (typeof tmpy == "string"){
@@ -719,6 +789,7 @@ function PlotController(config, useri, weather) {
                         //console.log(tmpDataPoint);
                         //onsole.log(j);
                         if(j>0){
+                            console.log(tmpdata[j-badPoints-1]);
                             tmpdata[j-badPoints-1].bad = true;
                             //console.log('not added, and labeled last point bad.');
                             //tmpdata.push(tmpDataPoint);

@@ -30,9 +30,7 @@
                 treeIndex.clearStore();
                 //Create object to hold floors
                 var objfloor = {"Average":treeIndex.addNewItem(0)};
-                //var objfloor = {};
-                //var objmain = {"Average":treeIndex.addNewItem(0)};
-                //var objfloor = {};
+                
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
                     
@@ -210,7 +208,13 @@
                 //If tree is displayed by use:
                 treeIndex.clearStore();
                 var objcircuit = {"Average":treeIndex.addNewItem(0)};
+                var objStats = {"Total Monitored Diff":treeIndex.addNewItem(0)};
+                treeIndex.appendItemURL("dataDiff", objStats["Total Monitored Diff"]);
+                //treeIndex.insertSensorType("dataDiff", objStats["Total Monitored Diff"]);
+                //objStats.Missing = {"Average":treeIndex.addNewItem(0)};
+                
                 objcircuit[bld] = null;
+                //objStats = {}
                 //object to store circuits,
                 for(var i=0;i<elecsensors.length;i++){
                     var path = elecsensors[i].path;
@@ -248,6 +252,8 @@
                         //work out size and total thus.
                         objcircuit[bld] = treeIndex.addNewItem(av);
                         treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
+                        //treeIndex.insertDataPolarity(path, "-");
+                        treeIndex.appendItemURL(path,objStats["Total Monitored Diff"]);
                     }
                     
                     else if (elecsensors[i].sensor != "S-m257" && !sensorIgnored){
@@ -272,7 +278,11 @@
                         //else { var recentaverage = 0; }
                         var floor="";
                         //treeIndex.sumItemAverage(av, objcircuit.Average);
-                        if (!sensorAverageIgnored){ treeIndex.sumItemAverage(av, objcircuit.Average); }
+                        if (!sensorAverageIgnored){ 
+                            treeIndex.sumItemAverage(av, objcircuit.Average);
+                            //treeIndex.sumItemAverage(av, objStats.Missing.Average);
+                            treeIndex.appendItemURL(path,objStats["Total Monitored Diff"]);
+                        }
                         
                         var objroom = new Object();
                         var objfloor = new Object();
@@ -331,6 +341,7 @@
                 }
                 treedata.Electricity = new Object();
                 treedata.Electricity = objcircuit;
+                treedata.Stats = objStats;
                 return treedata;
             }
         }

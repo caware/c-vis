@@ -4,13 +4,15 @@ function IntValueStore() {
     this.index = new Array();
     //This index is a 2D array to store an index value, and information assiociated with it.
     //each array referenced by and index currnetly holds:
-    // [AVERAGE, [URL,URL,URL,...], SENSORNAME]
+    // [AVERAGE, [URL,URL,URL,...], SENSORNAME, TYPE]
+    //
+    //TYPE = SPECIAL SENSOR TYPE, VIRTUAL, ETC.
     
     this.addNewItem = function(value){
         //Adds a new value to the store and returns its index
         //console.log(typeof value);
         //console.log(value);
-        var newarray = [0,[]];
+        var newarray = [0,[],"",""];
         if(typeof value == "number"){ newarray[0] = value; }
         if(typeof value == "string"){ newarray[1].push(value); }
         this.index.push(newarray);
@@ -31,6 +33,12 @@ function IntValueStore() {
     
     this.insertItemName = function(value, valueindex){
         this.index[valueindex][2] = value;
+    };
+    
+    this.insertSensorType = function(value, valueIndex){
+        console.log(value);
+        console.log(valueIndex);
+        this.index[valueIndex][3] = value;
     };
     
     this.getItem = function(ind){

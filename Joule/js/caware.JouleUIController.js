@@ -35,13 +35,28 @@ function JouleUIController(){
     
     this.treeNodeClick = function(node, useri){
         var ploturl = new Array();
-        var sensorurl = treeIndex.getItem(node.nodeValue)[1];
-        colourpool.toggleColour(sensorurl);
+        var sensorUrl = treeIndex.getItem(node.nodeValue)[1];
+        //var sensorType = treeIndex.getItem(node.nodeValue)[3];
+        //var type = "none";
+        var senCopy = sensorUrl.slice(0);
+        
+        //if (sensorUrl[0] === "dataDiff"){
+            //sensorUrl.push("minus36");
+        //    console.log(sensorUrl);
+        //    console.log(sensorUrl.length);
+        // var senCopy = sensorUrl.slice(0,sensorUrl.length-1);
+//             console.log(senCopy);
+//             senCopy.splice(0,1);
+//         //    console.log(sensorUrl);
+//         //    console.log(sensorUrl.length);
+//             var type = "dataDiff";
+//         }
+        colourpool.toggleColour(senCopy.toString());
         //console.log(sensorurl);
         
         this.loadSpin("in", function(){
-            if (plotController.togglePlotByUrl(sensorurl) < 0){
-                colourpool.toggleColour(sensorurl);
+            if (plotController.togglePlotByUrl(senCopy) < 0){
+                colourpool.toggleColour(senCopy.toString());
             }
             
             plotController.calculateData(useri.useWeather, useri.showDiff);

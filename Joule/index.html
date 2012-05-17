@@ -478,7 +478,9 @@
         	console.log('used diffArr maxes too');
         	for (tmpMax in diffArr){
         		if (diffArr[tmpMax].y > chartmax){
-          			chartmax = diffArr[tmpMax];
+        		    if(diffArr[tmpMax].y < 300){
+          			    chartmax = diffArr[tmpMax];
+          			}
           		}
         	}
         }
@@ -746,7 +748,7 @@
                 }
                 //}
                 
-                date2 = new Date();
+                //date2 = new Date();
                 //console.log(date2.getMilliseconds()-date1.getMilliseconds());
                 return dd;
             })
