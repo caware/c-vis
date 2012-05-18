@@ -1,8 +1,6 @@
-function JouleUIController(){
-    
+function JouleUIController(){ 
     this.errorIds = [];
     this.errorTimeout = 4;
-    
     this.useWeather = false;
     this.showDiff = false;
     this.scaleSelection = 'scale';
@@ -36,49 +34,26 @@ function JouleUIController(){
     this.treeNodeClick = function(node, useri){
         var ploturl = new Array();
         var sensorUrl = treeIndex.getItem(node.nodeValue)[1];
-        //var sensorType = treeIndex.getItem(node.nodeValue)[3];
-        //var type = "none";
         var senCopy = sensorUrl.slice(0);
-        
-        //if (sensorUrl[0] === "dataDiff"){
-            //sensorUrl.push("minus36");
-        //    console.log(sensorUrl);
-        //    console.log(sensorUrl.length);
-        // var senCopy = sensorUrl.slice(0,sensorUrl.length-1);
-//             console.log(senCopy);
-//             senCopy.splice(0,1);
-//         //    console.log(sensorUrl);
-//         //    console.log(sensorUrl.length);
-//             var type = "dataDiff";
-//         }
         colourpool.toggleColour(senCopy.toString());
-        //console.log(sensorurl);
         
         this.loadSpin("in", function(){
             if (plotController.togglePlotByUrl(senCopy) < 0){
                 colourpool.toggleColour(senCopy.toString());
             }
-            
             plotController.calculateData(useri.useWeather, useri.showDiff);
             useri.loadSpin("out");
         });
     };
     
     this.addMonth = function(useri){
-        //console.log("One");
         this.loadSpin("in", function(){
-            //console.log("Two");
             plotController.addMonth();
-            //console.log("Three");
             plotController.calculateData(useri.useWeather, useri.showDiff);
-            //console.log("Four");
             useri.loadSpin("out");
-            //console.log("Five");
         });
     };
-    
-    //console.log(this.useWeather);
-    
+        
     this.jouleFinishedLoading = function(useri, uiType){
         this.loadSpin("in", function(){
             weather = new WeatherJSONBridge();
@@ -116,8 +91,7 @@ function JouleUIController(){
                 plotController.calculateData(useri.useWeather, useri.showDiff);
                 refreshTree();
                 break;
-            }
-               
+            }   
             useri.loadSpin("out");
         });
     };
@@ -129,57 +103,51 @@ function JouleUIController(){
     this.jouleTempToggle = function(useri){
       this.loadSpin("in", function(){});
         if (useri.useWeather == true){
-            //$('#temperButton').addClass('Default');
             $('#temperButton').removeClass('success');
             useri.useWeather = false;
         }
         else if (useri.useWeather == false){
             $('#temperButton').addClass('success');
-            //$('#temperButton').addClass('Default');
             useri.useWeather = true
         }
         plotController.calculateData(useri.useWeather, useri.showDiff);
         useri.loadSpin("out");
-      //});
     };
     
     this.jouleShowDiff = function(useri){
       this.loadSpin("in", function(){});
         if (useri.showDiff == true){
-            //$('#temperButton').addClass('Default');
             $('#showDiffButton').removeClass('success');
             useri.showDiff = false;
         }
         else if (useri.showDiff == false){
             $('#showDiffButton').addClass('success');
-            //$('#temperButton').addClass('Default');
             useri.showDiff = true
         }
         plotController.calculateData(useri.useWeather, useri.showDiff);
         useri.loadSpin("out");
-      //});
     };
     
     this.jouleScaleSelectionToggle = function(useri, scaleType){
         switch (scaleType) {
-            case 'all': 
-                $('#scaleAllButton').addClass('success');
-                $('#scaleSelectionButton').removeClass('success');
-                $('#zoomButton').removeClass('success');
-                useri.scaleSelection = 'all';
-                break;
-            case 'scale':
-                $('#scaleAllButton').removeClass('success');
-                $('#scaleSelectionButton').addClass('success');
-                $('#zoomButton').removeClass('success');
-                useri.scaleSelection = 'scale'
-                break;
-            case 'zoom':
-                $('#scaleAllButton').removeClass('success');
-                $('#scaleSelectionButton').removeClass('success');
-                $('#zoomButton').addClass('success');
-                useri.scaleSelection = 'zoom'
-                break;
+          case 'all': 
+            $('#scaleAllButton').addClass('success');
+            $('#scaleSelectionButton').removeClass('success');
+            $('#zoomButton').removeClass('success');
+            useri.scaleSelection = 'all';
+            break;
+          case 'scale':
+            $('#scaleAllButton').removeClass('success');
+            $('#scaleSelectionButton').addClass('success');
+            $('#zoomButton').removeClass('success');
+            useri.scaleSelection = 'scale'
+            break;
+          case 'zoom':
+            $('#scaleAllButton').removeClass('success');
+            $('#scaleSelectionButton').removeClass('success');
+            $('#zoomButton').addClass('success');
+            useri.scaleSelection = 'zoom'
+            break;
         }
         plotController.calculateData(useri.useWeather, useri.showDiff);
     };
@@ -199,23 +167,22 @@ function JouleUIController(){
             $('#functbutton').addClass('success');
         }
         buildTree(indexUrl, treeType);
-        
     };
     
     this.showError = function(error, errorText, errorType, timeout, useri){
         var id = new Date().getTime().toString();
         var genHTML = "<div class=\"alert-message "+errorType+"\" id=\""+id+"\"><p><strong>";
         switch(errorType) {
-        case "warn":
+          case "warn":
             genHTML += "Warning ";
             break;
-        case "error":
+          case "error":
             genHTML += "Error ";
             break;
-        case "success":
+          case "success":
             genHTML += "Success ";
             break;
-        case "info":
+          case "info":
             genHTML += "Info ";
             break;
         }
@@ -223,9 +190,6 @@ function JouleUIController(){
         $('#notify-bar').prepend(genHTML);
         var time = timeout*1000;
         var t = setTimeout('ui.hideError('+id+')', time);
-        //console.log(genHTML);
-        // takes an error discription, and passes it to a class that generates the proper error text, class of error and timeout.
-        // then recives text, and appends HTML to the errorbar div.
     };
     
     this.hideError = function(id){
@@ -233,17 +197,13 @@ function JouleUIController(){
         $(jQid).hide("fast", function(){
             $(jQid).remove();
         });
-        //$(jQid).remove();
     };
     
     this.catchError = function(useri, call, arg){
-        //console.log(call);
         var obj = call(arg);
-        
         if (obj.error){
             useri.showError(obj.error, obj.errorText, obj.errorType, useri.errorTimeout, useri);
         }
-        
         return obj.result;
     };
 }

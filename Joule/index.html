@@ -977,8 +977,8 @@
                 .left(function(d) x(d.x))
                 .bottom(function(d) y(d.y))
                 .strokeStyle(plotcol[j])
-                //.segmented(true)
-                //.strokeDasharray(function(d) d.bad ? '2,2' : 'none')
+                .segmented(true)
+                .strokeDasharray(function(d) d.bad ? '2,2' : 'none')
                 .lineWidth(2);
         }
         

@@ -7,11 +7,9 @@ function PlotController(config, useri, weather) {
     this.plotarray = new Array();
     this.maxplots = config.maxNumberPlots.value;
     this.badUrls = [];
-    
     this.viewrange = {"startdate":new Date(),"enddate":new Date()};
     
     var sensorindex = ui.catchError(ui, cache.getObject, config.indexUrl.value);
-    
     
     this.getPlots = function(){
         return this.plotarray;
@@ -27,8 +25,6 @@ function PlotController(config, useri, weather) {
                 }
             }
         }
-        //if (!found) return -1;
-        //else if (found) return 1;
     };
     
     this.updateAvgSelected = function(ploturl, avgsel){
@@ -51,100 +47,37 @@ function PlotController(config, useri, weather) {
     
     this.togglePlotByUrl = function(sensorurl){
         // Adds a new plot to the store from an array of ploturls
-        //var todaydate = new Date();
-        //console.log(type);
-        //console.log(sensorurl);\
         var colourCopy = sensorurl.slice(0);
         if (sensorurl[0] === "dataDiff"){
             sensorurl.splice(0, 1);
             var statType = "dataDiff"
             console.log('removed!');
         }
-        //console.log(sensorurl);
-        //var year = this.viewrange.startdate.getFullYear();
-        //var month = (this.viewrange.startdate.getMonth()+1);
-        //if (month<10) month = "0"+month;
-        
-        //var endyear = this.viewrange.enddate.getFullYear();
-        //var endmonth = (this.viewrange.enddate.getMonth()+1);
-        //if (endmonth<10) endmonth = "0"+endmonth;
-        
-        // var Normsensorurl=["/elec/primary-se18/S-m27-", "/elec/primary-smb1/mcc05/S-m37-", "/elec/primary-cs3-riser/S-sockets/S-m10-", "/elec/primary-cs3-riser/S-lighting/S-m11-", "/elec/primary-cs2-riser/S-sockets/S-m12-", "/elec/primary-cs2-riser/S-lighting/S-m13-", "/elec/primary-cs2-riser/F-sockets/S-m14-", "/elec/primary-cs2-riser/F-lighting/S-m15-", "/elec/primary-cs2-riser/G-sockets/S-m16-", "/elec/primary-cs2-riser/G-lighting/S-m17-", "/elec/primary-cr2/S-m18-", "/elec/primary-cr-ac/S-m19-", "/elec/primary-G-exr/S-m20-", "/elec/primary-cs1-riser/G-sockets/S-m21-", "/elec/primary-cs1-riser/G-lighting/S-m22-", "/elec/primary-cs1-riser/F-lighting/S-m23-", "/elec/primary-cs1-riser/F-sockets/S-m24-", "/elec/primary-cs1-riser/S-lighting/S-m42-", "/elec/primary-cs1-riser/S-sockets/S-m26-", "/elec/primary-cs1-riser/SW00-ac/S-m52-", "/elec/primary-cs4-riser/S-lighting/S-m28-", "/elec/primary-cs4-riser/F-sockets/S-m31-", "/elec/primary-cs4-riser/F-lighting/S-m30-", "/elec/primary-cs4-riser/G-lighting/S-m34-", "/elec/primary-cs4-riser/G-sockets/S-m35-", "/elec/primary-cs4-riser/S-sockets/S-m29-", "/elec/primary-smb2/G-sockets/S-m32-", "/elec/primary-smb2/G-lighting/S-m33-", "/elec/primary-smb2/emerglight/S-m40-", "/elec/primary-smb2/mcc07/S-m38-", "/elec/primary-smb2/lifts/S-m39-", "/elec/primary-condensor/S-m43-", "/elec/primary-chiller/S-m44-", "/elec/primary-mcc01/S-m46-", "/elec/primary-mcc04/S-m47-", "/elec/primary-cr/pwr/S-m48-", "/elec/primary-mcc03/S-m50-", "/elec/primary-mcc02/S-m51-", "/elec/primary-fire-sec/S-m45-", "/elec/primary-pabx/S-m49-"];
-// 
-//         
-//         if (sensorurl[0] === "dataDiff"){
-//             console.log("negative data!");
-//             console.log(sensorurl[0]);
-//             //for(var z=0;z<sensorurl.length;z++){
-//             //    console.log(sensorurl[z]);
-//             //}
-//             sensorurl.splice(0, 1);
-//             //for(var z=0;z<sensorurl.length;z++){
-//             //    console.log(sensorurl[z]);
-//             //}
-//             var plotType = "dataDiff";
-//         }
-//         
-//         var same = true;
-//         for(var z=0;z<sensorurl.length;z++){
-//             if (!(sensorurl[z] === Normsensorurl[z])){
-//                 console.log(sensorurl[z]);
-//                 console.log(Normsensorurl[z]);
-//                 same = false;
-//                 break;
-//             }
-//         }
-//         if (same) console.log("all good yo!");
-        
-        //var sensorurl=["/elec/primary-se18/S-m27-", "/elec/primary-smb1/mcc05/S-m37-", "/elec/primary-cs3-riser/S-sockets/S-m10-", "/elec/primary-cs3-riser/S-lighting/S-m11-", "/elec/primary-cs2-riser/S-sockets/S-m12-", "/elec/primary-cs2-riser/S-lighting/S-m13-", "/elec/primary-cs2-riser/F-sockets/S-m14-", "/elec/primary-cs2-riser/F-lighting/S-m15-", "/elec/primary-cs2-riser/G-sockets/S-m16-", "/elec/primary-cs2-riser/G-lighting/S-m17-", "/elec/primary-cr2/S-m18-", "/elec/primary-cr-ac/S-m19-", "/elec/primary-G-exr/S-m20-", "/elec/primary-cs1-riser/G-sockets/S-m21-", "/elec/primary-cs1-riser/G-lighting/S-m22-", "/elec/primary-cs1-riser/F-lighting/S-m23-", "/elec/primary-cs1-riser/F-sockets/S-m24-", "/elec/primary-cs1-riser/S-lighting/S-m42-", "/elec/primary-cs1-riser/S-sockets/S-m26-", "/elec/primary-cs1-riser/SW00-ac/S-m52-", "/elec/primary-cs4-riser/S-lighting/S-m28-", "/elec/primary-cs4-riser/F-sockets/S-m31-", "/elec/primary-cs4-riser/F-lighting/S-m30-", "/elec/primary-cs4-riser/G-lighting/S-m34-", "/elec/primary-cs4-riser/G-sockets/S-m35-", "/elec/primary-cs4-riser/S-sockets/S-m29-", "/elec/primary-smb2/G-sockets/S-m32-", "/elec/primary-smb2/G-lighting/S-m33-", "/elec/primary-smb2/emerglight/S-m40-", "/elec/primary-smb2/mcc07/S-m38-", "/elec/primary-smb2/lifts/S-m39-", "/elec/primary-condensor/S-m43-", "/elec/primary-chiller/S-m44-", "/elec/primary-mcc01/S-m46-", "/elec/primary-mcc04/S-m47-", "/elec/primary-cr/pwr/S-m48-", "/elec/primary-mcc03/S-m50-", "/elec/primary-mcc02/S-m51-", "/elec/primary-fire-sec/S-m45-", "/elec/primary-pabx/S-m49-"];
 
-        
-        
-        var elecsensors = sensorindex.sensors.elec;
-        //var valid = false;
-        
+        var elecsensors = sensorindex.sensors.elec;        
         var monthread = 'monthly-readings';
-        
-        
         var year, month, endyear, endmonth;
-        
         var startmax, endmax;
         
-        //console.log(sensorurl);
         for(var i=0;i<elecsensors.length;i++){
             for(var z=0;z<sensorurl.length;z++){
-        //        //console.log(elecsensors[i].path);
-        //        //console.log(sensorurl[z]);
                 if (elecsensors[i].path == sensorurl[z]){
                     var key = "monthly-readings";
                     var recentreading = elecsensors[i][key][0];
                     var endmax = elecsensors[i][key][0].match(/[0-9]{4}-[0-9]{2}/)[0];
                     var tmplen = elecsensors[i][key].length-1;
                     var startmax = elecsensors[i][key][tmplen].match(/[0-9]{4}-[0-9]{2}/)[0];
-                    //console.log(recentreading);
-                    //var recentyear = recentreading.slice(7,11);
                     var mymatch = recentreading.match(/-[0-9]{4}-[0-9]{2}/)[0];
                     var recentyear = mymatch.slice(1,5);
                     var recentmonth = mymatch.slice(6,8);
-                    //var recentmonth = recentreading.match(/-[0-9]{4}/-);
                     
                     year = recentyear;
                     month = recentmonth;
                     endyear = recentyear;
                     endmonth = recentmonth;
-                    //console.log(year.toString());
-                    //console.log(endyear.toString());
-                    //console.log(month.toString());
-                    //console.log(endmonth.toString());
                 }
             }
         }
-        
-        
-        //if (!valid){
-        //    //console.log('No data!');
-        //return -1;
-        //}
         
         ploturl = [];
         for (var x=0; x<sensorurl.length; x++){
@@ -174,27 +107,18 @@ function PlotController(config, useri, weather) {
         }
         var found = false;
         
-        //console.log(plotline);
-        //console.log(this.plotarray);
-        
-        //return -1;
-        
         for (var i in this.plotarray){
             if (this.plotarray.hasOwnProperty(i)){
                 if (cmpArray(plotline.sensor, this.plotarray[i].sensor)){
                     found = true;
                     this.plotarray.splice(i,1);
-                    //console.log("Removed: "+plotline.url);
                     break;
                 }
             }
         }
         
-        //console.log("found: "+found);
-        
         if (!found){
             if (this.plotarray.length == this.maxplots){
-                //console.log("Maximum amount of plots already drawn.");
             }
             else {
                 this.plotarray.push(plotline);
@@ -204,18 +128,9 @@ function PlotController(config, useri, weather) {
                 
                 for (var p in this.plotarray){
                     if (this.plotarray.hasOwnProperty(p)){
-                        //console.log(this.plotarray);
                         var plotstart = new Date.parse(this.plotarray[p].startyear+"-01-"+this.plotarray[p].startmonth);
                         var plotend = new Date.parse(this.plotarray[p].endyear+"-01-"+this.plotarray[p].endmonth);
                         
-                        //for (var p in tmpstart){
-                        //    if (this.plotarray.hasOwnProperty(p)){
-                        //        console.log(tmpstart.p);
-                        //    }
-                        //}
-                        
-                        //console.log(tmpstart);
-                        //console.log(tmpend);
                         if (plotstart.isBefore(tmpstart)){
                             tmpstart = Date.parse(this.plotarray[p].startyear+"-01-"+this.plotarray[p].startmonth);
                         }
@@ -224,43 +139,35 @@ function PlotController(config, useri, weather) {
                         }
                     }
                 }
-                //console.log("Start: "+tmpstart);
-                //console.log("End: "+tmpend);
                 
                 this.viewrange.startdate = tmpstart;
                 this.viewrange.enddate = tmpend;
                 
                 for (var p in this.plotarray){
                     if (this.plotarray.hasOwnProperty(p)){
-                        //make start max into data before isbefore stuff.
+                        //make mure start max into data before is before stuff.
                         var tmpstartmax = Date.parse(this.plotarray[p].startmax.slice(0,4)+"-01-"+this.plotarray[p].startmax.slice(5,7));
                         var tmpendmax = Date.parse(this.plotarray[p].endmax.slice(0,4)+"-01-"+this.plotarray[p].endmax.slice(5,7));
-                        //console.log(tmpstartmax);
-                        //console.log(tmpendmax);
                         if (tmpstartmax.isBefore(this.viewrange.startdate)){
                             //If the sensors history goes back further than the view range, use the viewrange as the start
-                            //console.log("sensor has more history data than view");
                             this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                             this.plotarray[p].startmonth = this.viewrange.startdate.getMonth()+1;
                             this.plotarray[p].startmonth = this.plotarray[p].startmonth.toString();
                         }
                         else {
                             //Else, use the sensor's earliest data set
-                            //console.log("sensor has less data than view, restricting start data to last possible.");
                             this.plotarray[p].startyear = tmpstartmax.getFullYear().toString();
                             this.plotarray[p].startmonth = tmpstartmax.getMonth()+1;
                             this.plotarray[p].startmonth = this.plotarray[p].startmonth.toString();
                         }
                         if (tmpendmax.isAfter(this.viewrange.enddate)){
                             //If the sensors most recent data is after the viewport, use the viewport as the end point
-                            //console.log("sensor has more current data than view");
                             this.plotarray[p].endyear = this.viewrange.enddate.getFullYear().toString();
                             this.plotarray[p].endmonth = this.viewrange.enddate.getMonth()+1;
                             this.plotarray[p].endmonth = this.plotarray[p].endmonth.toString();
                         }
                         else {
                             //Else, use the most recent data availible from the sensor.
-                            //console.log("sensor has less data than view, restricting start data to earliest possible.");
                             this.plotarray[p].endyear = tmpendmax.getFullYear().toString();
                             this.plotarray[p].endmonth = tmpendmax.getMonth()+1;
                             this.plotarray[p].endmonth = this.plotarray[p].endmonth.toString();
@@ -294,54 +201,33 @@ function PlotController(config, useri, weather) {
     this.addMonth = function(){
         //
         this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(-1);
-        //console.log(this.viewrange.startdate);
         var noDataPlotCount = 0;
         var noDataSensors = [];
-        //this.badUrls = [];
         
         for (var p in this.plotarray){
             if (this.plotarray.hasOwnProperty(p)){
-                //this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
                 var tmpmonth = (this.viewrange.startdate.getMonth()+1); // get current month
-                //console.log(tmpmonth);
                 if (tmpmonth < 10) tmpmonth = "0"+tmpmonth;
-                //this.plotarray[p].startmonth = tmpmonth.toString();
-                
-                //FIXME: Shouldn't need this!
-                //this.plotarray[p].startmonthyear = tmpmonth.toString()+'-'+this.viewrange.startdate.getFullYear().toString();
-                
-                //console.log(this.plotarray[p]);
-                
                 
                 for (var u=0; u< this.plotarray[p].url.length; u++){
                     var noDataCount = 0;
                     var tmpstr = this.plotarray[p].url[u].substring(30);
-                    //console.log(tmpstr);
-                    //console.log(this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString());
+                    
                     if (sensorAccess.checkReadingExists(tmpstr, this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString())){
-                        //console.log("Reading OK");
                         //at least one URL has data for the month so extend the plot date.
                         this.plotarray[p].startyear = this.viewrange.startdate.getFullYear().toString();
-                        //var tmpmonth = (this.viewrange.startdate.getMonth()+1);
-                        //if (tmpmonth < 10) tmpmonth = "0"+tmpmonth;
                         this.plotarray[p].startmonth = tmpmonth.toString();
                         this.plotarray[p].startmonthyear = tmpmonth.toString()+'-'+this.viewrange.startdate.getFullYear().toString();
                     }
                     else {
                         noDataSensors.push(tmpstr);
-                        //this.ui.showError("Error", "No Reading for "+tmpstr, "warn", 5, ui);
-                        //this.badUrls.push(config.sensorFilesUrl.value+tmpstr+this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString());
                         var badstr = config.sensorFilesUrl.value+tmpstr+this.viewrange.startdate.getFullYear().toString()+'-'+tmpmonth.toString();
                         console.log("No Reading for "+tmpstr);
                         this.badUrls.push(badstr);
-                        //console.log(this.badUrls);
                         noDataCount++;
-                        
                     }
                 }
                 if (this.plotarray[p].url.length == noDataCount){
-                    //console.log("No Data Found for plot "+this.plotarray[p].url);
-                    //this.ui.showError("Error", "No reading for "+tmpstr, "warn", 5, ui);
                     noDataPlotCount++;
                 }
                 else if (noDataSensors.length > 0){
@@ -357,34 +243,18 @@ function PlotController(config, useri, weather) {
             }
         }
         if (this.plotarray.length == noDataPlotCount){
-            //console.log("No data for all plots! Not extending viewport!");
             this.ui.showError("Info:", "No more history data availble for currently displayed sensors.", "info", 8, ui);
             this.viewrange.startdate = new Date(this.viewrange.startdate).addMonths(1);
         }
-        //else if (noDataSensors.length = 1){
-        //    this.ui.showError("Error", "No reading for "+noDataSensors[0], "warn", 5, ui);
-        //}
-        //else if (noDataSensors.length > 0){
-        //    var sensorString = "";
-        //   for (warn in noDataSensors){
-        //        if (noDataSensors.hasOwnProperty(warn)){
-        //            sensorString += noDataSensors[warn].split("/S-")[1].split("-")[0]+", ";
-        //       }
-        //    }
-        //    this.ui.showError("Warning:", "No readings for sensors "+sensorString, "warn", 8, ui);
-        //}
-        console.log("Bad URLS:");
-        console.log(this.badUrls);
+        //console.log("Bad URLS:");
+        //console.log(this.badUrls);
     };
     
     this.removeMonth = function(){
-        //
         return false
     };
     
     this.calculateData = function(useWeather, showDiff){
-        //console.log("show Diff:");
-        //console.log(showDiff);
         
         if (showDiff){
             var diffArr = [];
@@ -404,7 +274,6 @@ function PlotController(config, useri, weather) {
                 var date2 = new Date();
                 console.log(date2 - date1);
             }
-            //diffArr.sort(cmpPoints);
         }
         // Calculate and return the data points, start, end and maximum values used for drawing the plots.
         
@@ -414,19 +283,10 @@ function PlotController(config, useri, weather) {
             jsonArray.push([]);
         }
         
-        //for each plot, sift through URLs and remove badLiusted ones?
-        
-        
-        //console.log("initialised");
-        
         if (this.plotarray.length == 0) return 0;
         
-        //console.log(plotArray);
-        
         var plotArray = this.plotarray;
-        //console.log("plot URLs:");
         var errorArr = [];
-        //FIXME:  if a file DL fails, substitute with zero'ed data.
         
         this.testURL = function(url){
             for (item in this.badUrls){
@@ -441,29 +301,18 @@ function PlotController(config, useri, weather) {
             return true;
         };
         
-        //console.log('Earliest date:');
-        //console.log(earlieststartdate);
-        //console.log(plotArray[0].url[0]+plotArray[0].startmonth+"-"+plotArray[0].startyear+".json");
-        
         //For each plot in plotArray
         for(var i=0;i<plotArray.length;i++){
-        //console.log("plot worked: "+i);
         //If the plot contains more than one URL, add up the data in the multiple URLs
             if (plotArray[i].url.length > 1){
-                //console.log("length is more than one");
                 //Create array to store the summed data
                 var totaldata = new Array();
-                var totalobj = {};
+                var totalobj = new Object();
                 //For each URL belonging to the plot
-                //console.log(plotArray[i].url.length);
-                //console.log(i)
+                
                 for (var k=0; k<plotArray[i].url.length; k++){
-                    //console.log("url worked: "+k);
-                    //console.log(plotArray[i].url.length);
                     //Add the json object of that array to the array in jsonArray
-                    //console.log(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
                     montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                    //console.log(plotArray[i].url+"Month:"+montharray);
                     var positiveFlip = false;
                     var initialised = false;
                     for (var t=0;t<montharray.length;t++){
@@ -472,20 +321,15 @@ function PlotController(config, useri, weather) {
                             if (this.testURL(tmpURL)){
                                 var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
                                 var fileName = "S-m"+plotArray[i].url[k].split("/S-m")[1]+montharray[t]+".json";
-                                //console.log(fileName);
                                 for (var sen in errorList){
                                     if(errorList.hasOwnProperty(sen)){
                                         for (var z=0; z<errorList[sen].length; z++){
                                             var error = errorList[sen][z];
-                                            //console.log(error);
                                             if(fileName === error.filename){
-                                                //console.log(fileName+" has errors!");
-                                                //console.log(error);
                                                 for (var err in error.errors){
                                                     var str = "Data Index";
                                                     var dI = error.errors[err][str];
                                                     tempJSON.data[dI][1] = "BAD:"+tempJSON.data[dI][1].toString();
-                                                    //console.log(tempJSON.data[dI]);
                                                 }
                                             }
                                         } 
@@ -496,14 +340,9 @@ function PlotController(config, useri, weather) {
                                 if(plotArray[i].stat === 'dataDiff' && sensorSName === "S-m36-"){
                                     console.log("S-m36 diff plot Found!");
                                     positiveFlip = true;
-                                    //console.log("S-m"+plotArray[i].url[k].split("/S-m")[1]);
-                                    // if sensor is sm36, make all power vals negative
-                                    // store i for turning positive later?
                                     for (var d=0; d<tempJSON.data.length; d++){
                                         if(typeof(tempJSON.data[d][1]) === "number"){
-                                            //tempJSON.data[d][1] =- tempJSON.data[d][1];
                                         }
-                                        //console.log(tempJSON.data[d][1]);
                                     }
                                     jsonArray[i][k] = tempJSON;
                                 }
@@ -512,29 +351,21 @@ function PlotController(config, useri, weather) {
                                 }
                                 initialised = true;
                             }
-                            //console.log("2 T: "+t);
                         }
                         else{
-                            //console.log("3 T: "+t);
                             var tmpURL = plotArray[i].url[k]+montharray[t]+".json";
                             if (this.testURL(tmpURL)){
                                 var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
-                                //console.log(tempJSON);
                                 var fileName = "S-m"+plotArray[i].url[k].split("/S-m")[1]+montharray[t]+".json";
-                                //console.log(fileName)
                                 for (var sen in errorList){
                                     if(errorList.hasOwnProperty(sen)){
                                         for (var z=0; z<errorList[sen].length; z++){
                                             var error = errorList[sen][z];
-                                            //console.log(error);
                                             if(fileName === error.filename){
-                                                //console.log(fileName+" has errors!");
-                                                //console.log(error);
                                                 for (var err in error.errors){
                                                     var str = "Data Index";
                                                     var dI = error.errors[err][str];
                                                     tempJSON.data[dI][1] = "BAD:"+tempJSON.data[dI][1].toString();
-                                                    //console.log(tempJSON.data[dI]);
                                                 }
                                             }
                                         } 
@@ -544,13 +375,10 @@ function PlotController(config, useri, weather) {
                                 if(plotArray[i].stat === 'dataDiff' && sensorSName === "S-m36-"){
                                     console.log("s-m36 diff plot Found!");
                                     positiveFlip = true;
-                                    //console.log("S-m"+plotArray[i].url[k].split("/S-m")[1]);
                                     
                                     for (var d=0; d<tempJSON.data.length; d++){
                                         if(typeof(tempJSON.data[d][1]) === "number"){
-                                            //tempJSON.data[d][1] =- tempJSON.data[d][1];
                                         }
-                                        //console.log(tempJSON.data[d][1]);
                                     }
                                     
                                     jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
@@ -558,9 +386,7 @@ function PlotController(config, useri, weather) {
                                 else{
                                     jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
                                 }
-                                //jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
 							}
-							//console.log("5 T: "+t);
                         }
                     }
                     //Add the room to the description
@@ -580,17 +406,9 @@ function PlotController(config, useri, weather) {
                     
                     //go through dataset, and add in any dates we found that aren't in the
                     //total data set, and initialise them to 0.
-                    var tmpdata = jsonArray[i][k].data;
+                    var tmpdata = jsonArray[i][k].data.slice(0);
                     for(var p=0; p<tmpdata.length; p++){
                         var key = tmpdata[p][0].toString();
-                        if (false){
-                            console.log(tmpdata[p][0]);
-                            console.log(typeof tmpdata[p][0]);
-                            console.log(key);
-                            console.log(typeof key);
-                            console.log(tmpdata[p][1]);
-                            console.log(typeof tmpdata[p][1]);
-                        }
                         
                         if (!totalobj.hasOwnProperty(key)){
                             totalobj[key] = 0.0;
@@ -609,10 +427,11 @@ function PlotController(config, useri, weather) {
                         if(positiveFlip){
                             totalobj[key] -= tmpdata[p][1];
                             //totalobj[key] =- totalobj[key];
-                            console.log("flipped!");
+                            //console.log("flipped!"+fileName);
                         }
                         else{
                             totalobj[key] += tmpdata[p][1];
+                            //console.log("Added "+fileName);
                         }
                         
                         if (bad){
@@ -621,53 +440,52 @@ function PlotController(config, useri, weather) {
                     }
                     
                     if (positiveFlip){
-                        console.log(JSON.stringify(totalobj));
-                        for (var stb in totalobj){
-                            if (totalobj.hasOwnProperty(stb)){
-                                console.log(typeof stb);
-                                console.log(stb);
-                                console.log(totalobj[stb]);
-                                //console.log(Math.abs(totalobj[somethingbig]));
-                                //totalobj[somethingbig] = Math.abs(totalobj[somethingbig])
-                            }
-                        }
-                        console.log(totalobj);
+                        var wasFlipped = true;
                     }
                     positiveFlip = false;
-                    
-                    //positiveFlip = false;
-                }
+                    }
                 
+                if(wasFlipped){
+                    for (var dat in totalobj){
+                        if(totalobj.hasOwnProperty(dat)){
+                        }
+                    }
+                }
                 
                 // Convert string of epoch date into int, and sort dates.
                 var totalarr = [];
                 for (var dat in totalobj){
-                    totalarr.push([parseInt(dat, 10),totalobj[dat]]);
+                    if(wasFlipped){
+                        var bad = false;
+                        if (typeof totalobj[dat] == "string"){
+                            bad = true;
+                            totalobj[dat] = parseFloat(totalobj[dat].split(':')[1]);
+                        }
+                        var minusTemp =-totalobj[dat];
+                        if (bad) totalarr.push([parseInt(dat, 10),"BAD:"+minusTemp.toString()]);
+                        else totalarr.push([parseInt(dat, 10),minusTemp]);
+                    }
+                    else{
+                        totalarr.push([parseInt(dat, 10),totalobj[dat]]);
+                    }
                 }
+                wasFlipped = false
                 totalarr.sort(sortArrayNum);
                 
                 for (var dat in totalarr){
                     var tmpdate = new Date(totalarr[dat][0]);
-                    //console.log(tmpdate+" - "+totalarr[dat][1]);
                 }
                 
-                
-                //console.log(totalarr);
-                //console.log(totaldata);
                 jsonArray[i][0].data = totalarr;
                 totaldata = null;
                 totalobj = undefined;
                 jsonArray[i][0].room = "--";
-                //console.log("11 rooms added");
             }
             else{
-                //jsonArray[i][0] = getJson(plotArray[i].url[0]+plotArray[i].startyear+"-"+plotArray[i].startmonth+".json");
                 montharray = getMonthsBetween(plotArray[i].startmonth,plotArray[i].startyear,plotArray[i].endmonth,plotArray[i].endyear);
-                //console.log("mntharray= "+montharray);
                 var initialised = false;
                 for (var t=0;t<montharray.length;t++){
                         if (!initialised){
-                            //console.log("getting JSONS");
                             var tmpURL = plotArray[i].url[0]+montharray[t]+".json";
                             if (this.testURL(tmpURL)){
                                 var tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
@@ -677,10 +495,7 @@ function PlotController(config, useri, weather) {
                                     if(errorList.hasOwnProperty(sen)){
                                         for (var e=0; e<errorList[sen].length; e++){
                                             var error = errorList[sen][e];
-                                            //console.log(error);
                                             if(fileName === error.filename){
-                                                //console.log(fileName+" has errors!");
-                                                //console.log(error);
                                                 for (var err in error.errors){
                                                     var str = "Data Index";
                                                     var dI = error.errors[err][str];
@@ -736,7 +551,7 @@ function PlotController(config, useri, weather) {
             plotArray[i].description = jsonArray[i][0].description;
             plotArray[i].room = jsonArray[i][0].room;
             
-            var plotBadData = true;
+            var plotBadData = false;
             var badPoints = 0;
             
             for (var j=0; j<jsonArray[i][0].data.length; j++){
@@ -746,15 +561,21 @@ function PlotController(config, useri, weather) {
                 
                 if (!plotBadData){
                     if (typeof tmpy == "number"){
-                        if (tmpy > this.autoFilter.maxY) bad = true;
-                        else if (tmpy < this.autoFilter.minY) bad = true;
+                        if (tmpy > this.autoFilter.maxY){
+                            bad = true;
+                        }
+                        else if (tmpy < this.autoFilter.minY){
+                            bad = true;
+                        }
                         //FIXME: filter bad total data here too
                     }
                 }
                 if (typeof tmpy == "string"){
-                    //console.log(parseFloat(tmpy.split(':')[1]));
+                    console.log("Pre-tagged Bad Data.");
+                    console.log(tmpy);
+                    console.log(parseFloat(tmpy.split(':')[1]));
                     tmpy = parseFloat(tmpy.split(':')[1]);
-                    var bad = true;
+                    bad = true;
                 }
                 
                 if (!bad) tmptotal += tmpy;
@@ -782,10 +603,12 @@ function PlotController(config, useri, weather) {
                 
                 var tmpDataPoint = {x:new Date(tmpx), y: tmpy};
                 
-                //if(tmpy < 6){
-                //    console.log('tmpy: '+tmpy);
-                //    console.log('bad: '+bad);
-                //    console.log('j: '+j);
+                if(bad){
+                    //console.log('tmpy: '+tmpy);
+                    //console.log('bad: '+bad);
+                    //console.log('j: '+j);
+                    //console.log('i: '+i);
+                }
                 //    if (j>0) console.log(tmpdata[j-badPoints-1]);
                 //}
                 
@@ -800,10 +623,10 @@ function PlotController(config, useri, weather) {
                         //console.log(tmpDataPoint);
                         //onsole.log(j);
                         if(j>0){
-                            console.log(tmpdata[j-badPoints-1]);
+                            //console.log(tmpdata[j-badPoints-1]);
                             tmpdata[j-badPoints-1].bad = true;
                             //console.log('not added, and labeled last point bad.');
-                            //tmpdata.push(tmpDataPoint);
+                            //console.log(tmpDataPoint);
                             //tmpdata[0].bad = true;
                         }
                     }
@@ -856,22 +679,6 @@ function PlotController(config, useri, weather) {
             dataArray.push(plotArray[i].data);
         }
         
-        //calculate average , and order plots in that average. (Remember colours.
-        
-        //else if (type == "multiple"){
-        //console.log(plotline);
-        //$('#chartdiv').empty();
-        // plotArray.length = 0;
-        // drawgrid();
-        //  $('#tablediv').empty();
-        //   return 0;
-        //}
-        //console.log('Fin');
-        //for (var i=0; i<jsonArray.length; i++){
-        //    console.log(jsonArray[i][0].coverage);
-        //}
-        //console.log("14 working length");
-        
         var chartcount = plotArray.length;
         
         if (useWeather){
@@ -911,12 +718,7 @@ function PlotController(config, useri, weather) {
             //weather
         }
         
-        //2D array of points where bad data starts
-        
-        
-        //console.log(dataArray);
-        
-        //console.log("s / e"+start.toString()+end.toString());
+        console.log(dataArray);
         actuallyChart(dataArray,start,end,chartmax,chartcount,plotcolours,weatherarr,errorArr,diffArr);
         //console.log("16 chart!");
     };

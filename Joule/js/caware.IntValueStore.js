@@ -10,19 +10,14 @@ function IntValueStore() {
     
     this.addNewItem = function(value){
         //Adds a new value to the store and returns its index
-        //console.log(typeof value);
-        //console.log(value);
         var newarray = [0,[],"",""];
         if(typeof value == "number"){ newarray[0] = value; }
         if(typeof value == "string"){ newarray[1].push(value); }
         this.index.push(newarray);
-        //console.log(this.index.length);
-        //console.log(this.index);
         return (this.index.length - 1);
     };
     
     this.sumItemAverage = function(value, valueindex){
-        //console.log("SumAv, Val: "+value+", @"+valueindex);
         this.index[valueindex][0] += value;
         return this.index[valueindex][0];
     };

@@ -4,7 +4,6 @@ function ColourPool(colourarray) {
     this.colours = colourarray;
     this.setcolours = {};
     
-    
     this.setColour = function(id){
         if (this.colours.length == 0) return 0;
         this.setcolours[id] = this.colours[0];
