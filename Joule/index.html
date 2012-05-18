@@ -474,6 +474,9 @@
           }
         }
         
+        
+        //FIXME: use global clamping rules!
+        
         if (diffArr){
         	console.log('used diffArr maxes too');
         	for (tmpMax in diffArr){
@@ -712,7 +715,7 @@
                         }
                     };
                     
-                    //add check for overall diff chart mins n maxs here
+                    //FIXME:add check for overall diff chart mins n maxs here
                     
                     var avg = tot / tmp.length;
                     var roundavg = Math.round(avg*1000)/1000;

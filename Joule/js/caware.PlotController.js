@@ -582,10 +582,18 @@ function PlotController(config, useri, weather) {
                     //total data set, and initialise them to 0.
                     var tmpdata = jsonArray[i][k].data;
                     for(var p=0; p<tmpdata.length; p++){
-                        var key = tmpdata[p][0];
+                        var key = tmpdata[p][0].toString();
+                        if (false){
+                            console.log(tmpdata[p][0]);
+                            console.log(typeof tmpdata[p][0]);
+                            console.log(key);
+                            console.log(typeof key);
+                            console.log(tmpdata[p][1]);
+                            console.log(typeof tmpdata[p][1]);
+                        }
                         
                         if (!totalobj.hasOwnProperty(key)){
-                            totalobj[key] = 0;
+                            totalobj[key] = 0.0;
                         }
                         
                         var bad = false;
@@ -613,15 +621,17 @@ function PlotController(config, useri, weather) {
                     }
                     
                     if (positiveFlip){
-                        console.log(totalobj);
-                        for (var somethingbig in totalobj){
-                        //    if (totalobj.hasOwnProperty(bob)){
-                                console.log(totalobj[somethingbig]);
-                                console.log(Math.abs(totalobj[somethingbig]));
+                        console.log(JSON.stringify(totalobj));
+                        for (var stb in totalobj){
+                            if (totalobj.hasOwnProperty(stb)){
+                                console.log(typeof stb);
+                                console.log(stb);
+                                console.log(totalobj[stb]);
+                                //console.log(Math.abs(totalobj[somethingbig]));
                                 //totalobj[somethingbig] = Math.abs(totalobj[somethingbig])
-                        //    }
+                            }
                         }
-                        //console.log(totalobj);
+                        console.log(totalobj);
                     }
                     positiveFlip = false;
                     
@@ -646,6 +656,7 @@ function PlotController(config, useri, weather) {
                 //console.log(totaldata);
                 jsonArray[i][0].data = totalarr;
                 totaldata = null;
+                totalobj = undefined;
                 jsonArray[i][0].room = "--";
                 //console.log("11 rooms added");
             }
