@@ -22,8 +22,8 @@ function getSensors(indexfile,checked){
         treeIndex.clearStore();
         //Create object to hold floors
         var objfloor = {"Average":treeIndex.addNewItem(0)};
-        var objStats = {"Total Monitored Diff":treeIndex.addNewItem(0)};
-        treeIndex.appendItemURL("dataDiff", objStats["Total Monitored Diff"]);
+        var objStats = {"(Total - Monitored) Difference":treeIndex.addNewItem(0)};
+        treeIndex.appendItemURL("dataDiff", objStats["(Total - Monitored) Difference"]);
         
         for(var i=0;i<elecsensors.length;i++){
             var path = elecsensors[i].path;
@@ -51,7 +51,7 @@ function getSensors(indexfile,checked){
                 var bld = 'Building (S-m36)';
                 objfloor[bld] = treeIndex.addNewItem(av);
                 treeIndex.appendItemURL(elecsensors[i].path, objfloor[bld]);
-                treeIndex.appendItemURL(path,objStats["Total Monitored Diff"]);
+                treeIndex.appendItemURL(path,objStats["(Total - Monitored) Difference"]);
             }
             else if (elecsensors[i].sensor == "S-m257"){
                 var bld = 'Building (S-m257)';
@@ -62,7 +62,7 @@ function getSensors(indexfile,checked){
                 //add sensors to the overall averages nodes
                 if (!sensorAverageIgnored){
                     treeIndex.appendItemURL(path,objfloor.Average);
-                    treeIndex.appendItemURL(path,objStats["Total Monitored Diff"]);
+                    treeIndex.appendItemURL(path,objStats["(Total - Monitored) Difference"]);
                 }
                 
                 //Get current sensor information
@@ -164,8 +164,8 @@ function getSensors(indexfile,checked){
         //If tree is displayed by use:
         treeIndex.clearStore();
         var objcircuit = {"Average":treeIndex.addNewItem(0)};
-        var objStats = {"Total Monitored Diff":treeIndex.addNewItem(0)};
-        treeIndex.appendItemURL("dataDiff", objStats["Total Monitored Diff"]);
+        var objStats = {"(Total - Monitored) Difference":treeIndex.addNewItem(0)};
+        treeIndex.appendItemURL("dataDiff", objStats["(Total - Monitored) Difference"]);
         
         objcircuit[bld] = null;
         for(var i=0;i<elecsensors.length;i++){
@@ -190,7 +190,7 @@ function getSensors(indexfile,checked){
                 //get most recent reading & work out size and total thus.
                 objcircuit[bld] = treeIndex.addNewItem(av);
                 treeIndex.appendItemURL(elecsensors[i].path, objcircuit[bld]);
-                treeIndex.appendItemURL(path,objStats["Total Monitored Diff"]);
+                treeIndex.appendItemURL(path,objStats["(Total - Monitored) Difference"]);
             }
             else if (elecsensors[i].sensor != "S-m257" && !sensorIgnored){
                 if (!sensorAverageIgnored) treeIndex.appendItemURL(path, objcircuit.Average);
@@ -206,7 +206,7 @@ function getSensors(indexfile,checked){
                 var floor="";
                 if (!sensorAverageIgnored){ 
                     treeIndex.sumItemAverage(av, objcircuit.Average);
-                    treeIndex.appendItemURL(path,objStats["Total Monitored Diff"]);
+                    treeIndex.appendItemURL(path,objStats["(Total - Monitored) Difference"]);
                 }
                 
                 var objroom = new Object();
