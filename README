@@ -7,12 +7,17 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 
 Change log:
 
-V2.1: Release!
-    Fixed bugs which allowed attempt of non-existent data
+V2.2: Release!
+    Added ability to plot difference in monitored sum and overall total
+    Added &fix44=true option to patch chilled data being factor of 40 out
+    Fixed non-display of single digit meters
+
+V2.1:
+    Fixed bugs which allowed attempt at download of non-existent data
     Added Y Axis scaling buttons for alternative data views
     Added bad data suppression support:
 	Added SVG dashed line support in protons
-	Added dashed lines for dat points which are considered bad by index generator
+	Added dashed lines for data points which are considered bad by index generator
 	Added auto clamping from config file, allowing Y axis power limits on data
 
 V2.0:
