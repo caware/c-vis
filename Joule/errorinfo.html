@@ -106,6 +106,7 @@
         
         var config = ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/indextest/config.json"]).config;
         //console.log(config);
+        //config.indexUrl.value = "http://www.cl.cam.ac.uk/~cce25/indextest/testsensorindex.json";
         
         var sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
         

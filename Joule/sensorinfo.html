@@ -103,6 +103,7 @@
         
         var config = ui.catchError(ui, cache.getObject, ["http://www.cl.cam.ac.uk/~cce25/indextest/config.json"]).config;
         //console.log(config);
+        //config.indexUrl.value = "http://www.cl.cam.ac.uk/~cce25/indextest/testsensorindex.json";
         
         var sensorAccess = new SensorAccessor(config.indexUrl.value,config.sensorFilesUrl.value);
         
@@ -133,7 +134,7 @@
             
             
             //sen[Sensor] = sen.sensorField;//.split("m")[1];
-            sen[sensorField] = sen.sensor;
+            sen[sensorField] = sen.sensor.split("m")[1];
             
             sen.Description = sen.description;
             sen[sensorloc] = sen.room;

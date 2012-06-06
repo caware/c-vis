@@ -290,8 +290,8 @@ function PlotController(config, useri, weather) {
             for (item in this.badUrls){
                 if (this.badUrls.hasOwnProperty(item)){
                     if (url === this.badUrls[item]+".json"){
-                        console.log('bad item stopped');
-                        console.log(url);
+                        //console.log('bad item stopped');
+                        //console.log(url);
                         return false;
                     }
                 }
@@ -344,12 +344,15 @@ function PlotController(config, useri, weather) {
                                     jsonArray[i][k] = tempJSON;
                                 }
                                 else if (sensorSName === "S-m44-" && fix44){
-                                    console.log("fixing!");
+                                    //console.log("fixing!");
                                     for (var d=0; d<tempJSON.data.length; d++){
-                                        tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        if (tempJSON.data[d][0] <= 1338379200000){
+                                            console.log("A*40");
+                                            tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        }
                                     }
                                     jsonArray[i][k] = tempJSON;
-                                    console.log("fixed!");
+                                    //console.log("fixed!");
                                 }
                                 else{
                                     jsonArray[i][k] = tempJSON;
@@ -388,12 +391,16 @@ function PlotController(config, useri, weather) {
                                     jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
                                 }
                                 else if (sensorSName === "S-m44-" && fix44){
-                                    console.log("fixing!");
+                                    //console.log("");
                                     for (var d=0; d<tempJSON.data.length; d++){
-                                        tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        if (tempJSON.data[d][0] <= 1338379200000){
+                                            console.log("B*40");
+                                            tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        }
                                     }
-                                    jsonArray[i][k] = tempJSON;
-                                    console.log("fixed!");
+                                    jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
+                                    //jsonArray[i][k] = tempJSON;
+                                    //console.log("fixed!");
                                 }
                                 else{
                                     jsonArray[i][k].data = jsonArray[i][k].data.concat(tempJSON.data);
@@ -518,14 +525,17 @@ function PlotController(config, useri, weather) {
                                     }
                                 }
                                 var sensorSName = "S-m"+plotArray[i].url[0].split("/S-m")[1];
-                                console.log(sensorSName);
+                                //console.log(sensorSName);
                                 if (sensorSName === "S-m44-" && fix44){
-                                    console.log("fixing!");
+                                    //console.log("this 44!");
                                     for (var d=0; d<tempJSON.data.length; d++){
-                                        tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        if (tempJSON.data[d][0] <= 1338379200000){
+                                            console.log("C*40");
+                                            tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        }
                                     }
                                     //jsonArray[i][k] = tempJSON;
-                                    console.log("fixed!");
+                                    //console.log("fixed!");
                                 }
                                 jsonArray[i][0] = tempJSON;
                                 initialised = true;
@@ -552,14 +562,17 @@ function PlotController(config, useri, weather) {
                                     }
                                 }
                                 var sensorSName = "S-m"+plotArray[i].url[0].split("/S-m")[1];
-                                console.log(sensorSName);
+                                //console.log(sensorSName);
                                 if (sensorSName === "S-m44-" && fix44){
-                                    console.log("fixing!");
+                                    //console.log("fixing!");
                                     for (var d=0; d<tempJSON.data.length; d++){
-                                        tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        if (tempJSON.data[d][0] <= 1338379200000){
+                                            console.log("D*40");
+                                            tempJSON.data[d][1] = tempJSON.data[d][1] * 40;
+                                        }
                                     }
                                     //jsonArray[i][k] = tempJSON;
-                                    console.log("fixed!");
+                                    //console.log("fixed!");
                                 }
                                 jsonArray[i][0].data = jsonArray[i][0].data.concat(tempJSON.data);
                             }
