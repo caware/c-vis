@@ -6,88 +6,74 @@
 #
 # Usage: indexgenerator.py root/of/json/file/tree/ path/to/output/json/file
 #
-import os
-import sys
-import datetime
-import re
-import urllib
-from sanitytest import sanitycheck
 
-try:
-    import simplejson as json
-except ImportError:
-    import json
+import os, sys, datetime, re
+try: import simplejson as json
+except ImportError: import json
 
-timeStart = datetime.datetime.now()
+tone = datetime.datetime.now()
 
-MONTH_POWER_LOG = '^S-m[0-9]{1,3}-\d\d\d\d-\d\d\.json$'
-DAY_POWER_LOG = '^S-m[0-9]{1,3}-\d\d\d\d-\d\d\-\d\d.json$'
-
-#debug = False
+MONTH_POWER_LOG = '^S-m[0-9]{2,3}-\d\d\d\d-\d\d\.json$'
+DAY_POWER_LOG = '^S-m[0-9]{2,3}-\d\d\d\d-\d\d\-\d\d.json$'
 
 monthfile = re.compile(MONTH_POWER_LOG)
 dayfile = re.compile(DAY_POWER_LOG)
 
-if len(sys.argv) <= 3 or sys.argv[1] == "help":
-    print "Usage: indexgenerator.py root/of/json/file/tree/ output/json/file error/json/file"
+debug = False
+
+
+
+configfile = open('config.json', 'r')
+readconfigfile = configfile.read()
+jsonconfig = json.loads(readconfigfile)
+configfile.close()
+
+if 'ignored_sensors' in configfile:
+    ignored_sensors = configfile['ignored_sensors']
+    if debug:
+        print "Ignoring sensors: "+str(ignored_sensors)
+
+if len(sys.argv) != 3 or sys.argv[1] == "help":
+    print "Usage: indexgenerator.py root/of/json/file/tree/ path/to/output/json/file"
     sys.exit()
 else:
-    dirtoread = sys.argv[1]
-    filetowrite = sys.argv[2]
-    errorfile = sys.argv[3]
+    [dirtoread, filetowrite] = sys.argv[1:]
     
-    if 'debug' in sys.argv:
-        debug = True
-    else:
-        debug = False
-    
-    if 'verbose' in sys.argv:
-        verbose = True
-    else:
-        verbose = False
-
-    if debug or verbose:
-        print "Input: "+dirtoread+", Output: "+filetowrite+", Errors: "+errorfile+"\n"
+    if debug:
+        print "Input: "+dirtoread+", Output: "+filetowrite
     
     totalfiles = 0
     currentsensor = ''
     alreadyfound = False
     elec = []
     tempsensor = {}
-    loggedErrors = {}
     
     for dirname, dirnames, filenames in os.walk(dirtoread):
         for filename in filenames:
-            if (filename[-5:] == ".json") and filename != filetowrite and monthfile.match(str(filename)):
-                #or dayfile.match(str(filename)) ):
+            if (filename[-5:] == ".json") and filename != filetowrite and (monthfile.match(str(filename)) or dayfile.match(str(filename)) ):
                 infile = open(os.path.join(dirname, filename), 'r')           
                 readfile = infile.read()
                 jsonfile = json.loads(readfile)
                 infile.close()
                 
                 if 'room' and 'path' and 'label' and 'description' and 'data' in jsonfile and len(jsonfile['data']) > 0 :
-                    if verbose or debug:
-	                print 'Valid filename: '+str(filename)
+                #if set(("room", "path", "label", "description", "data")) <= set(jsonfile):  
                     alreadyfound = False
                     #if we know about this sensor, add its readings only.
                     labelsplit = jsonfile['label'].split(' ', 1)
                     
-                    errors = sanitycheck(jsonfile, 'monthfile')
-                    if errors != 'OK':
-                        tmpSensorLabel = 'S-m' + labelsplit[0]
-                        errors['filename'] = str(filename)
-
-                        if tmpSensorLabel not in loggedErrors:
-                            loggedErrors[tmpSensorLabel] = []
-                        loggedErrors[tmpSensorLabel].append(errors)
-                            
-                        if verbose or debug:
-                            lenErrs = str(len(errors['errors']))
-                            print '[WARN] filename "'+str(filename)+'" has '+lenErrs+' errors'
+                    #temptotal = 0.0
+                    #mostrecentreading = False
+                    
+                    #if labelsplit[1] == recentsensor:
+                    #    mostrecentreading = True
+                    #    for i in jsonfile['data']:
+                    #        temptotal += i[1]
+                    #    datasize = len(jsonfile['data'])
                  
                     for sensor in elec:
                         if debug:
-                            print '[Debug]trying sensor ID:'+sensor['sensor']
+                            print 'trying sensor ID:'+sensor['sensor']
                         if 'sensor' in sensor:
                             if sensor['sensor'] == 'S-m' + labelsplit[0]:
                             
@@ -102,12 +88,12 @@ else:
                                 if sensor['monthly-readings'][0] == filename:
                                     #sensor is newer than others, prfer newer data over old.
                                     
+                                    #sensor['recenttotal'] = temptotal
+                                    #sensor['datasize'] = datasize
                                     sensorlabel = 'S-m' + labelsplit[0]
                                     sensor['sensor'] = sensorlabel
-
-                                    #tmppath = ''.join(jsonfile['path'].partition('/')[1:])+"/"+sensorlabel+"-"
-                                    tmppath = "/"+jsonfile['path'].split("/",1)[1]+"/"+sensorlabel+"-"
-				    sensor['path'] = urllib.quote(tmppath)
+                                    sensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
+                                    
                                     sensor['room'] = jsonfile['room']           
                                     sensor['description'] = jsonfile['description']
                                     
@@ -116,7 +102,7 @@ else:
                                             sensor['coverage'] = jsonfile['coverage']
                                     
                                 if debug:
-                                    print '[DEBUG]Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['monthly-readings'])
+                                    print 'Sensor ID:'+sensor['sensor']+' already found, readings: '+str(sensor['monthly-readings'])
                                 
                                 alreadyfound = True
                                 break
@@ -127,6 +113,7 @@ else:
                         #if this is a new sensor, add its readings to elec.
                         tempsensor = {}
 
+                        #tempsensor['readings'] = [filename]
                         if monthfile.match(str(filename)):
                             tempsensor['monthly-readings'] = [filename]
                             tempsensor['daily-readings'] = []
@@ -137,47 +124,45 @@ else:
 
                         sensorlabel = 'S-m' + labelsplit[0]
                         tempsensor['sensor'] = sensorlabel
-                        #tmppath = ''.join(jsonfile['path'].partition('/')[1:])+"/"+sensorlabel+"-"
-                        tmppath = "/"+jsonfile['path'].split("/",1)[1]+"/"+sensorlabel+"-"
-                        tempsensor['path'] = urllib.quote(tmppath)
+                        tempsensor['path'] = jsonfile['path'].lstrip("meters.cl.cam.ac.uk")+"/"+sensorlabel+"-"
+                        #tempsensor['recenttotal'] = temptotal
+                        #tempsensor['datasize'] = datasize
                         tempsensor['room'] = jsonfile['room']           
                         tempsensor['description'] = jsonfile['description']
                         if 'coverage' in jsonfile:
                             if jsonfile['coverage'] != 'cOVERAGE':
-                                tempsensor['coverage'] = jsonfile['coverage']
+                                sensor['coverage'] = jsonfile['coverage']
                             
                         elec.append(tempsensor)
                         
                         if debug:
-                            print '[DEBUG] New sensor found: '+str(tempsensor)
+                            print 'New sensor found: '+str(tempsensor)
                         tempsensor = {}
                     
                     totalfiles = totalfiles + 1
                 else:
-                    if debug or verbose:
-                        print "[WARN] Skipped malformed or null file"+str(filename)
+                    if debug:
+                        print "skipped malformed or null file"+str(filename)
     
     myjson = {}
     sensors = {}
     sensors['elec'] = elec
     myjson['sensors'] = sensors
     
-    outerrors = open(errorfile, 'w')
-    outerrors.write(json.dumps(loggedErrors))
-    outerrors.close()
-
     outputfile = open(filetowrite, 'w')
     outputfile.write(json.dumps(myjson))
     outputfile.close()
 
-    timeEnd = datetime.datetime.now()
-    diff = timeEnd - timeStart
-    if verbose or debug:
-        print '====================='
-        print 'Sensors with errors: '+str(len(loggedErrors))
-        print 'Time taken: '+str(diff)
-        print 'Total # sensors: '+str(len(elec))
-        print '\n'
-        print 'Total Files Parsed: '+str(totalfiles)
+    ttwo = datetime.datetime.now()
+    diff = ttwo - tone
+    
+    print '\n'
+    print 'Time: '+str(diff)
+    #if debug:
+    print '\n'
+    print 'Total # sensors: '+str(len(elec))
+    print '\n'
+    print 'Total Files Parsed: '+str(totalfiles)
+    #print json.dumps(myjson)
 
     sys.exit()
