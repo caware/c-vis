@@ -1,0 +1,43 @@
+{
+    "config" : {
+        "maxNumberPlots" : {
+            "description" : "Maximum number of sensor plots Joule can show.",
+            "value" : 10
+        },
+	"autoFilter" : {
+		"description" : "Object to specifiy max power values before auto discarding data outside limits.",
+		"value" : {"maxY" : 300, "minY" : 0}
+	},
+        "plotColour" : {
+            "description" : "Array of SVG colours for the individual plots. Must be same length as max-number-plots.",
+            "value" : ["firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise"]
+        },
+        "sensorNoAverage" : {
+            "description" : "Array of sensors not to add to average calculations.",
+            "value" : ["S-m41"]
+        },
+        "sensorIgnore" : {
+            "description" : "Array of sensors to completely ignore.",
+            "value" :["S-m25"]
+        },
+        "zoomSize" : {
+            "description" : "Width of the zoomed section.",
+            "value" : {
+                "zoomX" : 160,
+                "zoomDX" : 160 
+            }
+        },
+        "indexUrl" : {
+            "description" : "URL of the JSON index file for the sensors.",
+            "value" : "http://www.cl.cam.ac.uk/meters/tools/wgb-vis/configs/sensorindex.json"
+        },
+        "errorUrl" : {
+            "description" : "URL of the JSON error file for the sensors.",
+            "value" : "http://www.cl.cam.ac.uk/meters/tools/wgb-vis/configs/errors.json"
+        },
+        "sensorFilesUrl" : {
+            "description" : "URL of the root of the dir structure containing the sensor data.",
+            "value" : "http://www.cl.cam.ac.uk/meters"
+        }
+    }
+}
