@@ -26,6 +26,245 @@
     <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
     <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
     -->
+    <style type="text/css">
+    html, body {
+    margin:0;
+    padding:0;
+    font-family: "Lucida Grande", Verdana;
+    font-size: 0.9em;
+    text-align: center;
+    background-color:#F2F2F2;
+}
+
+input, select {
+    font-size:0.9em;
+}
+
+table {
+    margin-top:-10px;
+    margin-left:7px;
+}
+
+h4 {
+    font-size:1.1em;
+    text-decoration:none;
+    font-weight:normal;
+    color:#23A4FF;
+}
+
+a {
+    color:#23A4FF;
+}
+
+#container {
+    width: 1000px;
+    height: 600px;
+    margin:0 auto;
+    position:relative;
+}
+
+#left-container, 
+#right-container, 
+#center-container {
+    height:600px;
+    position:absolute;
+    top:0;
+}
+
+#left-container, #right-container {
+    width:200px;
+    color:#686c70;
+    text-align: left;
+    overflow: auto;
+    background-color:#fff;
+    background-repeat:no-repeat;
+    border-bottom:1px solid #ddd;
+}
+
+#left-container {
+    left:0;
+    background-image:url('col2.png');
+    background-position:center right;
+    border-left:1px solid #ddd;
+    
+}
+
+#right-container {
+    right:0;
+    background-image:url('col1.png');
+    background-position:center left;
+    border-right:1px solid #ddd;
+}
+
+#right-container h4{
+    text-indent:8px;
+}
+
+#center-container {
+    width:600px;
+    left:200px;
+    background-color:#1a1a1a;
+    color:#ccc;
+}
+
+.text {
+    margin: 7px;
+}
+
+#inner-details {
+    font-size:0.8em;
+    list-style:none;
+    margin:7px;
+}
+
+#log {
+    position:absolute;
+    top:10px;
+    font-size:1.0em;
+    font-weight:bold;
+    color:#23A4FF;
+}
+
+
+#infovis {
+    position:relative;
+    width:600px;
+    height:600px;
+    margin:auto;
+    overflow:hidden;
+}
+
+/*TOOLTIPS*/
+.tip {
+    color: #111;
+    width: 139px;
+    background-color: white;
+    border:1px solid #ccc;
+    -moz-box-shadow:#555 2px 2px 8px;
+    -webkit-box-shadow:#555 2px 2px 8px;
+    -o-box-shadow:#555 2px 2px 8px;
+    box-shadow:#555 2px 2px 8px;
+    opacity:0.9;
+    filter:alpha(opacity=90);
+    font-size:10px;
+    font-family:Verdana, Geneva, Arial, Helvetica, sans-serif;
+    padding:7px;
+}
+
+#right-container {
+  display: none;
+}
+
+#center-container {
+  width:800px;
+}
+
+#infovis {
+  width:800px;
+}
+
+#id-list {
+  background-color:#EEEEEE;
+  border:1px solid #CCCCCC;
+  margin:10px 20px 0 20px;
+  padding:5px;
+  text-align:left;
+  text-indent:2px;
+}
+
+#id-list li {
+  list-style: none;
+  margin-bottom:3px;
+  
+}
+
+.query-color {
+  border:1px solid #999999;
+  float:left;
+  height:10px;
+  margin:3px 3px 0 0;
+  width:10px;
+}
+
+#update {
+  margin:10px 40px;
+}
+
+.button {
+  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  font: 14px / 100% Arial, Helvetica, sans-serif;
+  padding: 0.5em 1em 0.55em;
+  text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.3);
+  -webkit-border-radius: 0.5em;
+  -moz-border-radius: 0.5em;
+  border-radius: 0.5em;
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+  text-decoration: none;
+}
+
+.button:active {
+  position: relative;
+  top: 1px;
+}
+
+/* gray */
+.gray {
+  color: #e9e9e9;
+  border: solid 1px #555;
+  background: #6e6e6e;
+  background: -webkit-gradient(linear, left top, left bottom, from(#888), to(#575757));
+  background: -moz-linear-gradient(top,  #888,  #575757);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#888888', endColorstr='#575757');
+}
+
+.gray:hover {
+  background: #616161;
+  background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#4b4b4b));
+  background: -moz-linear-gradient(top,  #757575,  #4b4b4b);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#757575', endColorstr='#4b4b4b');
+}
+
+.gray:active {
+  color: #afafaf;
+  background: -webkit-gradient(linear, left top, left bottom, from(#575757), to(#888));
+  background: -moz-linear-gradient(top,  #575757,  #888);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#575757', endColorstr='#888888');
+}
+
+/* white */
+.white {
+  color: #606060;
+  border: solid 1px #b7b7b7;
+  background: #fff;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#ededed));
+  background: -moz-linear-gradient(top,  #fff,  #ededed);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed');
+}
+
+.white:hover {
+  background: #ededed;
+  background: -webkit-gradient(linear, left top, left bottom, from(#fff), to(#dcdcdc));
+  background: -moz-linear-gradient(top,  #fff,  #dcdcdc);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#dcdcdc');
+}
+
+.white:active {
+  color: #999;
+  background: -webkit-gradient(linear, left top, left bottom, from(#ededed), to(#fff));
+  background: -moz-linear-gradient(top,  #ededed,  #fff);
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#ffffff');
+}
+
+</style>
     
 </head>
 <body>
@@ -86,28 +325,49 @@
                 </div> -->
             </div>
             <div id="diacontainer">
-            <h1 id='sunburst'>Sunburst</h1>
-                <div class='gallery' id='chart'>
+
+                <div id="treecontainer">
+                    <div style="width: 260px; margin: auto;">
+                    <a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treegeo'); return false"><button class="btn" id="geobutton">Geographic</button></a>
+                    <a href="#" onclick="ui.changeTree(config.indexUrl.value, 'treeuse'); return false"><button class="btn" id="functbutton">Functional</button></a>
+                    <div class="text">
+                        <h4>Pie Chart Example</h4> 
+                        A static Pie Chart example with gradients that displays tooltips when hovering the stacks.<br /><br />
+                        Click the Update button to update the JSON data.
+                    </div>    
                 </div>
-                <button class='first' id='size'>
-                    Size
-                </button>
-                <button class='last active' id='count'>
-                    Count
-                </button>
+                
+                
+            <div id="treediv">
+                        
             </div>
         </div>
+                
+        <div id="chartcontainer">
+            <div id="chartdiv">
+                <div id="infovis"></div>
+                <div id="right-container">
+                <div id="inner-details"></div>
+            </div>
+        </div>
+    </div>
+    <div id="chartinfo">
+        <div id="myGrid">
+        </div>
+    </div>
+</div>
+
         <footer>
         <p>University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-AWARE Project</a></p>
       </footer>
 
     </div> <!-- /container -->
 
-<script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-1.5.1.min.js"></script>
+    <script language="javascript" type="text/javascript" src="js/jit.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.8.14.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.event.drag-2.0.min.js"></script>
     <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
-    <script type="text/javascript" src="js/d3.v2.js"></script>
     <script type="text/javascript" src="js/date-en-GB.js"></script>
     <script type="text/javascript" src="js/caware.ColourPool.js"></script>
     <script type="text/javascript" src="js/caware.IntValueStore.js"></script>
@@ -119,6 +379,29 @@
     <script type="text/javascript" src="js/WeatherJSONBridge.js"></script>
     <script type="text/javascript" src="js/caware.JouleUIController.js"></script>
     <script type="text/javascript" src="js/caware.sunburst.js"></script>
+    <script type="text/javascript" src="js/excanvas.js"></script>
+    
+    <script type="text/javascript">
+        function getUrlVars() {
+            var vars = {}, hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for(var i = 0; i < hashes.length; i++) {
+                var hash = hashes[i].split('=');
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+        
+    var opts = getUrlVars();
+    var fix44 = false;
+        
+    if ('fix44' in opts){
+        if (opts['fix44'] === 'true'){
+            fix44 = true;
+        }
+    }
+    init();
+    </script>
 
   </body>
 </html>

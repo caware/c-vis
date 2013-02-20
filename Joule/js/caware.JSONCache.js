@@ -6,6 +6,7 @@ function JSONCache() {
     this.cachemisses = 0;
     
     this.getObject = function(url){
+        console.log("Req: "+url);
         //Fetches a json file from the cache, or downloads and inserts it if not already there.
         var found = false;
         for (var c in this.cache){
