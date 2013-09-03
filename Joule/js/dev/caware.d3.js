@@ -1,0 +1,605 @@
+function chart(data) {
+	
+	this.data = data;
+	this.filterOn = false;
+	this.col = d3.scale.category10();
+	this.sigma = d3.scale.linear().domain([0, 5000]).range([2, 15]);
+	this.size = d3.scale.linear().domain([0, 5000]).range([5, 100]);
+	this.focusData = new Object();
+	this.contextData = new Object();
+	this.dim = {
+	      "w" : 750,
+	      "h1" : 310,
+	      "spacing" : 30,
+	      "h2" : 50,
+	      "margin" : {
+		"top" : 30,
+		"right" : 20,
+		"bottom" : 20,
+		"left" : 30
+	      }
+	};
+	
+	var dim = this.dim;
+	
+	this.cx = d3.time.scale().domain([this.data.start, this.data.end]).range([dim.margin.left, dim.w + dim.margin.left]);
+	this.cy = d3.scale.linear().domain([0, this.data.yMax]).range([dim.margin.top + dim.h1 + dim.spacing + dim.h2, dim.margin.top + dim.h1 + dim.spacing]);
+	
+	this.fx = d3.time.scale().range([dim.margin.left, dim.w + dim.margin.right]);
+	this.fy = d3.scale.linear().range([dim.margin.top + dim.h1, dim.margin.top]);
+	this.ft = d3.scale.linear().range([0, dim.h1]);
+	
+	var fx = this.fx;
+	var fy = this.fy;
+	
+	var cx = this.cx;
+	var cy = this.cy;
+	
+	this.main = d3.select("#chartdiv").append("svg")
+		  .attr("width", dim.w + dim.margin.left + dim.margin.right)
+		  .attr("height", dim.margin.top + dim.margin.bottom + dim.h1 + dim.spacing + dim.h2);
+	
+	this.focusLine = d3.svg.line()
+				.x(function(d){ return fx(d.x); })
+				.y(function(d){ return fy(d.y); });
+
+	this.focus = this.main.append("g").attr("height", dim.h1).attr("class", "focus");
+	
+	this.xAxisFocusBottom = d3.svg.axis()
+		    .scale(this.fx)
+		    .orient("bottom")
+		    .ticks(7)
+		    .innerTickSize(-dim.h1)
+		    .outerTickSize(0)
+		    .tickFormat(function(d) {return zoomTimeFormat(new Date(d));});
+		      
+	this.xAxisFocusTop = d3.svg.axis()
+			    .scale(fx)
+			    .orient("top")
+			    .ticks(7)
+			    .tickSize(0)
+			    .tickFormat(function(d) {return zoomDateFormat(new Date(d));});
+			    
+	this.yAxisFocus = d3.svg.axis()
+			    .scale(fy)
+			    .ticks(7)
+			    .orient("left")
+			    .innerTickSize(-dim.w)
+			    .outerTickSize(0);
+			    
+	this.context = this.main.append("g").attr("height", dim.h2).attr("class", "context");
+
+	this.xAxisContext = d3.svg.axis()
+		  .scale(cx)
+		  .ticks(5)
+		  .orient("bottom")
+		  .innerTickSize(-dim.h2)
+		  .outerTickSize(0)
+		  .tickFormat(function(d){ return overallDateFormat(d); });
+		  
+	this.contextLine = d3.svg.line()
+				  .x(function(d){ return cx(d.x); })
+				  .y(function(d){ return cy(d.y); });
+	
+	var self = this;
+				  
+	this.brush = d3.svg.brush()
+			    .x(cx)
+			    .on("brush", function () {
+				self.refresh(self);
+			    });
+	
+}
+
+chart.prototype.refresh = function (self) {
+ 
+	self.fx.domain(self.brush.empty() ? self.fx.domain() : self.brush.extent());
+	self.sliceData(self.fx.domain());
+	_.each(self.data.data, function(d, i) { self.focus.select(".focusLine" + d.id).attr("d", self.focusLine(self.focusData.data[i].data)); });
+	self.focus.select(".fx.axis").call(self.xAxisFocusBottom);
+	self.focus.select(".fx2.axis").call(self.xAxisFocusTop);
+	self.focus.select(".fy.axis").transition().call(self.yAxisFocus);
+	self.context.select(".cx.axis").transition().call(self.xAxisContext);
+	self.gridUpdate();
+
+}
+
+chart.prototype.sliceData = function (range) {
+	//console.log("sliceData");
+	
+	var self = this;
+	
+	if (typeof range == 'undefined') {
+		console.log("Undefined range");
+		this.focusData = this.data.data;
+		this.fx.domain([this.data.start, this.data.end]);
+	} else {
+		this.fx.domain(range);
+		this.start = range[0];
+		this.end = range[1];
+		// Slice the data array to include data within range
+		var slicedData = [];
+		for(var j=0; j<this.data.data.length; j++){
+		    slicedData[j] = [];
+		    var remapped = _.map(_.pluck(this.data.data[j].data, "x"), function (d) { return d.getTime(); });
+		    slicedData[j].data = (this.data.data[j].data.slice(
+		      Math.max(0, _.sortedIndex(remapped, range[0].getTime(), null, true)), // If not found use 0
+		      _.sortedIndex(remapped, range[1].getTime(), null, true) + 1 // If not found uses 0
+		    ));
+		    this.filterOn ? slicedData[j].data = this.gaussian(5, 3, slicedData[j].data) : null;
+		    slicedData[j].id = this.data.data[j].id;
+		}
+		
+		this.focusData.data = slicedData;
+
+	}
+
+	var trimmedData = [];
+	    
+	if (this.data.data.length > 0) {
+	    if (this.data.data[0].length < 600) trimmedData = this.data.data;
+	    else {
+		var mydiv = this.data.data[0].data.length / 600;
+		var rounddiv = Math.round(mydiv*1)/1;
+		
+		for(var p=0; p<this.data.data.length; p++){
+		    for(var q=0; q<this.data.data[p].data.length;q++){
+			if (q == 0) {
+			    trimmedData[p] = new Object();
+			    trimmedData[p].data = new Array();
+			}
+			if (q%rounddiv == 0) {
+			  trimmedData[p].data.push(this.data.data[p].data[q]);
+			}
+		    }
+		    //q > 1000 ? trimmedData[p].data = this.gaussian(10, 2, trimmedData[p].data) : null;
+		    trimmedData[p].id = this.data.data[p].id;
+		}
+	    }
+	}
+
+	this.contextData.data = trimmedData;
+		
+	this.focusData.yMax = d3.max(this.focusData.data, function (d) { return d3.max(d.data, function (e) { return typeof e.y === "number" ? e.y : 0; }); });
+	this.focusData.yMin = d3.min(this.focusData.data, function (d) { return d3.min(d.data, function (e) { return typeof e.y === "number" ? e.y : 0; }); });
+	_.each(this.focusData.data, function (d, i) {i < self.data.table.length ? self.data.table[i].avgselected = pwrFormatter(d3.mean(d.data, function (e) { return (typeof e.y === "number") ? e.y : 0; })) : null; });
+	
+	switch (ui.scaleSelection) {
+	    case 'falseall':
+		this.fy.domain([0, this.data.yMax * 1.1]);
+		break;
+	    case 'scale':
+		this.fy.domain([0, this.focusData.yMax * 1.1]);
+		break;
+	    case 'zoom':
+		this.fy.domain([this.focusData.yMin * .8, this.focusData.yMax * 1.1]);
+		break;
+	}
+    
+}
+
+chart.prototype.draw = function (data, start, end) {
+	
+	var dim = this.dim;
+	var self = this;    
+	// Interaction state. Focus scales will have domain set on-render.
+      
+	var i = {x:config.zoomSize.value.zoomX, dx:config.zoomSize.value.zoomDX};
+
+	// Initialisation
+	
+	var d1 = this.cx.invert(config.zoomSize.value.zoomX);
+	config.zoomSize.value.zoomX = i.x;
+	var d2 = this.cx.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
+	config.zoomSize.value.zoomDX = i.dx;
+
+	if (!gotChartWidth) {
+	    chartWidth = this.main.attr("width");
+	    gotChartWidth = true;
+	}
+	else this.main.attr("width", chartWidth);
+	
+	// Data selection function
+	
+	this.sliceData([d1, d2]);
+	
+	// Find average for table
+	_.each(this.focusData.data, function (d, i) {i < self.data.table.length ? self.data.table[i].avgselected = pwrFormatter(d3.mean(d.data, function (e) { return (typeof e.y === "number") ? e.y : 0; })) : null; });
+	 
+	this.gridInit();     
+
+	// Focus area
+	// Create axes
+
+	this.focus.append("svg:g")
+	      .attr("class", "fx axis")
+	      .attr("transform", "translate(0," + (dim.h1 + dim.margin.top) + ")")
+	      .call(this.xAxisFocusBottom);
+	
+	this.focus.append("svg:g")
+	      .attr("class", "fx2 axis")
+	      .attr("transform", "translate(0," + dim.margin.top + ")")
+	      .call(this.xAxisFocusTop);
+    
+	this.focus.append("svg:g")
+	      .attr("class", "fy axis")
+	      .attr("transform", "translate(" + dim.margin.left + ",0)")
+	      .call(this.yAxisFocus);
+	
+	// Plot lines on focus chart
+
+	//self = this;
+	this.focus.selectAll(".f-line")
+	      .data(self.focusData.data, function (d) { return d.id; })
+	      .enter().append("svg:g")
+	      .attr("class", "f-line")
+		.append("svg:path")
+		  .attr("d", function (d) { return self.focusLine(d.data); })
+		  .attr("class", function (d, i) {return "focusLine" + d.id;})
+		  .style("stroke", function(d, i) { return self.col(i); })
+		  .style("stroke-width", 2)
+		  .style("fill", "none")
+		  .style("shape-rendering", "geometricPrecision");
+
+	this.context.append("svg:g")
+		.attr("class", "cx axis")
+		.attr("transform", "translate(0," + (dim.margin.top + dim.h1 + dim.spacing + dim.h2) + ")").call(this.xAxisContext);
+		
+	// Context base line
+	this.context.append("svg:line")
+		.attr("class", "baseline")
+		.attr("x1", dim.margin.left)
+		.attr("x2", dim.margin.left + dim.w)
+		.attr("y1", dim.margin.top + dim.h1 + dim.spacing + dim.h2)
+		.attr("y2", dim.margin.top + dim.h1 + dim.spacing + dim.h2);
+
+	// Plot lines on context chart
+
+       	this.context.selectAll(".c-line")
+	      .data(this.contextData.data, function (d) { return d.id + "#" + d.data.length; })
+	      .enter().append("svg:g")
+	      .attr("class", "c-line")
+		.append("svg:path")
+		  .attr("d", function (d) { return self.contextLine(d.data); })
+		  .attr("class", function (d, i) {return "contextLine" + d.id;})
+		  .style("stroke", function(d, i) { return self.col(i); })
+		  .style("stroke-width", 2)
+		  .style("fill", "none")
+		  .style("shape-rendering", "geometricPrecision");
+       
+	// Drag area on context chart
+		
+	this.context.append("g")
+		.attr("class", "brush")
+		.attr("transform", "translate(0," + (dim.margin.top + dim.h1 + dim.spacing)  + ")")
+		.call(this.brush)
+	    .selectAll("rect")
+	      .attr("y", -6)
+	      .attr("height", dim.h2 + 7);
+
+};
+
+chart.prototype.gridInit = function () {
+  
+  	var grid;
+
+	var columns = []
+
+	if (carbonOn){
+	    columns = [
+		{id:"PlotColour", name:"Colour", field:"colour", width:46, formatter:GraphicalColourCellFormatter},
+		{id:"Description", name:"Description", field:"description", width:215},
+		{id:"StartMonthyear", name:"Start", field:"startmonthyear", width:79},
+		{id:"EndMonthyear", name:"End", field:"endmonthyear", width:79},
+		{id:"CO2/s selected", name:"g/s Selected", field:"avgselected", width:115},
+		{id:"C02/s all", name:"g/s Entire", field:"avgtotal", width:95},
+		{id:"TotalCO2", name:"Total CO2 (tonnes)", field:"totalenergy", width:126}];
+	}
+	else {
+	    columns = [
+		{id:"PlotColour", name:"Colour", field:"colour", width:46, formatter:GraphicalColourCellFormatter},
+		{id:"Description", name:"Description", field:"description", width:215},
+		{id:"StartMonthyear", name:"Start", field:"startmonthyear", width:79},
+		{id:"EndMonthyear", name:"End", field:"endmonthyear", width:79},
+		{id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
+		{id:"kWTotal", name:"Avg kW Entire", field:"avgtotal", width:95},
+		{id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126}];
+	}
+
+	var options = {
+	    enableCellNavigation: false,
+	    enableColumnReorder: false,
+	    editable: false
+	};
+	
+	this.dataView = new Slick.Data.DataView();
+	this.grid = new Slick.Grid("#myGrid", this.dataView, columns, options);
+	
+	
+	this.dataView.beginUpdate();
+	this.grid.setData(this.data.table);
+	this.dataView.endUpdate();
+	this.grid.render();
+	$("#myGrid").show();
+}
+	    
+chart.prototype.gridUpdate = function () {
+	
+	var self = this;
+	_.each(this.focusData, function (d, i) {i < self.data.table.length ? self.data.table[i].avgselected = pwrFormatter.format(d3.mean(d, function (e) { return (typeof e.y === "number") ? e.y : 0; })) : null; });
+	this.grid.setData(this.data.table);
+	this.grid.render();
+    
+}
+
+chart.prototype.redraw = function (data) {
+console.log(data);
+	if (typeof data == 'undefined') {
+	  this.refresh(this);
+	  return;
+	}
+	this.data = data;
+	//this.start = this.data.start;
+	//this.end = this.data.end;
+	this.cx.domain([this.data.start, this.data.end]);
+	this.cy.domain([0, this.data.yMax]);
+	this.sliceData([this.start, this.end]);
+
+	var self = this;
+
+	this.focus.selectAll(".f-line")
+	      .data(self.focusData.data, function (d, i) { return d.id; })
+	      .enter().append("svg:g")
+	      .attr("class", "f-line")
+		.append("svg:path")
+		  .attr("d", function (d) { return self.focusLine(d.data); })
+		  .attr("class", function (d, i) { return "focusLine" + d.id; })
+		  .style("stroke", function(d, i) { return self.col(d.id); })
+		  .style("stroke-width", 2)
+		  .style("fill", "none")
+		  .style("shape-rendering", "geometricPrecision");
+	
+	this.focus.selectAll(".f-line")
+	      .data(self.focusData.data, function (d, i) { return d.id; }).exit().remove();
+
+	this.context.selectAll(".c-line")
+	      .data(self.contextData.data, function (d, i) { return d.id + "#" + d.data.length; })
+	      .enter().insert("svg:g", ".brush")
+	      .attr("class", "c-line")
+		.append("svg:path")
+		  .attr("d", function (d) { return self.contextLine(d.data); })
+		  .attr("class", function (d, i) { return "contextLine" + d.id;})
+		  .style("stroke", function(d, i) { return self.col(d.id); })
+		  .style("stroke-width", 2)
+		  .style("fill", "none")
+		  .style("shape-rendering", "geometricPrecision");
+	
+	this.context.selectAll(".c-line")
+	      .data(self.contextData.data, function (d, i) { return d.id + "#" + d.data.length; }).exit().remove();	      	  
+	
+	this.refresh(this);
+	2
+};
+
+chart.prototype.sankey = function () {
+  
+	// TO DO
+  
+}
+
+chart.prototype.gaussian = function (size, sigma, data) {
+	
+	var sigma = Math.abs(sigma);
+	var size = Math.round(this.size(data.length));
+	size%2 == 0 ? null : size = size+1; // Get even size number
+  
+	var val;
+	var kernel = new Array();
+	var normalized = new Array();
+	var filtered = new Array();
+	
+	for (var i = 0; i <= size; i++) {
+		val = Math.exp(-Math.pow(i-size/2, 2) / (2 * Math.pow(this.sigma(data.length), 2)));// Evaluate gaussian
+		kernel.push(val);
+	}
+	var sum = d3.sum(kernel);
+	_.each(kernel, function (d) { normalized.push(d / sum) }); // Normalize kernel
+	
+	var mean = d3.mean(data, function (d) { return d.y; })
+	
+	for (var i=0; i < data.length; i++) {
+		var conv = new Array();
+		var point = new Object();
+		for (var j=0; j < normalized.length; j++) {
+			
+			var index = i+j-(normalized.length-1)/2;
+		  
+			if (index >= 0 && index < data.length) {
+			  conv.push(data[index].y * normalized[j]); // Convolve data with normalized kernel
+			} else {
+			  conv.push(mean * normalized[j]); // Convolve mean value with normalized kernel at boundaries to avoid discontinuities
+			}
+		};
+		point.x = data[i].x;
+		point.y = d3.sum(conv);
+		filtered.push(point);
+	}
+
+	return filtered;
+  
+}
+
+chart.prototype.tree = function (sensorTree) {
+	    
+	var j = 0;
+	var self = this;
+	function mapper(treeObj) {
+	   
+		j++;
+	   
+		var remappedTree = new Array();
+		var i = 100;
+		
+		_.map(treeObj, function (value, key, list) { 
+			  
+			var temp = new Object();
+
+			if (typeof value == 'number') {
+				temp.name = key;
+				temp.id = value;
+				key == 'Building' ? temp.show = true : temp.show = false; // to be set at tree generation stage
+				remappedTree.push(temp);
+			} else if (typeof value == 'object') {
+				temp.name = key;
+				temp.id = j*i; // solve ID problem on non-leaves
+				temp._children = mapper(value);
+				remappedTree.push(temp);
+			}
+			
+			i++;
+			
+		});
+		
+		return remappedTree;
+		
+	}
+  
+	var dim = {
+	  "w" : 300,
+	  "elHeight" : 20,
+	  "elWidth" : 170,
+	  "h" : 2000
+	};
+	var duration = 200;
+	var i =0;
+	var tree = d3.layout.tree()
+		      .size([dim.h, 40]);
+		      
+	var diagonal = d3.svg.diagonal()
+			      .projection(function(d) { return [d.y, d.x]});
+			 
+	var vis = d3.select("#treediv").append("svg:svg")
+		      .attr("width", dim.w)
+		      .attr("height", dim.h)
+		     .append("svg:g")
+		       .attr("transform", "translate(5, 30)");
+	
+	var rootData = new Object();
+	
+	rootData.name = treeTitle;
+	rootData.children = mapper(sensorTree);
+	rootData.x0 = 0;
+	rootData.y0 = 0;
+	
+	update(rootData);
+	
+	function update(source) {
+
+		var nodes = tree.nodes(rootData);
+
+		nodes.forEach(function(n, i) {
+		  n.x = i * dim.elHeight;
+		});
+		
+		var node = vis.selectAll("g.node")
+			      .data(nodes, function(d) { return d.id; });
+			      
+		var nodeEnter = node.enter().append("svg:g")
+				    .attr("class", "node")
+				    .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
+				    .style("opacity", 1e-6);		    
+				    
+		nodeEnter.append("svg:rect")
+			  .attr("y", -dim.elHeight)
+			  .attr("height", dim.elHeight)
+			  .attr("width", dim.elWidth)
+			  .style("fill", color)
+			  .on("click", click);
+			  
+		nodeEnter.filter(function (d) { return !(d.children || d._children); }).append("svg:rect")
+			  .attr("class", "colorRect")
+			  .attr("y", -dim.elHeight + 3)
+			  .attr("x", 150)
+			  .attr("rx", 3)
+			  .attr("ry", 3)
+			  .attr("height", 14)
+			  .attr("width", 14);
+			  
+		nodeEnter.append("svg:text")
+			  .attr("dy", -6.5)
+			  .attr("dx", 5.5)
+			  .text(function(d) { return d.name; });
+			  
+		nodeEnter.transition()
+			  .duration(duration)
+			  .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+			  .style("opacity", 1);
+			  
+		var nodeUpdate = node.transition()
+		      .duration(duration)
+		      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+		      .style("opacity", 1);
+		      
+		nodeUpdate.select("rect")
+		      .style("fill", color);
+		
+		nodeUpdate.select(".colorRect")
+		      .style("fill", function(d) { return d.show ? self.col(d.id) : "white" });
+		      
+		node.exit().transition()
+		      .duration(duration)
+		      .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
+		      .style("opacity", 1e-6)
+		      .remove();
+		
+// 		var link = vis.selectAll("path.link")
+// 			      .data(tree.links(nodes), function(d) { return d.target.id });
+// 			      
+// 		link.enter().insert("svg:path", "g")
+// 		      .attr("class", "link")
+// 		      .attr("d", function(d) {
+// 			var o = {x: source.x0, y: source.y0};
+// 			return diagonal({source: o, target: o});
+// 		      })
+// 		    .transition()
+// 		      .duration(duration)
+// 		      .attr("d", diagonal);
+// 		      
+// 		link.transition()
+// 		    .duration(duration)
+// 		    .attr("d", diagonal);
+// 		
+// 		link.exit().transition()
+// 		    .duration(duration)
+// 		    .attr("d", function(d) {
+// 		      var o = {x: source.x, y: source.y};
+// 		      return diagonal({source: o, target: o});
+// 		    })
+// 		    .remove();
+		    
+		nodes.forEach(function(d) {
+		    d.x0 = d.x;
+		    d.y0 = d.y;
+		  });
+			      
+	}
+	
+	function click(d) {
+	    if (d.children) {
+	      d._children = d.children;
+	      d.children = null;
+	    } else if (d._children) {
+	      d.children = d._children;
+	      d._children = null;
+	    } else {
+	      ui.treeNodeClick(d.id, ui);
+	      d.show = !d.show;
+	    }
+	    update(d);
+	}
+
+	function color(d) {
+	    return d._children ? "#3182bd" : d.children ? "#c6dbef" : d.show ? self.col(d.id) : "white";
+	}
+	
+}

@@ -1,0 +1,92 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2013.04.27.11.15.18;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@moved to caware.TimeSeries.js
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@var carbon = {"start": 0,
+	      "step": 1,
+	      "readings" : []};
+
+function getViewRangeCarbonYears(viewrange){
+
+    //* Produce an array of annual segment suffixes for the viewrange
+
+    var outputarray = [];
+
+    var startYear = viewrange.startdate.getFullYear();
+    var endYear = viewrange.enddate.getFullYear();
+
+    for (var y=startYear; y<=endYear; y++){
+        outputarray.push(y.toString());
+    }
+    return outputarray;
+}
+
+
+function Carbonate( datum){
+    if (!carbonOn) return true;
+
+    // Find the carbon intensity for this time
+
+
+    var start = carbon.start;
+    var step = carbon.step;
+    var offset = (datum[0] - carbon.start)/carbon.step;
+    var date = new Date(datum[0]);
+    if ((offset >= 0) && (offset < carbon.readings.length)){
+    	// grams of CO2/kWHr * kW -> kg/s : divide by 3600   
+   	datum[1] = datum[1] * carbon.readings[offset] / 3600;    
+	return true;
+    }
+    return false;
+}
+
+function fetchTimeSeriesSeg (urlStem, segSuf){
+    var tmpURL = urlStem + segSuf + ".json";
+    var tempJSON = null;
+    tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+    if (tempJSON.hasOwnProperty ("data")) {
+	return tempJSON.data;
+    }
+    return [];
+}
+
+
+function ConcatTimeSeries (seg1, seg2){
+    return {"start" : seg1.start,
+	    "step" : seg1.step,
+	    "readings" : seg1.readings.concat(seg2.readings)};
+}
+
+function loadNewCarbon(){
+
+    // Add the earliest year required to what we have.
+
+    var carbonSuffixes = getViewRangeCarbonYears(viewrange);
+    var seg = fetchTimeSeriesSeg (config.carbonRootUrl.value,
+                            carbonSuffixes[0])
+    carbon = ConcatTimeSeries (seg, carbon); 
+}
+ 
+
+    
+
+@

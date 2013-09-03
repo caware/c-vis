@@ -1,0 +1,148 @@
+head	1.1;
+access;
+symbols;
+locks
+	iml1:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2013.04.18.07.52.45;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@function JSONCache() {
+
+    //A Class for defining a unique index => JSON store
+    // IML modification.  Store JSON objects rather than strings
+	
+    this.cache = {};
+    this.cachehits = 0;
+    this.cachemisses = 0;
+	
+		
+    this.getObject = function(url){
+		function Rebloat(obj){
+			var returnObj = {};
+			var interval = obj.data.step;
+			var timeStamp = obj.data.start;
+			var d = new Array(obj.data.readings.length);
+			
+			jQuery.extend(true, returnObj, obj);
+	
+			for (var reading in obj.data.readings){
+				d[reading] = new Array(2);
+				d[reading][0] = timeStamp;
+				d[reading][1] = obj.data.readings[reading];
+				timeStamp = timeStamp + interval;
+			}
+			returnObj.data = d;
+			return returnObj;
+		}
+		
+		function CheckURLIsData(u){
+			return (u.search("S-m[0-9][0-9]*-20[0-9][0-9]-[0-9][0-9]*.json") >= 0);
+		}
+		
+      
+		
+		var mightBeShortData;
+		var returnObj = {};
+        var cacheObj = {};
+		var jsonFile;
+		
+        //Fetches a json file from the cache, or downloads and inserts it if not already there.
+        
+        for (var c in this.cache){
+            if (this.cache.hasOwnProperty(c)){
+                if( c === url){
+                    found = true;
+                    this.cachehits++;
+                    returnObj.error = false;
+                    returnObj.result = this.cache[url];
+                    return returnObj;
+                }
+            }
+        }
+        
+          
+
+        mightBeShortData = CheckURLIsData (url);
+
+            
+        if (mightBeShortData){
+            var newUrl = url.replace (".json", ".jsn");
+		
+				// IML modification:
+				// If this is looking for a ".json" extension data file, fetch the
+				// equivalent ".jsn" extension.  These are less bloated versions.
+				// If there is, read it and convert it into internal form.
+				
+            jsonFile = $.ajax({ type: "GET", url: newUrl, async: false});
+            if (jsonFile.status === 200){
+                try {
+                    var tmp = jQuery.parseJSON(jsonFile.responseText);
+                    returnObj.result = Rebloat(tmp);
+                    returnObj.error = false;
+                    jQuery.extend(true, cacheObj, returnObj.result);
+                    this.cache[url] = cacheObj;
+                    this.cachemisses++;
+                }
+                catch(e) {
+                    returnObj.error = e;
+                    returnObj.errorText = "JSON Parse Error when trying to parse '"+newUrl+"'";
+                    returnObj.errorType = "warn";
+                }
+            }
+            else {
+                mightBeShortData = false;
+                console.log ("going for old style");
+            }
+        }
+			
+        if (!mightBeShortData) {
+            jsonFile = $.ajax({ type: "GET", url: url, async: false});
+
+            if (jsonFile.status === 200){
+                try {
+                    returnObj.result = jQuery.parseJSON(jsonFile.responseText);
+                    returnObj.error = false;
+                        
+                    jQuery.extend(true, cacheObj, returnObj.result);
+                    this.cache[url] = cacheObj;
+                    this.cachemisses++;
+                }
+                catch(e) {
+                    returnObj.error = e;
+                    returnObj.errorText = "JSON Parse Error when trying to parse '"+url+"'";
+                    returnObj.errorType = "warn";
+                }
+            }
+            else{
+                returnObj.error = jsonFile;
+                returnObj.errorText = "HTTP "+jsonFile.statusText+" "+jsonFile.status+" when trying to access '"+url+"'";
+                returnObj.errorType = "error";
+            }
+        }
+          
+        return returnObj;
+    };
+    
+    this.ajaxError = function(jqXHR, textStatus, errorThrown){
+        var error = {reqObj: jqXHR, status: textStatus, error: errorThrown };
+    };
+    
+    this.clearCache = function(){
+        this.cache = {};
+    };
+}@
