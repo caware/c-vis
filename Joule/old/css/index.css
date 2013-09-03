@@ -1,0 +1,83 @@
+div#chartcontainer {
+    float: right;
+    width: 750px;
+}
+
+div#treecontainer {
+    float: left;
+    width: 380px;
+}
+
+div#diacontainer{
+    width: 1200px;
+    display: inline-block;
+}
+
+div#top{
+    width: 1200px;
+    display: inline-block;
+}
+
+div.alert-bar{
+    min-height: 50px;
+}
+
+hr.topHR{
+    margin: 3px;
+}
+
+div#charttitle {
+    width: 750px;
+    margin-bottom: 5px;
+    height: 50px;
+    display: inline-block;
+    float: right;
+}
+
+div#content {
+    width: 1200px ;
+    min-height:800px;
+    margin-left: auto ;
+    margin-right: auto ;
+}
+
+div#chartinfo {
+    width: 750px;
+    min-height: 250px;
+    margin-top: 15px;
+    float: right;
+}
+
+div#myGrid {
+    width:755px;
+    min-height:250px;
+}
+
+div#topbar {
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #ffd324;
+    border-bottom: 2px solid #ffd324;
+    text-align:center
+}
+
+p#charttitletext {
+    text-align: center;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+p.chartinformation {
+    text-align: left;
+    padding-left: 20;
+}
+
+div#firstvisit {
+    padding: 5px 20px 5px 45px;
+    border-top: 2px solid #ffd324;
+    border-bottom: 2px solid #ffd324;
+    text-align:center;
+}
+
+div#sensorinfo {
+    min-height:150px;
+}
