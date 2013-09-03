@@ -26,11 +26,11 @@ function JouleUIController(){
         if (io == "in"){
             this.spinner = new Spinner(this.spinVar).spin();
             //$('#divSpinner').hide();
-            $('#divSpinner').append(this.spinner.el);
-            $('#divSpinner').fadeIn("fast", callback())
+            $('#loading').append(this.spinner.el);
+            $('#loading').fadeIn("fast", callback())
         }
         else if (io == "out"){
-            $('#divSpinner').hide();
+            $('#loading').hide();
             this.spinner.stop();
         }
     };
@@ -48,11 +48,11 @@ function JouleUIController(){
     this.jouleCarbonToggle = function (button){
 	carbonOn = !carbonOn;
 	if (carbonOn){
-           button.value = "Change to Power";
-           $('#charttitle h1').text('C02 (g/s)');
+           $(button).text("Change to Power");
+           $('#charttitle h1').html('CO<sub>2</sub> (g/s)');
 	}
 	else {
-           button.value = "Change to Carbon";
+           $(button).text("Change to Carbon");
            $('#charttitle h1').text('Power (kW)');
 	}
 	invalidatePlotLines();
@@ -62,6 +62,13 @@ function JouleUIController(){
     this.addMonth = function(useri){
         this.loadSpin("in", function(){
             addMonthData();
+            useri.loadSpin("out");
+        });
+    };
+    
+    this.removeMonth = function(useri){
+        this.loadSpin("in", function(){
+            removeMonthData();
             useri.loadSpin("out");
         });
     };
@@ -82,25 +89,24 @@ function JouleUIController(){
     
     
     this.jouleScaleSelectionToggle = function(useri, scaleType){
-        switch (scaleType) {
+      $('#scaleAllButton').toggleClass('btn-success', scaleType == 'all');
+      $('#scaleSelectionButton').toggleClass('btn-success', scaleType =='scale');
+      $('#zoomButton').toggleClass('btn-success', scaleType =='zoom');
+      $('#scaleAllButton').toggleClass('btn-default', scaleType != 'all');
+      $('#scaleSelectionButton').toggleClass('btn-default', scaleType !='scale');
+      $('#zoomButton').toggleClass('btn-default', scaleType != 'zoom');
+      switch (scaleType) {
           case 'all': 
-            $('#scaleAllButton').addClass('success');
-            $('#scaleSelectionButton').removeClass('success');
-            $('#zoomButton').removeClass('success');
             this.scaleSelection = 'all';
             break;
           case 'scale':
-            $('#scaleAllButton').removeClass('success');
-            $('#scaleSelectionButton').addClass('success');
-            $('#zoomButton').removeClass('success');
-            this.scaleSelection = 'scale'
+            this.scaleSelection = 'scale';
             break;
           case 'zoom':
-            $('#scaleAllButton').removeClass('success');
-            $('#scaleSelectionButton').removeClass('success');
-            $('#zoomButton').addClass('success');
-            this.scaleSelection = 'zoom'
+            this.scaleSelection = 'zoom';
             break;
+	  default:
+	    this.scaleSelection = 'scale';
         }
         plotPlotLines();
     };

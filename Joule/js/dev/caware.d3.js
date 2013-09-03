@@ -25,7 +25,7 @@ function chart(data) {
 	this.cx = d3.time.scale().domain([this.data.start, this.data.end]).range([dim.margin.left, dim.w + dim.margin.left]);
 	this.cy = d3.scale.linear().domain([0, this.data.yMax]).range([dim.margin.top + dim.h1 + dim.spacing + dim.h2, dim.margin.top + dim.h1 + dim.spacing]);
 	
-	this.fx = d3.time.scale().range([dim.margin.left, dim.w + dim.margin.right]);
+	this.fx = d3.time.scale().clamp(true).range([dim.margin.left, dim.w + dim.margin.left]);
 	this.fy = d3.scale.linear().range([dim.margin.top + dim.h1, dim.margin.top]);
 	this.ft = d3.scale.linear().range([0, dim.h1]);
 	
@@ -106,7 +106,7 @@ chart.prototype.refresh = function (self) {
 
 chart.prototype.sliceData = function (range) {
 	//console.log("sliceData");
-	
+
 	var self = this;
 	
 	if (typeof range == 'undefined') {
@@ -123,8 +123,8 @@ chart.prototype.sliceData = function (range) {
 		    slicedData[j] = [];
 		    var remapped = _.map(_.pluck(this.data.data[j].data, "x"), function (d) { return d.getTime(); });
 		    slicedData[j].data = (this.data.data[j].data.slice(
-		      Math.max(0, _.sortedIndex(remapped, range[0].getTime(), null, true)), // If not found use 0
-		      _.sortedIndex(remapped, range[1].getTime(), null, true) + 1 // If not found uses 0
+		      Math.max(0, _.sortedIndex(remapped, range[0].getTime(), null, true) - 1), // Take one extra value on each side of the range to show data at limits
+		      _.sortedIndex(remapped, range[1].getTime(), null, true) +1
 		    ));
 		    this.filterOn ? slicedData[j].data = this.gaussian(5, 3, slicedData[j].data) : null;
 		    slicedData[j].id = this.data.data[j].id;
@@ -135,9 +135,9 @@ chart.prototype.sliceData = function (range) {
 	}
 
 	var trimmedData = [];
-	    
+
 	if (this.data.data.length > 0) {
-	    if (this.data.data[0].length < 600) trimmedData = this.data.data;
+	    if (this.data.data[0].data.length < 600) trimmedData = this.data.data;
 	    else {
 		var mydiv = this.data.data[0].data.length / 600;
 		var rounddiv = Math.round(mydiv*1)/1;
@@ -165,7 +165,7 @@ chart.prototype.sliceData = function (range) {
 	_.each(this.focusData.data, function (d, i) {i < self.data.table.length ? self.data.table[i].avgselected = pwrFormatter(d3.mean(d.data, function (e) { return (typeof e.y === "number") ? e.y : 0; })) : null; });
 	
 	switch (ui.scaleSelection) {
-	    case 'falseall':
+	    case 'all':
 		this.fy.domain([0, this.data.yMax * 1.1]);
 		break;
 	    case 'scale':
@@ -192,7 +192,7 @@ chart.prototype.draw = function (data, start, end) {
 	config.zoomSize.value.zoomX = i.x;
 	var d2 = this.cx.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
 	config.zoomSize.value.zoomDX = i.dx;
-
+	this.brush.extent([d1, d2]); // Set the initial focus range on the context chart
 	if (!gotChartWidth) {
 	    chartWidth = this.main.attr("width");
 	    gotChartWidth = true;
@@ -269,7 +269,7 @@ chart.prototype.draw = function (data, start, end) {
        
 	// Drag area on context chart
 		
-	this.context.append("g")
+	this.brushEl = this.context.append("g")
 		.attr("class", "brush")
 		.attr("transform", "translate(0," + (dim.margin.top + dim.h1 + dim.spacing)  + ")")
 		.call(this.brush)
@@ -287,29 +287,30 @@ chart.prototype.gridInit = function () {
 
 	if (carbonOn){
 	    columns = [
-		{id:"PlotColour", name:"Colour", field:"colour", width:46, formatter:GraphicalColourCellFormatter},
-		{id:"Description", name:"Description", field:"description", width:215},
-		{id:"StartMonthyear", name:"Start", field:"startmonthyear", width:79},
-		{id:"EndMonthyear", name:"End", field:"endmonthyear", width:79},
-		{id:"CO2/s selected", name:"g/s Selected", field:"avgselected", width:115},
-		{id:"C02/s all", name:"g/s Entire", field:"avgtotal", width:95},
-		{id:"TotalCO2", name:"Total CO2 (tonnes)", field:"totalenergy", width:126}];
+		{id:"PlotColour", name:"Colour", field:"colour", width:60, formatter: Slick.Formatters.Color},
+		{id:"Description", name:"Description", field:"description", width:195},
+		{id:"StartMonthyear", name:"Start", field:"startmonthyear", width:80},
+		{id:"EndMonthyear", name:"End", field:"endmonthyear", width:80},
+		{id:"CO2/s selected", name:"g/s Selected", field:"avgselected", width:130},
+		{id:"C02/s all", name:"g/s Entire", field:"avgtotal", width:110},
+		{id:"TotalCO2", name:"Total CO2 (tonnes)", field:"totalenergy", width:145}];
 	}
 	else {
 	    columns = [
-		{id:"PlotColour", name:"Colour", field:"colour", width:46, formatter:GraphicalColourCellFormatter},
-		{id:"Description", name:"Description", field:"description", width:215},
-		{id:"StartMonthyear", name:"Start", field:"startmonthyear", width:79},
-		{id:"EndMonthyear", name:"End", field:"endmonthyear", width:79},
-		{id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
-		{id:"kWTotal", name:"Avg kW Entire", field:"avgtotal", width:95},
-		{id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126}];
+		{id:"PlotColour", name:"Colour", field:"colour", width:60, formatter: Slick.Formatters.Color},
+		{id:"Description", name:"Description", field:"description", width:195},
+		{id:"StartMonthyear", name:"Start", field:"startmonthyear", width:80},
+		{id:"EndMonthyear", name:"End", field:"endmonthyear", width:80},
+		{id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:130},
+		{id:"kWTotal", name:"Avg kW Entire", field:"avgtotal", width:110},
+		{id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:145}];
 	}
 
 	var options = {
 	    enableCellNavigation: false,
 	    enableColumnReorder: false,
-	    editable: false
+	    editable: false,
+	    forceFitColumns: true
 	};
 	
 	this.dataView = new Slick.Data.DataView();
@@ -333,7 +334,7 @@ chart.prototype.gridUpdate = function () {
 }
 
 chart.prototype.redraw = function (data) {
-console.log(data);
+	console.log(data);
 	if (typeof data == 'undefined') {
 	  this.refresh(this);
 	  return;
@@ -343,25 +344,29 @@ console.log(data);
 	//this.end = this.data.end;
 	this.cx.domain([this.data.start, this.data.end]);
 	this.cy.domain([0, this.data.yMax]);
+	// Update the selection on the context chart to reflect the change in context range
+	this.brush.extent(this.brush.extent());
+	this.context.select("g.brush")
+		.call(this.brush);
+	
 	this.sliceData([this.start, this.end]);
 
 	var self = this;
 
-	this.focus.selectAll(".f-line")
+	var fLine = this.focus.selectAll(".f-line")
 	      .data(self.focusData.data, function (d, i) { return d.id; })
 	      .enter().append("svg:g")
-	      .attr("class", "f-line")
-		.append("svg:path")
+	      .attr("class", "f-line").append("svg:path")
 		  .attr("d", function (d) { return self.focusLine(d.data); })
 		  .attr("class", function (d, i) { return "focusLine" + d.id; })
 		  .style("stroke", function(d, i) { return self.col(d.id); })
 		  .style("stroke-width", 2)
 		  .style("fill", "none")
 		  .style("shape-rendering", "geometricPrecision");
-	
-	this.focus.selectAll(".f-line")
-	      .data(self.focusData.data, function (d, i) { return d.id; }).exit().remove();
 
+	this.focus.selectAll(".f-line")
+	      .data(self.focusData.data, function (d, i) { return d.id; }).exit().remove();    
+	      
 	this.context.selectAll(".c-line")
 	      .data(self.contextData.data, function (d, i) { return d.id + "#" + d.data.length; })
 	      .enter().insert("svg:g", ".brush")
@@ -378,7 +383,7 @@ console.log(data);
 	      .data(self.contextData.data, function (d, i) { return d.id + "#" + d.data.length; }).exit().remove();	      	  
 	
 	this.refresh(this);
-	2
+
 };
 
 chart.prototype.sankey = function () {
@@ -468,7 +473,12 @@ chart.prototype.tree = function (sensorTree) {
 	  "w" : 300,
 	  "elHeight" : 20,
 	  "elWidth" : 170,
-	  "h" : 2000
+	  "h" : 800,
+	  "margin" : {
+	    "top" : 30,
+	    "bottom" : 30,
+	    "left" : 5
+	  }
 	};
 	var duration = 200;
 	var i =0;
@@ -479,10 +489,10 @@ chart.prototype.tree = function (sensorTree) {
 			      .projection(function(d) { return [d.y, d.x]});
 			 
 	var vis = d3.select("#treediv").append("svg:svg")
+		      .attr("class", "tree")
 		      .attr("width", dim.w)
-		      .attr("height", dim.h)
 		     .append("svg:g")
-		       .attr("transform", "translate(5, 30)");
+		       .attr("transform", "translate(" + dim.margin.left + "," + dim.margin.top + ")");
 	
 	var rootData = new Object();
 	
@@ -522,8 +532,8 @@ chart.prototype.tree = function (sensorTree) {
 			  .attr("x", 150)
 			  .attr("rx", 3)
 			  .attr("ry", 3)
-			  .attr("height", 14)
-			  .attr("width", 14);
+			  .attr("height", 0.7 * dim.elHeight)
+			  .attr("width", 0.7 * dim.elHeight);
 			  
 		nodeEnter.append("svg:text")
 			  .attr("dy", -6.5)
@@ -581,7 +591,13 @@ chart.prototype.tree = function (sensorTree) {
 		    d.x0 = d.x;
 		    d.y0 = d.y;
 		  });
-			      
+		
+		
+		
+		d3.select("svg.tree").attr("height", dim.elHeight * nodes.length + dim.margin.top + dim.margin.bottom)
+		
+		console.log(d3.select("svg.tree").attr("height"));
+		
 	}
 	
 	function click(d) {

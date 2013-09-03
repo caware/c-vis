@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -13,11 +13,11 @@
     <![endif]-->
     
     <link rel="stylesheet" type="text/css" href="css/index.css" media="screen" charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.10.3.custom.css" media="screen" charset="utf-8"/>
+    <!-- <link rel="stylesheet" type="text/css" href="css/smoothness/jquery-ui-1.8.16.custom.css" media="screen" charset="utf-8"/>!-->
     <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/grid.css" media="screen" charset="utf-8"/>
-    <link href="css/bootstrap.css" rel="stylesheet">
-    <link href="css/bootstrapCustoms.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/slick-default-theme.css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="css/bootstrap-theme.min.css" media="screen" charset="utf-8"/>
     
     <script type="text/javascript" src="js/spin.js"></script>
     
@@ -35,94 +35,88 @@
             <p class="alert">Alternatively you may use another broswer such as <a href="http://www.google.com/chrome/">Chrome</a>, <a href="http://www.mozilla.com/">Firefox</a> or <a href="http://www.apple.com/safari/">Safari</a>.</p>
         </div>
     <![endif]-->
+
+   
+<div class="navbar navbar-inverse navbar-static-top">
+	<div class="container">
+		<a class="navbar-brand" href="/">Joule @ CL</a>
+		<ul class="nav navbar-nav">
+		  <li class="dropdown">
+		    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Deployments<b class="caret"></b></a>
+		    <ul class="dropdown-menu">
+		      <li class="active" ><a href="#WGB">William Gates Bld</a></li>
+		      <li><a href="#SE18">SE18 Server Room</a></li>
+		    </ul>
+		  </li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+		  <li><a href="#about">About</a></li>
+		  <li class="dropdown">
+		    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Feedback<b class="caret"></b></a>
+		    <ul class="dropdown-menu">
+		      <li><a href="mailto:iml1@cl.cam.ac.uk?subject=Joule Feedback">Email</a></li>
+		      <li><a href="https://github.com/caware/c-vis/issues" target="_blank">GitHub Bug Report</a></li>
+		    </ul>
+		  </li>
+		  <li><a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-Aware</a></li>
+		</ul>
+	</div>
+</div>
     
-    <div class="topbar">
-      <div class="fill">
-        <div class="container">
-          <a class="brand" href="/">Joule @ CL</a>
-          <ul class="nav">
-            <li class="dropdown" data-dropdown="dropdown">
-              <a href="#" class="dropdown-toggle">Deployments</a>
-              <ul class="dropdown-menu">
-                <li class="active" ><a href="#WGB">William Gates Bld</a></li>
-                <li><a href="#SE18">SE18 Server Room</a></li>
-              </ul>
-            </li>
-          </ul>
-          <ul class="nav secondary-nav">
-            <li><a href="#about">About</a></li>
-            <li class="dropdown" data-dropdown="dropdown">
-              <a href="#" class="dropdown-toggle">Feedback</a>
-              <ul class="dropdown-menu">
-                <li><a href="mailto:iml1@cl.cam.ac.uk?subject=Joule Feedback">Email</a></li>
-                <li><a href="https://github.com/caware/c-vis/issues" target="_blank">GitHub Bug Report</a></li>
-              </ul>
-            </li>
-            <li><a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-Aware</a></li>
-          </ul>
-        </div>
-      </div>
-    </div>
-    
-     <div class="container">
-     
+<div class="container">    
         <div class="content">
         
-                       <div class="alert-bar" id="notify-bar">
-                <noscript>
-                    <div class="alert-message error">
-                        <p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
-                    </div>
-                </noscript>
-                <!-- <div class="alert-message info" id="loading-message">
-                    <p><strong>Loading...</strong></p>
-                </div> -->
-            </div>
-            <div id="diacontainer">
-                <div id="treecontainer">
-                   
-                    <hr class="topHR">
-                    <h2>Selection tree</h2>
-                    <div id="treediv">
-                        
-                    </div>
-                </div>
-                
-                
-                <div id="chartcontainer">
-                <!--<div id="loading"></div>!-->
-                    <div style="margin-right: 10px; margin-left: 10px; float: right;">
-                		Y Axis Scale:
-                	<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'all')"><button class="btn" id="scaleAllButton">All Data</button></a>
-                	<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'scale')"><button class="btn success" id="scaleSelectionButton">Selection</button></a>
-                	<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'zoom')"><button class="btn" id="zoomButton">Zoom Selection</button></a>
-                	<a href="#"><button class="btn" onclick="ui.addMonth(ui)" id="rangeUp">Increase range</button></a>
-                	<a href="#"><button class="btn" onclick="ui.addMonth(ui)" id="rangeDown">Decrease range</button></a>
-                	<a href="#"><button class="btn" onclick="ui.toggleFilter(myChart)" id="filter">Toggle filter</button></a>
-                    </div>
-		    <div id="charttitle" style="color:black; "><h1 style="float: left; ">Power (kW)</h1><input onclick="ui.jouleCarbonToggle(this)" type="button" value="Change to Carbon" 
-				id="carbonButton2" style ="margin: 0 0 0 10px; float: left; background-color: white; color: black; position: relative; top: 5px;"></div>
-                    <div id="chartdiv">
-                    </div>
-
-                <div id="chartinfo">
-                    <div id="myGrid">
-                    </div>
-		    </div>
-                </div>
-            </div>
-        </div>
+                <div class="alert-bar">
+			<noscript>
+				<div class="alert alert-error">
+				    <p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
+				</div>
+			</noscript>
+			<!-- <div class="alert-message info" id="loading-message">
+			    <p><strong>Loading...</strong></p>
+			</div> -->
+		</div>
+            
+		<div id="diacontainer">
+			<div id="treecontainer">
+				<div id="treeTitle">
+					<h2>Selection tree</h2>
+				</div>
+				<div id="treediv"></div>
+			</div>
+			
+			
+			<div id="chartcontainer">
+			<!--<div id="loading"></div>!-->
+				<div id="charttitle" style="color:black; ">
+					<h1 style="float: left; ">Power (kW)</h1>
+					<button class="btn btn-sm btn-default" onclick="ui.jouleCarbonToggle(this)" style ="margin: 28px 0 0 10px; float: left;">Change to Carbon</button>
+				</div>
+				<div id="chartdiv"></div>
+				<div style="margin-right: 10px; margin-left: 10px; float: right;">Y Axis Scale:
+				<button class="btn btn-sm btn-default" id="scaleAllButton" onclick="ui.jouleScaleSelectionToggle(ui, 'all')">All Data</button>
+				<button class="btn btn-sm btn-success" id="scaleSelectionButton" onclick="ui.jouleScaleSelectionToggle(ui, 'scale')">Selection</button>
+				<button class="btn btn-sm btn-default" id="zoomButton" onclick="ui.jouleScaleSelectionToggle(ui, 'zoom')">Zoom Selection</button>
+				<button class="btn btn-sm btn-default" onclick="ui.addMonth(ui)" id="rangeUp">Increase range</button>
+				<button class="btn btn-sm btn-default" onclick="ui.removeMonth(ui)" id="rangeDown">Decrease range</button>
+				<button class="btn btn-sm btn-default" onclick="ui.toggleFilter(myChart)" id="filter">Toggle filter</button>
+				</div>
+				<div id="chartinfo"><div id="myGrid"></div></div>
+			</div>
+		</div>
+	</div>
+        
         <footer>
-        <p>University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-AWARE Project</a></p>
-      </footer>
+		<p>University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-AWARE Project</a></p>
+	</footer>
 
-    </div> <!-- /container -->
+</div>
 
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
 <script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.event.drag-2.0.min.js"></script>
-<script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/dev/d3.v3.min.js"></script>
 <script type="text/javascript" src="js/dev/d3.sankey.js"></script>
 <script type="text/javascript" src="js/dev/underscore-min.js"></script>
@@ -130,6 +124,7 @@
 <script type="text/javascript" src="js/slick.core.js"></script>
 <script type="text/javascript" src="js/slick.grid.js"></script>
 <script type="text/javascript" src="js/slick.editors.js"></script>
+<script type="text/javascript" src="js/slick.formatters.js"></script>
 <script type="text/javascript" src="js/slick.dataview.js"></script>
 <script type="text/javascript" src="js/caware.TimeSeries.js"></script>
 <script type="text/javascript" src="js/caware.PlotLine.js"></script>
@@ -209,6 +204,8 @@ console.log ("Read Configuration");
     
      $(document).ready(function() {
       
+      $("button").click(function(e) { e.preventDefault(); });
+	
 	ui.jouleFinishedLoading(ui, 'line');
         ui.jouleStopLoading(ui);
         });
@@ -216,5 +213,5 @@ console.log ("Read Configuration");
    
     </script>
 
-  </body>
+</body>
 </html>

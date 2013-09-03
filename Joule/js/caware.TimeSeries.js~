@@ -1,4 +1,5 @@
 var DateZero = new Date (2013, 0, 1, 0, 0, 0, 0);
+console.log(DateZero);
 var viewrange;
 var segmentSuffixes;
 var carbon;
@@ -24,6 +25,9 @@ function CopyTimeSeries (ts){
 function ConcatTimeSeries (seg1, seg2){
 
     // This needs to add check that the timeseries are consecutive and have same step
+    // Check timeseries are consecutive
+      
+    
     var nonEmpty = seg1;
     if (nonEmpty.readings.length === 0) nonEmpty = seg2;
     return {"start" : nonEmpty.start,
@@ -47,7 +51,20 @@ function addMonthData (){
         segmentSuffixes = getViewRangeMonths(viewrange);
         for (var i=0; i<plotLineDesc.length; i++) plotLineDesc[i].valid = false;
         for (var k in meterReadings) if (meterReadings.hasOwnProperty(k)) meterReadings[k].valid = false;
-        loadNeeded (findNeeded(plotLineDesc)); 
+        loadNeeded(findNeeded(plotLineDesc)); 
+        plotPlotLines();
+}
+
+function removeMonthData (){
+	var oldStartYear = viewrange.startdate.getFullYear();
+        viewrange.startdate.addMonths(1);
+	if (oldStartYear != viewrange.startdate.getFullYear()){
+		loadNewCarbon();
+	}
+        segmentSuffixes = getViewRangeMonths(viewrange);
+        for (var i=0; i<plotLineDesc.length; i++) plotLineDesc[i].valid = false;
+        for (var k in meterReadings) if (meterReadings.hasOwnProperty(k)) meterReadings[k].valid = false;
+        loadNeeded(findNeeded(plotLineDesc)); 
         plotPlotLines();
 }
 
@@ -90,7 +107,7 @@ function getViewRangeMonths(viewrange){
         if (runningDate > viewrange.enddate) break;
         yearStr = runningDate.getFullYear().toString();
         monthStr = twoDigits(runningDate.getMonth()+1);
-        outputarray.push(yearStr + "-" + monthStr);
+        outputarray.push({"year" : yearStr, "month" : monthStr});
         runningDate.addMonths(1);
     }
     return outputarray;
@@ -133,9 +150,16 @@ function ensureTimeInterval (meter){
     // check start and end time for the meter
     // against the view interval
     var ts;
+    meter.data.readings = []; // Reset meter readings to allow for range contraction
     if (meter.data.readings.length === 0){
 	for (var i = 0 ; i<segmentSuffixes.length; i++){
-	    ts = fetchTimeSeriesSeg (meter.urlDir, segmentSuffixes[i]);
+	    ts = fetchTimeSeriesSeg (meter.urlDir, segmentSuffixes[i].year + "-" + segmentSuffixes[i].month);
+	    // Make sure data is available for all days in the month, if not fill empty spaces with negative values so as to trigger "bad" in plotPlotLines
+	    if (i != segmentSuffixes.length - 1 && ts.readings.length < 24 * Date.getDaysInMonth(segmentSuffixes[i].year, parseInt(segmentSuffixes[i].month) - 1)) {
+		//var mean = d3.mean(ts.readings)
+		while (ts.readings.length < 24 * Date.getDaysInMonth(segmentSuffixes[i].year, parseInt(segmentSuffixes[i].month) - 1))
+			ts.readings.push(-1);
+	    }
 	    if (ts !== null) {
 	        meter.data = ConcatTimeSeries (meter.data, ts);
 	    }
@@ -143,8 +167,9 @@ function ensureTimeInterval (meter){
 	return;
     }
 
-
+    // Append data until the whole viewrange is filled :: TO BE REMOVED? never triggered as meter readings always start from empty and segment suffixes fill the whole range
     while (!sameMonth (meter.data.start, viewrange.startdate)) {
+      console.log("while");
 	ts = fetchTimeSeriesSeg (meter.urlDir, PreviousMonth (meter.data.start)   );
 	if (ts.readings.length <= 0) break;
 	meter.data = ConcatTimeSeries (ts, meter.data);
@@ -174,6 +199,7 @@ function getViewRangeCarbonYears(viewrange){
     for (var y=startYear; y<=endYear; y++){
         outputarray.push(y.toString());
     }
+    console.log(outputarray);
     return outputarray;
 }
 
@@ -202,7 +228,3 @@ function loadNewCarbon(){
     var seg = fetchTimeSeriesSeg (config.carbonRootUrl.value, carbonSuffixes[0])
     carbon = ConcatTimeSeries (seg, carbon); 
 }
- 
-
-    
-

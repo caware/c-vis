@@ -131,15 +131,17 @@ function plotPlotLines (){
             if (pL.data.readings.length < 2) continue;
 	    pL.pA = new Object();
             pL.pA.data = new Array();
-        
+
             pL.end = new Date();
 	    pL.start = new Date ();
 	    var x = pL.data.start;
+
             var maxy = 0.0;
             var sum = 0.0;
             var points = 0;
             var avg = 0;
             var duration;
+
             for (var i=0;i<pL.data.readings.length; i++){
                 var y = pL.data.readings[i];
                 if (!(typeof y === "number") || (y < 0) || (y > 1000)){
@@ -159,11 +161,12 @@ function plotPlotLines (){
 		    }
 		    else pL.pA.data.push ({"bad" : true, "x": new Date (x), "y" : fakeY});
 	        }
-	        x += pL.data.step;
+	        x += pL.data.step; // Problem when data is not complete
             
             }
             pL.pA.id = p;
             pL.start = pL.pA.data[0].x;
+
             pL.end = pL.pA.data[pL.pA.data.length - 1].x;
 
         

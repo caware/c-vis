@@ -15,7 +15,7 @@ div#treecontainer {
 }
 
 div#diacontainer{
-    width: 1200px;
+    width: 1100px;
     display: inline-block;
 }
 
@@ -44,10 +44,12 @@ div#chartcontainer {
 
 div#charttitle {
     width: 750px;
-    margin: 30px 0 0 30px;
+    margin: 0 0 0 30px;
     display: inline-block;
 }
-
+div#treeTitle {
+    margin: 10px 0 0 0;
+}
 div#content {
     width: 1200px ;
     min-height:800px;
@@ -74,6 +76,7 @@ div#loading {
 div#myGrid {
     width:800px;
     min-height:250px;
+    padding: 5px 0 0 0;
 }
 
 div#topbar {
@@ -153,4 +156,8 @@ g.axis line {
 
 .resize {
     stroke: black;
+}
+
+#chartinfo * {
+    box-sizing: content-box;
 }

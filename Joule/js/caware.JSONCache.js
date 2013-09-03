@@ -25,6 +25,7 @@ function JSONCache() {
 				d[reading][1] = obj.data.readings[reading];
 				timeStamp = timeStamp + interval;
 			}
+
 			returnObj.data = d;
 			return returnObj;
 		}
