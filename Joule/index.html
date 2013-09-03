@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-ﬁ    <meta name="description" content="">
+    <meta name="description" content="">
     <meta name="author" content="Chris Elsmore and Ian Leslie">
     <title>Joule - An Energy Data Visualisation Tool from the C-Aware Project</title>
     
@@ -65,7 +65,9 @@
     </div>
     
      <div class="container">
+     
         <div class="content">
+        
                        <div class="alert-bar" id="notify-bar">
                 <noscript>
                     <div class="alert-message error">
@@ -78,11 +80,9 @@
             </div>
             <div id="diacontainer">
                 <div id="treecontainer">
-                    <div id="divSpinner" style="width: 30px; float:left; padding: 20px 0px 0px 30px;">
-                        
-                    </div>
                    
                     <hr class="topHR">
+                    <h2>Selection tree</h2>
                     <div id="treediv">
                         
                     </div>
@@ -90,18 +90,18 @@
                 
                 
                 <div id="chartcontainer">
-		    <input onclick="ui.jouleCarbonToggle(this)" type="button" value="Change to Carbon" 
-				id="carbonButton2" style ="margin-left: 10px; float: right; background-color: white; color: black; ">
+                <!--<div id="loading"></div>!-->
                     <div style="margin-right: 10px; margin-left: 10px; float: right;">
                 		Y Axis Scale:
                 	<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'all')"><button class="btn" id="scaleAllButton">All Data</button></a>
                 	<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'scale')"><button class="btn success" id="scaleSelectionButton">Selection</button></a>
                 	<a href="#" onclick="ui.jouleScaleSelectionToggle(ui, 'zoom')"><button class="btn" id="zoomButton">Zoom Selection</button></a>
+                	<a href="#"><button class="btn" onclick="ui.addMonth(ui)" id="rangeUp">Increase range</button></a>
+                	<a href="#"><button class="btn" onclick="ui.addMonth(ui)" id="rangeDown">Decrease range</button></a>
+                	<a href="#"><button class="btn" onclick="ui.toggleFilter(myChart)" id="filter">Toggle filter</button></a>
                     </div>
-                    <hr  class="topHR">
-		    <div id="charttitle" style="color:black; font-size: 200%">Power (kW) </div>
-
-                    <hr  class="topHR">
+		    <div id="charttitle" style="color:black; "><h1 style="float: left; ">Power (kW)</h1><input onclick="ui.jouleCarbonToggle(this)" type="button" value="Change to Carbon" 
+				id="carbonButton2" style ="margin: 0 0 0 10px; float: left; background-color: white; color: black; position: relative; top: 5px;"></div>
                     <div id="chartdiv">
                     </div>
 
@@ -123,9 +123,9 @@
 <script type="text/javascript" src="js/jquery-ui-1.10.3.custom.min.js"></script>
 <script type="text/javascript" src="js/jquery.event.drag-2.0.min.js"></script>
 <script type="text/javascript" src="js/bootstrap-dropdown.js"></script>
-<script type="text/javascript" src="js/protovis-d3.4.js"></script>
-<!--<script type="text/javascript" src="js/dev/d3.v3.min.js"></script>!-->
-<!--<script type="text/javascript" src="js/dev/underscore.min.js"></script>!-->
+<script type="text/javascript" src="js/dev/d3.v3.min.js"></script>
+<script type="text/javascript" src="js/dev/d3.sankey.js"></script>
+<script type="text/javascript" src="js/dev/underscore-min.js"></script>
 <script type="text/javascript" src="js/date-en-GB.js"></script>
 <script type="text/javascript" src="js/slick.core.js"></script>
 <script type="text/javascript" src="js/slick.grid.js"></script>
@@ -133,13 +133,12 @@
 <script type="text/javascript" src="js/slick.dataview.js"></script>
 <script type="text/javascript" src="js/caware.TimeSeries.js"></script>
 <script type="text/javascript" src="js/caware.PlotLine.js"></script>
-<!--<script type="text/javascript" src="js/dev/caware.d3.js"></script>!-->
-<script type="text/javascript" src="js/caware.PV.js"></script>
+<script type="text/javascript" src="js/dev/caware.d3.js"></script>
 <script type="text/javascript" src="js/caware.Tree.js"></script>
 <script type="text/javascript" src="js/caware.JSONCache.js"></script>
 <script type="text/javascript" src="js/caware.JouleUIController.js"></script>
 
-<script type="text/javascript+protovis">
+<script type="text/javascript">
     function getUrlArgs() {
             var args = {};
             var hashes = window.location.hash.substr(1).split('&');
@@ -166,21 +165,14 @@ console.log ("Joule starting ...");
     var ui = new JouleUIController();
 console.log ("Attempting to read " + configFile);    
 
-    var config = ui.catchError(ui, cache.getObject,
-            configFile).config;
+    var config = ui.catchError(ui, cache.getObject, configFile).config;
 
 console.log ("Read Configuration");
 
-    var yearMonthFormatter = pv.Format.date ("%b %Y");
-
-    var pwrFormatter = pv.Format.number();  
-    pwrFormatter.fractionDigits(2,2);
-
-    var engFormatter = pv.Format.number();
-    engFormatter.fractionDigits(0,0);
-
-    var carbonFormatter = pv.Format.number();
-    carbonFormatter.fractionDigits(2,2);
+     var yearMonthFormatter = d3.time.format("%b %Y");
+     var pwrFormatter = d3.format(".2f");
+     var engFormatter = d3.format(",f");
+     var carbonFormatter = d3.format(",f");
     
     var myColourPool = new Array (config.maxNumberPlots.value + 1);
     for (var ii=0; ii<myColourPool.length; ii++) myColourPool[ii] = 0;
@@ -207,16 +199,17 @@ console.log ("Read Configuration");
     initMeterReadings();
       
     //Date formats for chart tick labels
-    var zoomDateFormat = pv.Format.date("%a %d %b");
-    var zoomTimeFormat = pv.Format.date("%H:%M");
-    var overallDateFormat = pv.Format.date("%d %b '%y");
+    var zoomDateFormat = d3.time.format("%a %d %b");
+    var zoomTimeFormat = d3.time.format("%H:%M");
+    var overallDateFormat = d3.time.format("%d %b '%y");
     
     //Vars for array of plots, and chart visulisation
     var vis;
     var sensors;
     
      $(document).ready(function() {
-        ui.jouleFinishedLoading(ui, 'line');
+      
+	ui.jouleFinishedLoading(ui, 'line');
         ui.jouleStopLoading(ui);
         });
 
