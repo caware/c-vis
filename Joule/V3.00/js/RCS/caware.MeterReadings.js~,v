@@ -1,0 +1,187 @@
+head	1.1;
+access;
+symbols;
+locks; strict;
+comment	@# @;
+
+
+1.1
+date	2013.04.18.07.52.45;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@
+var viewrange;
+var segmentSuffixes;
+
+
+
+function initMeterReadings(){
+    
+    //* View Range should be for last month available, so from config files
+    //* (so need to modify configuration)
+    //* CONFIG MAGIC
+    viewrange = {"startdate": new Date(), "enddate": new Date()};
+    segmentSuffixes = getViewRangeMonths (viewrange);
+} 
+
+function addMonthData (){
+        viewrange.startdate.addMonths(-1);
+        segmentSuffixes = getViewRangeMonths(viewrange);
+        for (var i=0; i<plotLineDesc.length; i++) plotLineDesc[i].valid = false;
+        for (var k in meterReadings) if (meterReadings.hasOwnProperty(k)) meterReadings[k].valid = false;
+        loadNeeded (findNeeded(plotLineDesc)); 
+        plotPlotLines();
+}
+
+     
+function backTrackMonth(){
+    viewrange.enddate.addMonths(-1);
+    addMonthData();
+}
+
+
+function twoDigits (thing){
+    if (thing < 10) return "0"+thing.toString();
+    return thing.toString();
+}
+
+function advanceDay (date){
+    // This should be fool proof.  Advance by the milliseconds in a day
+    date.setTime(date.valueOf()+24*60*60*1000);
+}
+
+function advanceMonth (date){
+    date.setMonth (date.getMonth()+1);
+}
+
+function getLastPathComponent (url){
+        var comps = url.split("/");
+        return comps[comps.length - 1];
+}
+        
+function getViewRangeMonths(viewrange){
+
+    //* Produce an array of month segment suffixes for the viewrange
+    
+    var runningDate = new Date(viewrange.startdate);
+    var monthStr;
+    var yearStr; 
+    var outputarray = new Array();
+    var loopLimit = 200;
+    var monthString = "";
+    for (var i=0;i<loopLimit;i++){
+        if (runningDate > viewrange.enddate) break;
+        yearStr = runningDate.getFullYear().toString();
+        monthStr = twoDigits(runningDate.getMonth()+1);
+        outputarray.push(yearStr + "-" + monthStr);
+        runningDate.addMonths(1);
+    }
+    return outputarray;
+}
+function getViewRangeDays(viewrange){
+
+    //* Produce an array of day segment suffixes for the viewrange
+    
+    var runningDate = new Date(viewrange.startdate);
+    var daystr;
+    var monthStr;
+    var yearStr; 
+    var outputarray = new Array();
+    var loopLimit = 200;
+    var monthString = "";
+    for (var i=0;i<loopLimit;i++){
+        if (runningDate > viewrange.enddate) break;
+        yearStr = runningDate.getFullYear().toString();
+        monthStr = twoDigits(runningDate.getMonth()+1);
+        dayStr = twoDigits(runningDate.getDate());
+        outputarray.push(yearStr + "-" + monthStr + "-" + dayStr);
+        advanceDay(runningDate);
+        console.log (runningDate);
+    }
+    return outputarray;
+}
+
+
+
+function fetchSingleSeg (urlStem, segSuf){
+    var tmpURL = urlStem + segSuf + ".json";
+    var tempJSON = null;
+    tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+    if (typeof tempJSON === "object"){
+        return tempJSON.data;
+    }
+    return [];
+}
+
+function ensureTimeInterval (meter){
+    // check start and end time for the meter
+    // against the view interval
+
+    // Dumb for now, just fetch the segment unless already ALL there.
+    
+    if (meter.valid) return;
+    
+    meter.valid = true;
+
+    if ((meter.start === viewrange.startdate) && 
+            (meter.end === viewrange.enddate)){
+        return;
+    }
+    
+    meter.data = [];
+    for (var i=0; i< segmentSuffixes.length; i++){
+        meter.data = meter.data.concat (fetchSingleSeg (meter.urlDir,
+                            segmentSuffixes[i]));
+        }
+
+
+    meter.start = new Date (viewrange.startdate);
+    meter.end = new Date (viewrange.enddate);
+}
+ 
+
+function addNewMeter (m) {
+
+    // Find the sensor description for this meter and retrieve
+    // the path to the directory
+    var meterNum = m.match(/[0-9]*$/)[0];
+    var path;
+    if (meterIndex.hasOwnProperty(meterNum)){
+        path = meterIndex[meterNum].path;
+    }
+    // Strip off the first element and replace with "meters"  (This needs fixing!!)
+    path = path.replace (/^[^\/]*\//, "/") + "/" + m + "-";
+    
+    path = config.sensorRootUrl.value + path;
+
+    if (path !== null){
+        meterReadings[m] = {"urlDir": path,
+                            start :null, end: null, valid : false, data: null};
+    }
+    
+}
+
+    
+    
+function loadNeeded(needed){    
+    for (var i=0; i<needed.length; i++){
+        var m = needed[i];
+        if (!meterReadings.hasOwnProperty (m)){
+            addNewMeter (m);
+        }
+        ensureTimeInterval (meterReadings[m]);
+    }
+}
+
+@

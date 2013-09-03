@@ -1,0 +1,202 @@
+head	1.1;
+access;
+symbols;
+locks
+	iml1:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2013.04.18.07.52.45;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@var plotInfo = [];
+
+function getColour (){
+    for (var i=0; i<myColourPool.length; i++){
+        if (myColourPool[i] === 0){
+            myColourPool[i]++;
+            return i;
+        }
+    }
+    return myColourPool.length;
+}
+
+function freeColour (id){
+    if (id < myColourPool.length) {
+        myColourPool[id] = 0;
+    }
+}
+
+function makeCopyReadings (data){
+    var res = [];
+    for (var i=0;i<data.length; i++){
+        res.push ([data[i][0], data[i][1]]);
+    }
+    return res;
+}
+
+
+function accumDataReadings (accum, next, sign){
+    if (next === null) return;
+    if (next.length < 0) return;
+    if (next[0] === null) return;
+    for (var i=0; i<next.length; i++){
+        // this is not robust....
+        if (accum[i][0] === next[i][0]){
+            accum[i][1] += sign * next[i][1];
+        }
+    }
+}
+        
+
+function validatePlotLineData(pL){
+
+    function getPlotLineData (name){
+        var data;
+        if (isMeter (name)){
+            if (meterReadings[name].hasOwnProperty("data")){
+                data = meterReadings[name].data;
+            }
+            else {
+                data = [];
+            }
+        }
+        else {
+            var compPL = findPL (plotLineDesc, name);
+            validatePlotLineData (compPL);
+            data = compPL.data;
+        }
+        return data;
+    }
+
+    if (pL.valid) return;
+    
+        
+    if (isMeter (pL.pLName)) {
+        pL.data = getPlotLineData(pL.pLName);
+        pL.valid = true;
+        return;
+    }
+
+    if (pL.hasOwnProperty ("components")){
+        var comps = pL.components;
+        pL.data = makeCopyReadings (getPlotLineData(comps[0]));
+        for (var k=1; k<comps.length; k++){
+            accumDataReadings(pL.data, getPlotLineData(comps[k]), 1);
+        }
+               
+      
+        if (pL.hasOwnProperty ("minus")){
+            var minus = pL.minus;
+            for (var k=0; k<minus.length; k++){
+                accumDataReadings(pL.data, getPlotLineData(minus[k]), -1);
+            }
+        }
+        pL.valid = true;
+        return;
+    }
+   
+    if (pL.hasOwnProperty ("primary")){
+        var prim = pL.primary [0];
+        pL.data = makeCopyReadings (getPlotLineData(prim));
+        pL.valid = true;
+        return;
+        }
+}
+
+    
+function plotPlotLines (){
+    var pAA = [];
+    var maxA = [];
+    var cols = [];
+    var end = new Date();
+    var start = new Date();
+    var numSelected = 0;
+    
+    plotInfo = [];
+    
+    for (var p=0; p< plotLineDesc.length; p++){
+        var pL = plotLineDesc[p];
+        if (!pL.selected) {
+            if (pL.colour !== "none"){
+                freeColour (pL.colour);
+                pL.colour = "none";
+            }
+            continue;
+        }
+        
+        numSelected++;
+        
+        validatePlotLineData(pL);
+        
+        var pA = new Array();
+
+        if (!pL.hasOwnProperty ("data")) continue;
+        if (pL.data === null) continue;
+        if (pL.data.length < 2) continue;
+        
+        var end = new Date();
+        var maxy = 0.0;
+        var sum = 0.0
+        var points = 0;
+        var avg = 0;
+        var duration;
+        for (var i=0;i<pL.data.length; i++){
+            var datum = pL.data[i];
+            if (!(typeof datum[1] === "number") || (datum[1] < 0) || (datum[1] > 1000)){
+                datum[1] = "bad";
+            }
+            else{
+                sum += datum[1];
+                points++;
+                if (maxy < datum[1]) maxy = datum[1];
+            }
+            pA.push ({"x": new Date (datum[0]), "y":datum[1]});
+            
+        }
+        start = pA[0].x;
+        end = pA[pA.length - 1].x;
+        pAA.push(pA);
+        maxA.push(maxy);
+        if (pL.colour === "none"){
+           pL.colour = getColour();
+        }
+        
+        if (points > 0) avg = sum/points;
+        duration = (end - start) / 1000 / 60 / 60;   // milliseconds to hours
+        
+        // calculate sum using duration
+        
+        sum = avg * duration;
+        
+        cols.push(colourpool[pL.colour]);
+        plotInfo.push({"colour": colourpool[pL.colour],
+                        "description" : pL.description,
+                        "startmonthyear": yearMonthFormatter(new Date(start)), 
+                        "endmonthyear" : yearMonthFormatter(new Date(end)),
+                        "avgtotal" : pwrFormatter.format(avg),
+                        "totalenergy": engFormatter (sum),  
+                        "id" : pL.id});
+    }
+   
+    if ((numSelected > 0) && (pAA.length === 0)){
+        backTrackMonth();
+    }
+    else {
+        drawChart(pAA,start,end,maxA,pAA.length, cols, [], undefined);
+    }
+    
+}
+@

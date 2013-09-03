@@ -1,0 +1,341 @@
+head	1.2;
+access;
+symbols;
+locks
+	iml1:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2013.06.03.10.15.49;	author iml1;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2013.04.27.11.16.57;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@merger of CarbonIntensity and MeterReadings
+@
+
+
+1.2
+log
+@before fixing trying to fetch a month early.
+@
+text
+@var DateZero = new Date (2013, 0, 1, 0, 0, 0, 0);
+var viewrange;
+var segmentSuffixes;
+var carbon;
+var emptyTimeSeries = {"start": 0,
+	      "step": 1,
+	      "readings" : []};
+
+function fetchTimeSeriesSeg (urlStem, segSuf){
+    var tmpURL = urlStem + segSuf + ".json";
+    var tempJSON = null;
+    tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+    if (tempJSON !== undefined)
+    	if (tempJSON.hasOwnProperty ("data")) {
+	    return tempJSON.data;
+    	}
+    return emptyTimeSeries;
+}
+
+function CopyTimeSeries (ts){
+    return {start: ts.start, step: ts.step, readings : ts.readings.slice(0)}
+}
+
+function ConcatTimeSeries (seg1, seg2){
+
+    // This needs to add check that the timeseries are consecutive and have same step
+    var nonEmpty = seg1;
+    if (nonEmpty.readings.length === 0) nonEmpty = seg2;
+    return {"start" : nonEmpty.start,
+	    "step" : nonEmpty.step,
+	    "readings" : seg1.readings.concat(seg2.readings)};
+}
+
+function initMeterReadings(){
+    viewrange = {"startdate": new Date(), "enddate": new Date()};
+    segmentSuffixes = getViewRangeMonths (viewrange);
+    carbon = emptyTimeSeries;
+    loadNewCarbon();
+} 
+
+function addMonthData (){
+	var oldStartYear = viewrange.startdate.getFullYear();
+        viewrange.startdate.addMonths(-1);
+	if (oldStartYear != viewrange.startdate.getFullYear()){
+		loadNewCarbon();
+	}
+        segmentSuffixes = getViewRangeMonths(viewrange);
+        for (var i=0; i<plotLineDesc.length; i++) plotLineDesc[i].valid = false;
+        for (var k in meterReadings) if (meterReadings.hasOwnProperty(k)) meterReadings[k].valid = false;
+        loadNeeded (findNeeded(plotLineDesc)); 
+        plotPlotLines();
+}
+
+     
+function backTrackMonth(){
+    if (viewrange.enddate < DateZero) return;
+    viewrange.enddate.addMonths(-1);
+    addMonthData();
+}
+
+
+function twoDigits (thing){
+    if (thing < 10) return "0"+thing.toString();
+    return thing.toString();
+}
+
+function advanceDay (date){
+    // This should be fool proof.  Advance by the milliseconds in a day
+    date.setTime(date.valueOf()+24*60*60*1000);
+}
+
+function advanceMonth (date){
+    date.setMonth (date.getMonth()+1);
+}
+
+function getLastPathComponent (url){
+        var comps = url.split("/");
+        return comps[comps.length - 1];
+}
+        
+function getViewRangeMonths(viewrange){
+
+    //* Produce an array of month segment suffixes for the viewrange
+    
+    var runningDate = new Date(viewrange.startdate);
+    var monthStr;
+    var yearStr; 
+    var outputarray = new Array();
+    var loopLimit = 200;
+    var monthString = "";
+    for (var i=0;i<loopLimit;i++){
+        if (runningDate > viewrange.enddate) break;
+        yearStr = runningDate.getFullYear().toString();
+        monthStr = twoDigits(runningDate.getMonth()+1);
+        outputarray.push(yearStr + "-" + monthStr);
+        runningDate.addMonths(1);
+    }
+    return outputarray;
+}
+
+function PreviousMonth (timeStamp){
+    var dateStamp = new Date (timeStamp);
+    dateStamp.addMonths (-1);
+    return dateStamp.getFullYear().toString() + "-" + twoDigits (dateStamp.getMonth() + 1);
+}
+
+function getViewRangeDays(viewrange){
+
+    //* Produce an array of day segment suffixes for the viewrange
+    
+    var runningDate = new Date(viewrange.startdate);
+    var daystr;
+    var monthStr;
+    var yearStr; 
+    var outputarray = new Array();
+    var loopLimit = 200;
+    var monthString = "";
+    for (var i=0;i<loopLimit;i++){
+        if (runningDate > viewrange.enddate) break;
+        yearStr = runningDate.getFullYear().toString();
+        monthStr = twoDigits(runningDate.getMonth()+1);
+        dayStr = twoDigits(runningDate.getDate());
+        outputarray.push(yearStr + "-" + monthStr + "-" + dayStr);
+        advanceDay(runningDate);
+    }
+    return outputarray;
+}
+
+function ensureTimeInterval (meter){
+    // check start and end time for the meter
+    // against the view interval
+    var ts;
+    if (meter.data.readings.length === 0){
+	for (var i = 0 ; i<segmentSuffixes.length; i++){
+	    ts = fetchTimeSeriesSeg (meter.urlDir, segmentSuffixes[i]);
+	    if (ts !== null) {
+	        meter.data = ConcatTimeSeries (meter.data, ts);
+	    }
+	}
+	return;
+    }
+
+    while (meter.data.start > viewrange.startdate.valueOf()){
+	ts = fetchTimeSeriesSeg (meter.urlDir, PreviousMonth (meter.data.start)   );
+	if (ts.readings.length <= 0) break;
+	meter.data = ConcatTimeSeries (ts, meter.data);
+    }
+}
+ 
+
+    
+function loadNeeded(needed){
+    for (var i=0; i<needed.length; i++){
+        var m = needed[i];
+        if (!meterReadings.hasOwnProperty (m)){
+	    var path = config.sensorRootUrl.value + "/" + m  + "/" + m + "-"; 
+	    meterReadings[m] = {"urlDir": path, "valid": false, "data" :emptyTimeSeries};
+        }
+        ensureTimeInterval (meterReadings[m]);
+    }
+}
+
+
+function getViewRangeCarbonYears(viewrange){
+
+    //* Produce an array of annual segment suffixes for the viewrange
+
+    var outputarray = [];
+
+    var startYear = viewrange.startdate.getFullYear();
+    var endYear = viewrange.enddate.getFullYear();
+
+    for (var y=startYear; y<=endYear; y++){
+        outputarray.push(y.toString());
+    }
+    return outputarray;
+}
+
+
+function Carbonate(x, y){
+    if (!carbonOn) return y;
+
+    // Find the carbon intensity for this time
+
+
+    var start = carbon.start;
+    var step = carbon.step;
+    var offset = (x - carbon.start)/carbon.step;
+
+    if ((offset >= 0) && (offset < carbon.readings.length)){
+    	// grams of CO2/kWHr * kW -> g/s : divide by 3600   
+   	return y * carbon.readings[offset] / 3600;    
+    }
+    return -1;
+}
+
+function loadNewCarbon(){
+
+    // Add the earliest year required to what we have.
+
+    var carbonSuffixes = getViewRangeCarbonYears(viewrange);
+    var seg = fetchTimeSeriesSeg (config.carbonRootUrl.value, carbonSuffixes[0])
+    carbon = ConcatTimeSeries (seg, carbon); 
+}
+ 
+
+    
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+
+d4 4
+d9 14
+d24 9
+d37 1
+d56 1
+d100 7
+a124 1
+        console.log (runningDate);
+a128 12
+
+
+function fetchSingleSeg (urlStem, segSuf){
+    var tmpURL = urlStem + segSuf + ".json";
+    var tempJSON = null;
+    tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+    if (typeof tempJSON === "object"){
+        return tempJSON.data;
+    }
+    return [];
+}
+
+d132 10
+d143 4
+a146 9
+    // Dumb for now, just fetch the segment unless already ALL there.
+    
+    if (meter.valid) return;
+    
+    meter.valid = true;
+
+    if ((meter.start === viewrange.startdate) && 
+            (meter.end === viewrange.enddate)){
+        return;
+a147 10
+    
+    meter.data = [];
+    for (var i=0; i< segmentSuffixes.length; i++){
+        meter.data = meter.data.concat (fetchSingleSeg (meter.urlDir,
+                            segmentSuffixes[i]));
+        }
+
+
+    meter.start = new Date (viewrange.startdate);
+    meter.end = new Date (viewrange.enddate);
+d152 1
+a152 1
+function loadNeeded(needed){    
+d157 1
+a157 2
+	    meterReadings[m] = {"urlDir": path,
+                            start :null, end: null, valid : false, data: null};
+a162 3
+var carbon = {"start": 0,
+	      "step": 1,
+	      "readings" : []};
+d180 2
+a181 2
+function Carbonate( datum){
+    if (!carbonOn) return true;
+d188 2
+a189 2
+    var offset = (datum[0] - carbon.start)/carbon.step;
+    var date = new Date(datum[0]);
+d191 2
+a192 3
+    	// grams of CO2/kWHr * kW -> kg/s : divide by 3600   
+   	datum[1] = datum[1] * carbon.readings[offset] / 3600;    
+	return true;
+d194 1
+a194 18
+    return false;
+}
+
+function fetchTimeSeriesSeg (urlStem, segSuf){
+    var tmpURL = urlStem + segSuf + ".json";
+    var tempJSON = null;
+    tempJSON = ui.catchError(ui, cache.getObject, tmpURL);
+    if (tempJSON.hasOwnProperty ("data")) {
+	return tempJSON.data;
+    }
+    return [];
+}
+
+
+function ConcatTimeSeries (seg1, seg2){
+    return {"start" : seg1.start,
+	    "step" : seg1.step,
+	    "readings" : seg1.readings.concat(seg2.readings)};
+d202 1
+a202 2
+    var seg = fetchTimeSeriesSeg (config.carbonRootUrl.value,
+                            carbonSuffixes[0])
+@

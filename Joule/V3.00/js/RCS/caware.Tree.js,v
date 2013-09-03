@@ -1,0 +1,250 @@
+head	1.2;
+access;
+symbols;
+locks
+	iml1:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2013.06.03.15.08.07;	author iml1;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2013.04.18.07.52.45;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@tidying up valid
+@
+text
+@var treeTitle = "Electricity Use";
+ 
+function findPL(plotLineDesc, name){
+    for (var i = 0; i<plotLineDesc.length;i++){
+        if (plotLineDesc[i].pLName === name){
+            return plotLineDesc[i];
+        }
+    }
+    return null;
+}
+
+function isMeter (comp){
+    return (comp.indexOf("S-m") === 0);
+}
+  
+function buildConfiguration(treeConf){
+    
+    //  Build up plot descriptors and the visualisation tree for plot lines from the tree configuration
+    //  Default it to make a plot line for a non leaf the sum of the leaves under it.
+    
+    var plotLineDesc = Array();
+    var pL = treeConf.functionTree;
+    var plotLineExceptions = treeConf.plotLines;
+    var depth = 0;
+    var visTree = {};
+    
+    function traverse (pL,vT, defaultName){
+        var i;
+        var node = {};
+
+        if (pL.pLName !== null) {
+            plotLineDesc.push (pL);
+            vT[pL.nodeName] = node;
+            
+            if (defaultName === "") {
+                defaultName = pL.nodeName;
+            }
+            else defaultName = defaultName + ": " + pL.nodeName;
+        }
+        else {
+	    node = vT;
+	    treeTitle = pL.nodeName;
+	}
+        
+        pL.defined = false;
+        pL.selected = false;
+        pL.needed = false;
+        pL.valid = false;
+        pL.colour = "none";
+        pL.id = plotLineDesc.length - 1;
+        
+        if (!pL.hasOwnProperty("description")) pL.description = defaultName;
+        
+        if (pL.hasOwnProperty ("children")){
+            var comps = Array();
+            var totalStr = pL.nodeName + " Total";
+            if (pL.pLName !== null) node[totalStr] = plotLineDesc.length - 1; // index of plotline
+            for (i=0; i<pL.children.length; i++){
+                var child = pL.children[i];
+                depth++;
+                traverse (child, node, defaultName);
+                depth--;
+                if (child.hasOwnProperty ("components")){
+                    comps = comps.concat (child.components);
+                }
+                else {
+                    comps.push (child.pLName);
+                }
+                
+            }
+            pL.components = comps;
+        }
+        else {
+            pL.components = new Array (pL.pLName);
+            vT[pL.nodeName] = plotLineDesc.length - 1;  // index of plotline
+        }
+        
+        pL.depth = depth;
+       
+    }
+       
+    function resolveComponents(components){
+        // Any plot lines referred to must be defined
+        var ok = true;
+        for (var i = 0; i<components.length; i++){
+            if (!isMeter(components[i])){
+                var pL = findPL (plotLineDesc, components[i]);
+                if (pL === null) {
+                    ok = false;
+                }
+                else if (!pL.defined) {
+                    ok = false;
+                }
+            }
+        }
+        return ok;
+    }
+    
+    function processExcepPL (pLDesc, pLEx){
+        var ok = true;
+        if (pLEx.mode === "ALT"){
+            delete pLDesc.components;
+            pLDesc.primary = new Array (pLEx.components[0]);
+            if (!resolveComponents(pLDesc.primary)) ok = false;
+            pLDesc.secondary = new Array (pLEx.components[1]);
+            if (!resolveComponents(pLDesc.secondary)) ok = false;
+        }
+        else if (pLEx.mode === "SUM"){
+            pLDesc.components = pLEx.components;
+            if (!resolveComponents (pLDesc.components)) ok = false;
+        }
+        else if (pLEx.mode === "DIFF"){
+            pLDesc.components = new Array(pLEx.components[0]);
+            if (!resolveComponents (pLDesc.components)) ok = false;
+            pLDesc.minus = new Array(pLEx.components[1]);
+            if (!resolveComponents (pLDesc.minus)) ok = false;
+        }
+        else console.log ("ERROR");
+      
+        if (ok) {
+            pLDesc.defined = true;
+        }
+        else {
+            console.log ("error");
+            console.log (JSON.stringify (pLDesc));
+            console.log (JSON.stringify (pLEx));
+        }
+    }
+    
+    // Start with simple traversal, using default construction
+ 
+    traverse (pL, visTree, "");
+    
+    // Check resolution for simple ones
+    
+    for (var k = 0; k < plotLineDesc.length; k++){
+        var ok = true;
+        if (plotLineDesc[k].hasOwnProperty ("components")){
+            plotLineDesc[k].defined = resolveComponents (plotLineDesc[k].components);
+        }
+    }
+        
+
+    // Now look at the overriding plot line descriptors
+    
+    for (var j = 0; j < plotLineExceptions.length; j++){
+        var pLEx = plotLineExceptions[j];
+        pLDesc = findPL (plotLineDesc, pLEx.pLName);
+        if (pLDesc !== null){
+            processExcepPL (pLDesc, pLEx);
+        }
+    }
+    
+    return {'plotLineDesc': plotLineDesc, 'visTree' : visTree};
+}
+
+function addIfNotFound (arr, item){
+    for (var i=0; i<arr.length; i++){
+        if (arr[i] === item) return;
+    }
+    arr.push(item);
+}
+
+function descendNeeded (pL, needed, plotLineDesc){
+
+    function neededComponents (comps){
+     
+        for (var i=0; i<comps.length; i++){
+ 
+            if (isMeter(comps[i])){
+                addIfNotFound (needed, comps[i]);
+                }
+            else {
+                newPL = findPL (plotLineDesc, comps[i]);
+                if (newPL !== null) {
+                    if (!newPL.needed){
+                        newPL.needed = true;
+                        descendNeeded (newPL, needed, plotLineDesc);
+                    }
+                }
+            }
+        }
+    }
+    
+    // mark all components of this plotline as needed, and if any are plotLines, descend into them
+    
+    if (pL.hasOwnProperty ("components")) neededComponents (pL.components);
+    if (pL.hasOwnProperty ("minus")) neededComponents (pL.minus);
+    if (pL.hasOwnProperty ("primary")) neededComponents (pL.primary);
+    if (pL.hasOwnProperty ("secondary")) neededComponents (pL.secondary);
+}
+
+
+function findNeeded (plotLineDesc){
+    // Update plotLineDesc to show which plot lines are needed (even if not selected) and produce array of meters that are needed
+    var needed = [];
+    var i;
+  
+    for (i = 0 ; i < plotLineDesc.length ; i++) plotLineDesc[i].needed = false;
+
+    for (i = 0 ; i < plotLineDesc.length ; i++){
+        var pL = plotLineDesc[i];
+        if (pL.selected) pL.needed = true;
+        if (pL.needed) descendNeeded (pL, needed, plotLineDesc);
+    }
+   
+    return needed;
+}
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+d40 4
+a43 1
+        else node = vT;
+@

@@ -1,0 +1,506 @@
+head	1.1;
+access;
+symbols;
+locks
+	iml1:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2013.04.18.07.52.45;	author iml1;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@
+function drawChart(dataArray,start,end,maxArr,chartcount,plotcol,weather,missingArr,diffArr){
+      
+    var data = dataArray;
+    var chartmax = 0.0;
+    
+    for (tmpMax in maxArr){
+        if (maxArr[tmpMax] > chartmax){
+          	chartmax = maxArr[tmpMax];
+        }
+    }
+    
+       // Scales and sizing.
+    var w = 700,
+        h1 = 310,
+        h2 = 50,
+        x = pv.Scale.linear(start, end).range(0, w),
+        y = pv.Scale.linear(0, chartmax+1).range(0, h2);
+            
+    if (weather){    
+        var tempery = pv.Scale.linear(pv.min(weather, function(d) {return d.y}),
+                                        pv.max(weather, function(d) {return d.y})).range(0, h1);
+    }        
+        
+    // Interaction state. Focus scales will have domain set on-render.
+        
+    var i = {x:config.zoomSize.value.zoomX, dx:config.zoomSize.value.zoomDX};
+    var fx = pv.Scale.linear().range(0, w),
+        fy = pv.Scale.linear().range(0, h1),
+        ft = pv.Scale.linear().range(0, h1);
+  
+    // Root panel. 
+    vis = new pv.Panel()
+        .canvas("chartdiv")
+        .width(w)
+        .height(h1 + 30 + h2)
+        .bottom(20)
+        .left(30)
+        .right(20)
+        .top(20);
+        
+    function datasel(id){
+        d1 = x.invert(config.zoomSize.value.zoomX);
+        config.zoomSize.value.zoomX = i.x;
+        d2 = x.invert(config.zoomSize.value.zoomX + config.zoomSize.value.zoomDX);
+        config.zoomSize.value.zoomDX = i.dx;
+        fx.domain(d1, d2);
+        
+        var dd = [];
+        if (id === 'temps'){
+            if (weather){
+                temper = (weather.slice(Math.max(0, pv.search.index(weather, d1, function(d) {return d.x}) - 1),
+                pv.search.index(weather, d2, function(d) {return d.x}) + 1));
+            }
+            return temper;
+        }
+        else {
+            for(var j=0; j<data.length; j++){//for each line in the data array
+                dd[j] = [];
+                dd[j] = (data[j].slice(Math.max(0, pv.search.index(data[j], d1, function(d) {return d.x}) - 1),
+                pv.search.index(data[j], d2, function(d) {return d.x}) + 1));
+            }
+            	            	
+            if (typeof id == 'undefined') return dd;
+            else return dd[id];
+        }
+    }
+        
+    var grid;
+
+    var columns = [
+        {id:"PlotColour", name:"Colour", field:"colour", width:46, formatter:GraphicalColourCellFormatter},
+        {id:"Description", name:"Description", field:"description", width:215},
+        {id:"StartMonthyear", name:"Start", field:"startmonthyear", width:79},
+        {id:"EndMonthyear", name:"End", field:"endmonthyear", width:79},
+        {id:"kWSelected", name:"Avg kW Selected", field:"avgselected", width:115},
+        {id:"kWTotal", name:"Avg kW Entire", field:"avgtotal", width:95},
+        {id:"TotalEnergy", name:"Total Energy (kWh)", field:"totalenergy", width:126},        ];
+
+    var options = {
+        enableCellNavigation: false,
+        enableColumnReorder: false,
+        editable: true
+    };
+        
+  
+    function SelectCellEditor(args) {
+        var $select;
+        var defaultValue;
+        
+        this.init = function() {
+                
+            if(args.column.options){
+                opt_values = args.column.options.split(',');
+            }
+            else{
+                opt_values ="yes,no".split(',');
+            }
+            option_str = ""
+            for( i in opt_values ){
+                v = opt_values[i];
+                option_str += "<OPTION value='"+v+"'>"+v+"</OPTION>";
+            }
+            $select = $("<SELECT class='editor-select'>"+ option_str +"</SELECT>");
+            $select.appendTo(args.container);
+            $select.focus();
+        };
+            
+        this.destroy = function() {
+            $select.remove();
+        };
+            
+        this.focus = function() {
+            $select.focus();
+        };
+            
+        this.loadValue = function(item) {
+            defaultValue = item[args.column.field];
+            $select.val(defaultValue);
+        };
+            
+        this.serializeValue = function() {
+            if(args.column.options){
+                return $select.val();
+            }
+            else{
+                return ($select.val() == "yes");
+            }
+        };
+            
+        this.applyValue = function(item,state) {
+            item[args.column.field] = state;
+        };
+            
+        this.isValueChanged = function() {
+            return ($select.val() != defaultValue);
+        };
+            
+        this.validate = function() {
+            return {
+                valid: true,
+                msg: null
+            };
+        };
+            
+        this.init();
+    }
+        
+    function drawgrid() {
+        dataView = new Slick.Data.DataView();
+        grid = new Slick.Grid("#myGrid", dataView, columns, options);
+        dataView.beginUpdate();
+        dataView.setItems(plotInfo);
+        dataView.endUpdate();
+        grid.render();
+        $("#myGrid").show();
+    }
+        
+    function panelAddLine (panel, ind){
+        panel.add(pv.Line)
+                .data(function(){ return datasel(ind); })
+                .left(function(d){ return fx(d.x); })
+                .bottom(function(d){ return fy(d.y); })
+                .strokeStyle(plotcol[ind])
+                .segmented(true)
+                .strokeDasharray(function(d) {return d.bad ? '2,2' : 'none';})
+                .interpolate(null)
+                .lineWidth(2);
+            }
+
+
+    // Focus panel (zoomed in).
+    var focus = vis.add(pv.Panel)
+        .def("init", function() {
+            date1 = new Date();
+            var dd = datasel();
+            var tot = 0;
+            var maxy = 0;
+            var miny = 0;
+                
+            miny = 100000;
+            //if (dd.length > 0) miny = dd[0][0].y;
+            for(var a=0;a<data.length;a++){
+                tot = 0;
+                var tmp = dd[a]
+                var count = 0;
+                for(var b=0; b<tmp.length;b++){
+                    if (typeof tmp[b].y === "number"){
+                        tot+=tmp[b].y;
+                        if(tmp[b].y > maxy) maxy = tmp[b].y;
+                        if(tmp[b].y < miny) miny = tmp[b].y;
+                        count++;
+                    }
+                }
+                var avg = 0;                
+                if (count > 0)  avg = tot / count;
+                var roundavg = Math.round(avg*1000)/1000;
+                
+                
+                if (a < plotInfo.length) plotInfo[a].avgselected = pwrFormatter.format(roundavg);
+            }
+                
+            drawgrid();
+			
+            if (maxYEver < maxy) maxYEver = maxy;
+            
+            switch (ui.scaleSelection) {
+                case 'all':
+                    fy.domain(0, maxYEver * 1.1);
+                    break;
+                case 'scale':
+                    fy.domain(0, maxy * 1.1);
+                    break;
+                case 'zoom':
+                    fy.domain(miny * .8, maxy * 1.1);
+                    break;
+            }
+                
+            if (weather) {
+                ft.domain(tempery.domain());
+            }
+            return dd;
+        })
+        .top(0)
+        .height(h1);
+            
+ 
+    // X-axis ticks. 
+    focus.add(pv.Rule)
+        .data(function(){return fx.ticks(7);})
+        .left(fx)
+        .strokeStyle(function(d) { return d ? "#aaa" : "#000";})
+        .lineWidth(function(d){
+            var tmp = new Date(d);
+            if (tmp.getDay() == 6 || tmp.getDay() == 1){
+                if (tmp.getHours() == 0){ return 3; }
+                else return 1;
+            }
+            else return 1;
+        })
+        .anchor("bottom").add(pv.Label)
+        .text(function(fx) {return zoomTimeFormat.format(fx);});
+        
+
+    focus.add(pv.Rule)
+        .data(function(){return fx.ticks(7);})
+        .left(fx)
+        .strokeStyle("rgba(255,255,255,0)")
+        .anchor("top").add(pv.Label)
+        .text(function(fx){return zoomDateFormat.format(fx);});
+                
+
+    // Y-axis ticks.
+    focus.add(pv.Rule)
+        .data(function() {return fy.ticks(7); })
+        .bottom(fy)
+        .strokeStyle(function(d) {return d ? "#aaa" : "#000"; })
+        .anchor("left").add(pv.Label)
+        .text(fy.tickFormat);
+ 
+            
+    if (weather) {   
+        focus.add(pv.Rule)
+        .data(function() {return ft.ticks(7); })
+        .bottom(ft)
+        .strokeStyle("#000")
+        .lineWidth(function(d) {return d === 0 ? 0.5 : 0;})
+        .segmented(true)
+        .strokeDasharray('2,2')
+        .anchor("right").add(pv.Label)
+        .text(function(d) { return d.toString(); });
+            
+    }
+        
+    // Focus area chart.
+        
+  
+    panel = focus.add(pv.Panel)
+        .overflow("hidden");
+
+    for (var cc=chartcount-1; cc>=0; cc--){
+        panelAddLine(panel, cc);
+    }
+
+
+    if (weather){
+        panel.add(pv.Line)
+            .data(function(){ return datasel('temps'); })
+            .left(function(d){ return fx(d.x); })
+            .bottom(function(d){ return ft(d.y); })
+            .strokeStyle('black')
+            .lineWidth(1);
+        }
+
+                
+    // Context panel (zoomed out).
+    var context = vis.add(pv.Panel)
+        .bottom(0)
+        .height(h2);
+        
+    // X-axis ticks.
+    context.add(pv.Rule)
+        .data(x.ticks(5))
+        .left(x)
+        .lineWidth(function(d){
+            var tmp = new Date(d);
+            if (tmp.getDay() == 6 || tmp.getDay() == 1){
+                if (tmp.getHours() == 0){ return 3; }
+                else return 1;
+            }
+            else return 1;
+        })
+        .strokeStyle("#aaa")
+        .anchor("bottom").add(pv.Label)
+        .text(function(x){return overallDateFormat.format(x); });
+       
+    // Y-axis ticks.
+    context.add(pv.Rule)
+        .bottom(0);
+        
+    var totdata = [];
+        
+    if (data.length > 0) {
+        if (data[0].length < 600) totdata = data;
+        else {
+            var mydiv = data[0].length / 600;
+            var rounddiv = Math.round(mydiv*1)/1;
+            
+            for(var p=0; p<data.length; p++){
+                for(var q=0; q<data[p].length;q++){
+                    if (q == 0) totdata[p]=[];
+                    if (q%rounddiv == 0) totdata[p].push(data[p][q]);
+                }
+            }
+        }
+    }
+    
+    for(var j=0; j<data.length; j++){
+        context.add(pv.Line)
+            .data(totdata[j])
+            .left(function(d){ return x(d.x); })
+            .bottom(function(d) { return y(d.y); })
+            .strokeStyle(plotcol[j])
+            .segmented(true)
+            .strokeDasharray(function(d){return  d.bad ? '2,2' : 'none'; })
+            .lineWidth(2);
+    }
+       
+
+    
+    // The selectable, draggable focus region.
+    context.add(pv.Panel)
+        .data([i])
+        .cursor("crosshair")
+        .events("all")
+        .event("mousedown", pv.Behavior.select())
+        .event("select", focus)
+        .add(pv.Bar)
+        .left(function(d){ return d.x; })
+        .width(function(d) { return d.dx; })
+        .fillStyle("rgba(100, 128, 255, .3)")
+        .cursor("move")
+        .event("mousedown", pv.Behavior.drag())
+        .event("drag", focus);
+        
+    context.add(pv.Dot)
+        .left(-15)
+        .bottom(25)
+        .shape("triangle")
+        .angle(Math.PI*0.5)
+        .size(110)
+        .strokeStyle("#0069d6")
+        .lineWidth(3)
+        .cursor("pointer")
+        .events("all")
+        .event("click", function(){ui.addMonth(ui);} );
+
+    vis.render();
+}
+    
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+    
+function tree(sensortree,type){
+    //Create tree from sensor index object.
+    
+    // Handle flipping of tree node selection
+    
+    function toggle(n) {
+        n.toggle(pv.event.altKey);
+        //If the node clicked is a leaf node need to change plot
+ 
+        if ((typeof n.nodeValue === "number")) {
+            var index = n.nodeValue;
+            ui.treeNodeClick(index, ui);
+            }
+        return layout.reset().root;
+    }
+ 
+
+  
+  
+    //Specify the root node from the tree JS object
+    
+    var root = pv.dom(sensortree)
+        .root("Electricity Use");
+
+
+
+    //Create the root visualisation panel
+    var treevis = new pv.Panel()
+        .canvas("treediv")
+        .width(380)
+        .height(function(){return((root.nodes().length + 1) * 24);})
+        .margin(5);
+
+
+        
+    //Create the Indentation layout
+    var layout = treevis.add(pv.Layout.Indent)
+        .nodes(function() {return root.nodes();})
+        .depth(24)
+        .breadth(24);
+ 
+
+       
+    //Add nodes to the layout
+    var node = layout.node.add(pv.Panel)
+        .top(function(n){return(n.y-6);})
+        .height(12)
+        .right(6)
+        .strokeStyle("none")
+        .fillStyle("rgb(235, 235, 235)")
+        .events("all")
+        .cursor("pointer")
+        .event("mousedown", toggle);
+ 
+
+       
+    node.anchor("left").add(pv.Dot)
+        .radius("7")
+        .shape(function(n){
+            if (!n.toggled && !n.firstChild) return "square";
+            else return "triangle";
+        })
+        .left(10)
+        .angle(function(n){
+            if (n.toggled){return (Math.PI*1.5); }
+        })
+        .strokeStyle("#999")
+        .fillStyle(function(n){
+            if (n.hasOwnProperty ("pLInd")){
+                if (plotLineDesc[n.pLInd].selected){
+                    return  colourpool[plotLineDesc[n.pLInd].colour];
+                }
+                else {
+                    return  "#FFFFFE";
+                }
+            }
+            else {
+                return "#AAAAAA";
+            }
+        })
+        .title(function t(d){ d.parentNode ? (t(d.parentNode) + "." + d.nodeName) : d.nodeName;})
+        .anchor("right").add(pv.Label)
+        .text(function(n){return n.nodeName;})
+        .font("12px/14px Helvetica, Arial, Sans-serif");
+            
+  
+  
+  
+    // toggle any nodes with children, other than the top node
+    
+    var nodes = root.nodes();
+    var ind = 0;
+    for (var i=0; i<nodes.length;i++){     
+         if (i>0) nodes[i].toggle();
+         if (!nodes[i].hasOwnProperty("firstChild")) nodes[i].pLInd = ind++;
+    }
+
+    treevis.render();
+}
+
+@

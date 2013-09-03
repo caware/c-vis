@@ -1,0 +1,39 @@
+{
+    "config" : {
+        "maxNumberPlots" : {
+            "description" : "Maximum number of sensor plots Joule can show.",
+            "value" : 10
+        },
+	"segmentation" : {
+	    "description" : "How meter info is segmented",
+	    "value" : "monthly"
+	},
+	"autoFilter" : {
+		"description" : "Object to specifiy max power values before auto discarding data outside limits.",
+		"value" : {"maxY" : 300, "minY" : 0}
+	},
+        "plotColour" : {
+            "description" : "Array of SVG colours for the individual plots. Must be same length as max-number-plots.",
+            "value" : ["firebrick","seagreen","steelblue","gold","darkorange","blue","limegreen","purple","sienna","darkturquoise"]
+        },
+         "zoomSize" : {
+            "description" : "Width of the zoomed section.",
+            "value" : {
+                "zoomX" : 160,
+                "zoomDX" : 160 
+            }
+        },
+         "treeUrl" : {
+            "description" : "URL of the JSON file that defines tree to use.",
+            "value" : "http://www.cl.cam.ac.uk/meters/vis-configs/trees.json"
+        },
+        "sensorRootUrl" : {
+            "description" : "URL of the root of the dir structure containing the sensor data.",
+            "value" : "http://www.cl.cam.ac.uk/meters/elec/published"
+        },
+        "carbonRootUrl" : {
+            "description" : "URL prefix of the carbon data.",
+            "value" : "http://www.cl.cam.ac.uk/meters/carbon/CarbonInt"
+        }
+    }
+}
