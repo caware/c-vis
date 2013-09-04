@@ -76,13 +76,13 @@ function JSONCache() {
                 catch(e) {
                     returnObj.error = e;
                     returnObj.errorText = "JSON Parse Error when trying to parse '"+url+"'";
-                    returnObj.errorType = "warn";
+                    returnObj.errorType = "warning";
                 }
             }
             else {
                 returnObj.error = jsonFile;
                 returnObj.errorText = "HTTP "+jsonFile.statusText+" "+jsonFile.status+" when trying to access '"+url+"'";
-                returnObj.errorType = "error";
+                returnObj.errorType = "danger";
             }
         }
 			
@@ -101,13 +101,13 @@ function JSONCache() {
                 catch(e) {
                     returnObj.error = e;
                     returnObj.errorText = "JSON Parse Error when trying to parse '"+url+"'";
-                    returnObj.errorType = "warn";
+                    returnObj.errorType = "warning";
                 }
             }
             else{
                 returnObj.error = jsonFile;
                 returnObj.errorText = "HTTP "+jsonFile.statusText+" "+jsonFile.status+" when trying to access '"+url+"'";
-                returnObj.errorType = "error";
+                returnObj.errorType = "danger";
             }
         }
           

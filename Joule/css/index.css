@@ -24,8 +24,9 @@ div#top{
     display: inline-block;
 }
 
-div.alert-bar{
-    min-height: 50px;
+div#alert-bar{
+    min-height: 55px;
+    margin-bottom: 20px;
 }
 
 hr.topHR{

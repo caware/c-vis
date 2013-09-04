@@ -121,23 +121,23 @@ function JouleUIController(){
     
     this.showError = function(error, errorText, errorType, timeout, useri){
         var id = new Date().getTime().toString();
-        var genHTML = "<div class=\"alert-message "+errorType+"\" id=\""+id+"\"><p><strong>";
+        var genHTML = "<div class='alert alert-" + errorType + "' id='" + id + "'><strong>";
         switch(errorType) {
-          case "warn":
-            genHTML += "Warning ";
+          case "warning":
+            genHTML += "Warning: ";
             break;
-          case "error":
-            genHTML += "Error ";
+          case "danger":
+            genHTML += "Error: ";
             break;
           case "success":
-            genHTML += "Success ";
+            genHTML += "Success: ";
             break;
           case "info":
-            genHTML += "Info ";
+            genHTML += "Info: ";
             break;
         }
-        genHTML += "</strong> "+errorText+" </p></div>";
-        $('#notify-bar').prepend(genHTML);
+        genHTML += "</strong>" + errorText + "</div>";
+        $('#alert-bar').prepend(genHTML);
         var time = timeout*1000;
         var t = setTimeout('ui.hideError('+id+')', time);
     };
