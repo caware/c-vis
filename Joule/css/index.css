@@ -33,17 +33,22 @@ hr.topHR{
     margin: 3px;
 }
 
-div#chartdiv {
+div#chartBody {
     margin-top: 0px;
     margin-left: 0px;
 }
-
+#chartBody svg {
+  margin-top: 20px;
+}
+input.date {
+  width: 100px;
+}
 div#chartcontainer {
     margin-top: 0px;
     margin-left: 0px;
 }
 
-div#charttitle {
+div#chartHeader {
     width: 750px;
     margin: 0 0 0 30px;
     display: inline-block;
@@ -87,12 +92,6 @@ div#topbar {
     text-align:center
 }
 
-p#charttitletext {
-    text-align: center;
-    padding-top: 0;
-    padding-bottom: 0;
-}
-
 p.chartinformation {
     text-align: left;
     padding-left: 20;
@@ -108,17 +107,23 @@ div#firstvisit {
 div#sensorinfo {
     min-height:150px;
 }
+div.ctrl-buttons{
+    margin: 10px 0 10px 0;
+}
 
 path {
     shape-rendering: crispEdges;
+}
+.f-area path {
+  opacity: 0.5;
 }
 
 .node rect {
   cursor: pointer;
   fill: #fff;
-  fill-opacity: 0.5;
-  stroke: #3182bd;
-  stroke-width: 1.5px;
+  fill-opacity: 0.65;
+  stroke: lightgray;
+  stroke-width: 1;
 }
 
 .node rect.colorRect {
@@ -126,7 +131,7 @@ path {
 }
 
 .node text {
-  font: 10px sans-serif;
+  font: 11px sans-serif;
   pointer-events: none;
 }
 
@@ -136,7 +141,7 @@ path.link {
   stroke-width: 1.5px;
 }
 line {
-    stroke: black;
+    stroke: lightgray;
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
@@ -161,4 +166,30 @@ g.axis line {
 
 #chartinfo * {
     box-sizing: content-box;
+}
+
+
+.sNode rect {
+  cursor: move;
+  fill-opacity: .9;
+  shape-rendering: crispEdges;
+  stroke: lightgray;
+}
+.sNode text {
+  pointer-events: none;
+  text-shadow: 0 1px 0 #fff;
+}
+.sLink {
+  fill: none;
+  stroke-opacity: .3;
+  shape-rendering: geometricPrecision;
+}
+.sLink:hover {
+  stroke-opacity: .8;
+}
+
+
+.slice path {
+  shape-rendering: geometricPrecision;
+  fill-opacity: 0.75;
 }

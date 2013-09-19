@@ -18,6 +18,8 @@ V3.1:
     Upgraded charting library from Protovis to D3.js
     Added filter button to remove high frequencies from large datasets
 
+V3.0:
+
 V2.2: Release!
     Added ability to plot difference in monitored sum and overall total
     Added &fix44=true option to patch chilled data being factor of 40 out
