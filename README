@@ -7,25 +7,39 @@ More information about the project can be found at http://www.cl.cam.ac.uk/resea
 
 Change log:
 
-V3.2:
+v3.3:
+    Added Sankey diagrams
+    New visual design
+    Added "Reset selection" button on tree
+    Line chart:
+      Day-precision range selection
+      Zoom on chart using mouse wheel
+    Sankey diagram:
+      Diagram based on average values from the latest period
+      Options to change maximum depth and zoom into diagram
+    New script structure using objects and chart options
+    timeSeries class manages concatenation of data time series handling missing data
+
+v3.2:
     Upgraded Bootstrap from v1.3.0 to v3.0.0
     Upgraded SlickGrid.js from v2.0 alpha to v2.2
     Various fixes to the html and css
     Working "Decrease range" button
     Fixed bug that caused wrong timestamp-value association due to missing value in raw data
 
-V3.1:
+v3.1:
     Upgraded charting library from Protovis to D3.js
     Added filter button to remove high frequencies from large datasets
 
-V3.0:
+v3.0:
+    N/A
 
-V2.2: Release!
+v2.2: Release!
     Added ability to plot difference in monitored sum and overall total
     Added &fix44=true option to patch chilled data being factor of 40 out
     Fixed non-display of single digit meters
 
-V2.1:
+v2.1:
     Fixed bugs which allowed attempt at download of non-existent data
     Added Y Axis scaling buttons for alternative data views
     Added bad data suppression support:
@@ -33,7 +47,7 @@ V2.1:
 	Added dashed lines for data points which are considered bad by index generator
 	Added auto clamping from config file, allowing Y axis power limits on data
 
-V2.0:
+v2.0:
     Sensor data awareness, won't extend viewport when no data exists.
     UI overhaul, using bootstrap from Twitter, including loading indicators.
     Added Info, Warning and Error messages when files not found / no data to display etc.
@@ -49,24 +63,24 @@ V2.0:
     Improved visual scheme
 
 
-V1.9.5:
+v1.9.5:
     Now adds up and sorts multiple plots preventing plots repeating themselves.
     Started frequency testing.
 
 
-V.1.9:.
+v1.9:
     Tool now deals with missing data files, presenting the earliest and latest files at max and min.
     Improved average code.
     Displays N/A in tree when sensors below have differing data dates for average calc.
     Restored S-m27.
 
 
-V1.8.6:
+v1.8.6:
     Code clean up.
     Added overall meter on load.
 
 
-V1.8.5:
+v1.8.5:
     Bug fixes.
     Started additions to HTML validation.
     Now uses coverage fields from data in tree and table.
@@ -74,7 +88,7 @@ V1.8.5:
     Ignores S-m27 meter for release.
 
 
-V1.8:
+v1.8:
     Plots no longer jump colours on sensor changes.
     Added months for which node averages were calculated into tree text.
     Added Google Chrome Frame banner for IE users.
@@ -82,18 +96,18 @@ V1.8:
     Added simple caching of sensor files.
 
 
-V1.7:
+v1.7:
     Added support for displaying previous months data as well as the current month. 
     Tidied up the UI, split the time and date below and above the main graph panel.
 
 
-V1.6:
+v1.6:
     Added increased number of plots to be displayed, and general code and UI tweaks
 
 
-V1.5:
+v1.5:
     Added ability for Average nodes to display summation of all nodes beneath them.
 
 
-V1.4:
+v1.4:
     Added Average nodes into the exploration tree.
