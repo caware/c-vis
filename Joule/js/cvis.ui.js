@@ -1,4 +1,4 @@
-function JouleUIController(){ 
+function JouleUIController() { 
 	var that = this;  
 	
 	this.errorIds = [];
@@ -194,7 +194,7 @@ function JouleUIController(){
 		}
 	}
 	
-	this.graph = function (button, type) {
+	this.graph = function(button, type) {
 
 		$(button).hasClass("btn-success") ? null : $(button).toggleClass("btn-success", true).toggleClass("btn-default", false).siblings().toggleClass("btn-default", true).toggleClass("btn-success", false);
 		
@@ -230,7 +230,7 @@ function JouleUIController(){
 	
 	}
 	
-	this.units = function (button) {
+	this.units = function(button) {
 
 		var unit = $(button).attr("unit");
 
@@ -257,7 +257,7 @@ function JouleUIController(){
 	
 	}
 	
-	this.progress = function (loaded, errors) {
+	this.progress = function(loaded, errors) {
 	
 		$(".progress-bar-success").css("width", loaded*100 + "%");
 		$(".progress-bar-danger").css("width", errors*100 + "%");
@@ -339,7 +339,7 @@ function JouleUIController(){
 
 	};
 	
-	this.showError = function (error, errorText, errorType, timeout) {
+	this.showError = function(error, errorText, errorType, timeout) {
 		
 		var id = new Date().getTime().toString();
 		var genHTML = "<div class='alert alert-" + errorType + "' id='" + id + "'><strong>";
@@ -367,14 +367,14 @@ function JouleUIController(){
 		var t = setTimeout('ui.hideError('+id+')', time);
 	};
 	
-	this.hideError = function (id){
+	this.hideError = function(id) {
 		jQid = '#'+id;
 		$(jQid + ", #alert-bar").hide("fast", function(){
 			$(jQid).remove();
 		});
 	};
 	
-	this.catchError = function (useri, call, arg){
+	this.catchError = function(useri, call, arg) {
 		var obj = call.apply(null, arg);
 		if (obj.status !== 200) {
 			useri.showError(obj.status, obj.statusText, "danger", that.errorTimeout);

@@ -64,6 +64,242 @@ function data() {
 		
 	}
 	
+	this.render = function (options) {
+		
+		if (typeof options == 'undefined') options = {};
+		
+		cvis.chart.draw(options);
+		
+	}
+	
+	this.changeRange = function (range) {
+		
+		if (range[1].isBefore(range[0]) || range[0].isBefore(cvis.data.zeroDate)) return false; // Make sure range remains consistent
+		that.viewRange.start = range[0];
+		that.viewRange.end = range[1];
+		updateSuffixes();
+		for (var i=0; i< cvis.tree.plotLineDesc.length; i++) cvis.tree.plotLineDesc[i].valid = false;
+		for (var k in meterReadings) if (meterReadings.hasOwnProperty(k)) meterReadings[k].valid = false;
+
+		return true;
+
+	};
+	
+// Private methods
+	
+	var fetchSeg = function (urlStem, segSuf, index) {
+
+		var url = urlStem + segSuf + ".json";
+
+		var jsonData = cvis.cache.getObject(url, true);
+
+		return $.Deferred(function (deferredObj) {
+			
+			$.when(jsonData).done(function (meterData) {
+				if (meterData.hasOwnProperty("data"))
+					deferredObj.resolve(new timeSeries(meterData.data.start, meterData.data.step, meterData.data.readings), index);
+				else
+					deferredObj.reject(index);
+			}).fail(function () {
+				deferredObj.reject(index);
+			});
+		
+		});
+		
+	};
+	
+	var loadMeterData = function (meterNames) {
+
+		function createMeterData (urlDir, meterIndex) {
+
+			return $.Deferred(function (deferredObj) {
+				
+				var segments = [], segmentsReq = [], meterTs = new timeSeries();
+
+				for (var i = 0; i<powerSuffixes.length; i++) {
+					segmentsReq[i] = $.when(fetchSeg(urlDir, powerSuffixes[i].year + "-" + powerSuffixes[i].month, i)).done(function (data, segIndex) {
+						segments[segIndex] = data;
+					}).fail(function (segIndex) {
+						segments[segIndex] = new timeSeries();
+					});
+				}
+
+				$.when.apply(this, segmentsReq).done(function () {
+					for (var i = 0; i<segments.length; i++) {
+						if (i==0)
+							meterTs.set(segments[i].start, segments[i].step, segments[i].readings);
+						else
+							meterTs = meterTs.concat(segments[i]);
+					}
+					deferredObj.resolve(meterTs, meterIndex, true);
+				}).fail(function() {
+					deferredObj.resolve(meterTs, meterIndex, false);
+				});
+				
+			}).promise();
+			
+		};
+
+		var loadCount = 0;
+		var errorCount = 0;
+		
+		return $.Deferred(function (deferredObj) {
+			
+			var metersReq = [];
+			
+			for (var i=0; i<meterNames.length; i++) {
+				var m = meterNames[i];
+				var path = cvis.config.sensorRootUrl.value + "/" + m  + "/" + m + "-";
+				if (!meterReadings.hasOwnProperty(m)) { 
+					meterReadings[m] = {"urlDir": path, "valid": false, "data" : new timeSeries()};
+				}
+			
+				metersReq[i] = createMeterData(path, m).done(function(data, meterIndex, valid) {
+					if (valid) {
+						loadCount++;
+					} else {
+						errorCount++;
+					}
+					meterReadings[meterIndex].data = data;
+					meterReadings[meterIndex].valid = valid;
+					
+					cvis.ui.progress(loadCount/meterNames.length, errorCount/meterNames.length);
+				});
+			
+			}
+
+			var test = $.when.apply($, metersReq).always(function() {
+				deferredObj.resolve();
+			});
+			
+		}).promise();
+	
+	};
+	
+	var loadCarbonData = function () {
+		
+		return $.when(fetchSeg(config.carbonRootUrl.value, carbonSuffixes[0].year)).done(function (data) {
+			carbon = data.concat(carbon);
+		});
+	};
+	
+	var carbonate = function (x, y) {
+		
+		if (that.metricType != "carbon") return y;
+		
+		// Find the carbon intensity for this time
+		
+		var start = carbon.start;
+		var step = carbon.step;
+		var offset = (x - carbon.start)/carbon.step;
+		
+		if ((offset >= 0) && (offset < carbon.readings.length)){
+			// grams of CO2/kWHr * kW -> g/s : divide by 3600   
+			return y * carbon.readings[offset] / 3600;    
+		}
+		return -1;
+		
+	}
+	
+	var getSuffixes = function (interval) {
+		
+		//* Produce an array of month segment suffixes for the viewrange
+		
+		var runningDate = new Date(that.viewRange.start);
+		var monthStr;
+		var yearStr; 
+		var suffixes = new Array();
+		var monthString = new String();
+		
+		switch (interval) {
+			case "monthly":
+				while (runningDate.getMonth() <= that.viewRange.end.getMonth()) {
+					yearStr = runningDate.getFullYear().toString();
+					monthStr = zero(runningDate.getMonth()+1);
+					suffixes.push({"year" : yearStr, "month" : monthStr});
+					runningDate.addMonths(1);
+				}
+				break;
+			case "yearly":
+				while (runningDate.getFullYear() <= that.viewRange.end.getFullYear()) {
+					yearStr = runningDate.getFullYear().toString();
+					monthStr = zero(runningDate.getMonth()+1);
+					suffixes.push({"year" : yearStr});
+					runningDate.addYears(1);
+				}
+				break;
+			default:
+				while (runningDate.getMonth() <= that.viewRange.end.getMonth()) {
+					yearStr = runningDate.getFullYear().toString();
+					monthStr = zero(runningDate.getMonth()+1);
+					suffixes.push({"year" : yearStr, "month" : monthStr});
+					runningDate.addMonths(1);
+				}
+				break;
+		}
+		
+		return suffixes;
+		
+	};
+	
+	var updateSuffixes = function () {
+		
+		powerSuffixes = getSuffixes("monthly");
+		carbonSuffixes = getSuffixes("yearly");
+		
+	};
+	
+	var getMeterNames = function () {
+		
+		// Update plotLineDesc to show which plot lines are needed (even if not selected) and produce array of meters that are needed
+		
+		function descendNeeded (pL, needed) {
+			
+			function neededComponents (comps, needed) {
+				
+				for (var i=0; i<comps.length; i++){
+					if (cvis.utils.isMeter(comps[i])){
+						needed = _.union(needed, [comps[i]]);
+					}
+					else {
+						newPL = _.findWhere(cvis.tree.plotLineDesc, {"pLName" : comps[i]});
+						if (newPL !== null) {
+							if (!newPL.needed){
+								newPL.needed = true;
+								needed = descendNeeded(newPL, needed);
+							}
+						}
+				}
+			}
+			
+			return needed;
+			
+		};
+		
+		// mark all components of this plotline as needed, and if any are plotLines, descend into them
+		
+		if (pL.hasOwnProperty ("components")) needed = _.union(needed, neededComponents(pL.components, needed.slice()));
+		if (pL.hasOwnProperty ("minus")) needed = _.union(needed, neededComponents(pL.minus, needed.slice()));
+		if (pL.hasOwnProperty ("primary")) needed = _.union(needed, neededComponents(pL.primary, needed.slice()));
+		if (pL.hasOwnProperty ("secondary")) needed = _.union(needed, neededComponents(pL.secondary, needed.slice()));
+		
+		return needed;
+		
+	}
+	
+	var needed = [];
+	
+	for (var i = 0 ; i < cvis.tree.plotLineDesc.length ; i++){
+		cvis.tree.plotLineDesc[i].needed = false;
+		var pL = cvis.tree.plotLineDesc[i];
+		if (pL.selected) pL.needed = !pL.valid;
+		if (pL.needed) needed = _.union(needed, descendNeeded(pL, needed));
+	}
+	
+	return needed;
+	
+	};
+	
 	var createTable = function () {
 		
 		var table = [];
@@ -521,243 +757,7 @@ function data() {
 		});
 		
 	}
-	
-	this.render = function (options) {
-		
-		if (typeof options == 'undefined') options = {};
-		
-		cvis.chart.draw(options);
-		
-	}
-	
-	this.changeRange = function (range) {
-		
-		if (range[1].isBefore(range[0]) || range[0].isBefore(cvis.data.zeroDate)) return false; // Make sure range remains consistent
-		that.viewRange.start = range[0];
-		that.viewRange.end = range[1];
-		updateSuffixes();
-		for (var i=0; i< cvis.tree.plotLineDesc.length; i++) cvis.tree.plotLineDesc[i].valid = false;
-		for (var k in meterReadings) if (meterReadings.hasOwnProperty(k)) meterReadings[k].valid = false;
 
-		return true;
-
-	};
-	
-// Private methods
-	
-	var fetchSeg = function (urlStem, segSuf, index) {
-
-		var url = urlStem + segSuf + ".json";
-
-		var jsonData = cvis.cache.getObject(url, true);
-
-		return $.Deferred(function (deferredObj) {
-			
-			$.when(jsonData).done(function (meterData) {
-				if (meterData.hasOwnProperty("data"))
-					deferredObj.resolve(new timeSeries(meterData.data.start, meterData.data.step, meterData.data.readings), index);
-				else
-					deferredObj.reject(index);
-			}).fail(function () {
-				deferredObj.reject(index);
-			});
-		
-		});
-		
-	};
-	
-	var loadMeterData = function (meterNames) {
-
-		function createMeterData (urlDir, meterIndex) {
-
-			return $.Deferred(function (deferredObj) {
-				
-				var segments = [], segmentsReq = [], meterTs = new timeSeries();
-
-				for (var i = 0; i<powerSuffixes.length; i++) {
-					segmentsReq[i] = $.when(fetchSeg(urlDir, powerSuffixes[i].year + "-" + powerSuffixes[i].month, i)).done(function (data, segIndex) {
-						segments[segIndex] = data;
-					}).fail(function (segIndex) {
-						segments[segIndex] = new timeSeries();
-					});
-				}
-
-				$.when.apply(this, segmentsReq).done(function () {
-					for (var i = 0; i<segments.length; i++) {
-						if (i==0)
-							meterTs.set(segments[i].start, segments[i].step, segments[i].readings);
-						else
-							meterTs = meterTs.concat(segments[i]);
-					}
-					deferredObj.resolve(meterTs, meterIndex, true);
-				}).fail(function() {
-					deferredObj.resolve(meterTs, meterIndex, false);
-				});
-				
-			}).promise();
-			
-		};
-
-		var loadCount = 0;
-		var errorCount = 0;
-		
-		return $.Deferred(function (deferredObj) {
-			
-			var metersReq = [];
-			
-			for (var i=0; i<meterNames.length; i++) {
-				var m = meterNames[i];
-				var path = cvis.config.sensorRootUrl.value + "/" + m  + "/" + m + "-";
-				if (!meterReadings.hasOwnProperty(m)) { 
-					meterReadings[m] = {"urlDir": path, "valid": false, "data" : new timeSeries()};
-				}
-			
-				metersReq[i] = createMeterData(path, m).done(function(data, meterIndex, valid) {
-					if (valid) {
-						loadCount++;
-					} else {
-						errorCount++;
-					}
-					meterReadings[meterIndex].data = data;
-					meterReadings[meterIndex].valid = valid;
-					
-					cvis.ui.progress(loadCount/meterNames.length, errorCount/meterNames.length);
-				});
-			
-			}
-
-			var test = $.when.apply($, metersReq).always(function() {
-				deferredObj.resolve();
-			});
-			
-		}).promise();
-	
-	};
-	
-	var loadCarbonData = function () {
-		
-		return $.when(fetchSeg(config.carbonRootUrl.value, carbonSuffixes[0].year)).done(function (data) {
-			carbon = data.concat(carbon);
-		});
-	};
-	
-	var carbonate = function (x, y) {
-		
-		if (that.metricType != "carbon") return y;
-		
-		// Find the carbon intensity for this time
-		
-		var start = carbon.start;
-		var step = carbon.step;
-		var offset = (x - carbon.start)/carbon.step;
-		
-		if ((offset >= 0) && (offset < carbon.readings.length)){
-			// grams of CO2/kWHr * kW -> g/s : divide by 3600   
-			return y * carbon.readings[offset] / 3600;    
-		}
-		return -1;
-		
-	}
-	
-	var getSuffixes = function (interval) {
-		
-		//* Produce an array of month segment suffixes for the viewrange
-		
-		var runningDate = new Date(that.viewRange.start);
-		var monthStr;
-		var yearStr; 
-		var suffixes = new Array();
-		var monthString = new String();
-		
-		switch (interval) {
-			case "monthly":
-				while (runningDate.getMonth() <= that.viewRange.end.getMonth()) {
-					yearStr = runningDate.getFullYear().toString();
-					monthStr = zero(runningDate.getMonth()+1);
-					suffixes.push({"year" : yearStr, "month" : monthStr});
-					runningDate.addMonths(1);
-				}
-				break;
-			case "yearly":
-				while (runningDate.getFullYear() <= that.viewRange.end.getFullYear()) {
-					yearStr = runningDate.getFullYear().toString();
-					monthStr = zero(runningDate.getMonth()+1);
-					suffixes.push({"year" : yearStr});
-					runningDate.addYears(1);
-				}
-				break;
-			default:
-				while (runningDate.getMonth() <= that.viewRange.end.getMonth()) {
-					yearStr = runningDate.getFullYear().toString();
-					monthStr = zero(runningDate.getMonth()+1);
-					suffixes.push({"year" : yearStr, "month" : monthStr});
-					runningDate.addMonths(1);
-				}
-				break;
-		}
-		
-		return suffixes;
-		
-	};
-	
-	var updateSuffixes = function () {
-		
-		powerSuffixes = getSuffixes("monthly");
-		carbonSuffixes = getSuffixes("yearly");
-		
-	};
-	
-	var getMeterNames = function () {
-		
-		// Update plotLineDesc to show which plot lines are needed (even if not selected) and produce array of meters that are needed
-		
-		function descendNeeded (pL, needed) {
-			
-			function neededComponents (comps, needed) {
-				
-				for (var i=0; i<comps.length; i++){
-					if (cvis.utils.isMeter(comps[i])){
-						needed = _.union(needed, [comps[i]]);
-					}
-					else {
-						newPL = _.findWhere(cvis.tree.plotLineDesc, {"pLName" : comps[i]});
-						if (newPL !== null) {
-							if (!newPL.needed){
-								newPL.needed = true;
-								needed = descendNeeded(newPL, needed);
-							}
-						}
-				}
-			}
-			
-			return needed;
-			
-		};
-		
-		// mark all components of this plotline as needed, and if any are plotLines, descend into them
-		
-		if (pL.hasOwnProperty ("components")) needed = _.union(needed, neededComponents(pL.components, needed.slice()));
-		if (pL.hasOwnProperty ("minus")) needed = _.union(needed, neededComponents(pL.minus, needed.slice()));
-		if (pL.hasOwnProperty ("primary")) needed = _.union(needed, neededComponents(pL.primary, needed.slice()));
-		if (pL.hasOwnProperty ("secondary")) needed = _.union(needed, neededComponents(pL.secondary, needed.slice()));
-		
-		return needed;
-		
-	}
-	
-	var needed = [];
-	
-	for (var i = 0 ; i < cvis.tree.plotLineDesc.length ; i++){
-		cvis.tree.plotLineDesc[i].needed = false;
-		var pL = cvis.tree.plotLineDesc[i];
-		if (pL.selected) pL.needed = !pL.valid;
-		if (pL.needed) needed = _.union(needed, descendNeeded(pL, needed));
-	}
-	
-	return needed;
-	
-	};
-	
 // Initilisation calls
 	
 	updateSuffixes();
