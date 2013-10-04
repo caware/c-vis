@@ -3,122 +3,109 @@ Repo for the development of a visualisation tool to display the energy use of C-
 More information about the project can be found at http://www.cl.cam.ac.uk/research/srg/netos/c-aware/
 
 
-Dependencies:
-	jQuery v1.9.1
-	underscore.js v1.5.2
-	Date.js v1.0 Alpha-1
-	D3.js v3.3.2
-	SlickGrid v2.2
-	Bootstrap v3.0
-	Datepicker for Bootstrap v1.2.0
-
 
 
 Change log:
 
 v4.0:
-	Upgraded charting library from Protovis to D3.js v3
-	Upgraded Bootstrap from v1.3.0 to v3.0.0
-	Upgraded SlickGrid.js from v2.0 alpha to v2.2
-	Upgraded jQuery from v1.9.1 to v2.0.3
-	New visual design
-	Added "Reset selection" button on tree
-	Added Sankey diagrams and Tree maps
-	Line chart:
-	  Hour-precision range selection
-	  Zoom on chart using mouse wheel
-	  Added filter button to remove high frequencies from large datasets
-	  Added area gradient to help visualise plot lines
-	  Points on the chart are sampled to limit the amount to c.600 per plot line
-	Sankey diagram:
-	  Diagram based on average values at an interval, from hourly to monthly, over a defined time range
-	  Options to change maximum depth and zoom into diagram
-	Tree Map:
-	  Tree map representation of the tree
-	New script structure using objects and chart options
-	timeSeries class to manage concatenation of data time series handling missing data
-	
+  Upgraded charting library from Protovis to D3.js v3
+  Upgraded Bootstrap from v1.3.0 to v3.0.0
+  Upgraded SlickGrid.js from v2.0 alpha to v2.2
+  Upgraded jQuery from v1.9.1 to v2.0.3
+  New visual design
+  Added "Reset selection" button on tree
+  Added Sankey diagrams and Tree maps
+  Line chart:
+    Hour-precision range selection
+    Zoom on chart using mouse wheel
+    Added filter button to remove high frequencies from large datasets
+    Added area gradient to help visualise plot lines
+    Points on the chart are sampled to limit the amount to c.600 per plot line
+  Sankey diagram:
+    Diagram based on average values at an interval, from hourly to monthly, over a defined time range
+    Options to change maximum depth and zoom into diagram
+  Tree Map:
+    Tree map representation of the tree
+  New script structure using objects and chart options
+  timeSeries class to manage concatenation of data time series handling missing data
+  
 v3.0:
-	N/A
+  N/A
 
 v2.2: Release!
-	Added ability to plot difference in monitored sum and overall total
-	Added &fix44=true option to patch chilled data being factor of 40 out
-	Fixed non-display of single digit meters
+  Added ability to plot difference in monitored sum and overall total
+  Added &fix44=true option to patch chilled data being factor of 40 out
+  Fixed non-display of single digit meters
 
 v2.1:
-	Fixed bugs which allowed attempt at download of non-existent data
-	Added Y Axis scaling buttons for alternative data views
-	Added bad data suppression support:
-	Added SVG dashed line support in protons
-	Added dashed lines for data points which are considered bad by index generator
-	Added auto clamping from config file, allowing Y axis power limits on data
+  Fixed bugs which allowed attempt at download of non-existent data
+  Added Y Axis scaling buttons for alternative data views
+  Added bad data suppression support:
+  Added SVG dashed line support in protons
+  Added dashed lines for data points which are considered bad by index generator
+  Added auto clamping from config file, allowing Y axis power limits on data
 
 v2.0:
-	Sensor data awareness, won't extend viewport when no data exists.
-	UI overhaul, using bootstrap from Twitter, including loading indicators.
-	Added Info, Warning and Error messages when files not found / no data to display etc.
-	Added ability to ignore sensors, and/or to avoid them increasing the averages in the tree above.
-	Improved code portability
-	Added config file support.
-	Improved SensorAccessor class, and make use of it
-	Fixed page resizing errors
-	Added external temperature plotting support
-	Added multiple visualisation support
-	Added sensor info panel
-	Added sensor error index
-	Improved visual scheme
+  Sensor data awareness, won't extend viewport when no data exists.
+  UI overhaul, using bootstrap from Twitter, including loading indicators.
+  Added Info, Warning and Error messages when files not found / no data to display etc.
+  Added ability to ignore sensors, and/or to avoid them increasing the averages in the tree above.
+  Improved code portability
+  Added config file support.
+  Improved SensorAccessor class, and make use of it
+  Fixed page resizing errors
+  Added external temperature plotting support
+  Added multiple visualisation support
+  Added sensor info panel
+  Added sensor error index
+  Improved visual scheme
 
 
 v1.9.5:
-	Now adds up and sorts multiple plots preventing plots repeating themselves.
-	Started frequency testing.
+  Now adds up and sorts multiple plots preventing plots repeating themselves.
+  Started frequency testing.
 
 
 v1.9:
-	Tool now deals with missing data files, presenting the earliest and latest files at max and min.
-	Improved average code.
-	Displays N/A in tree when sensors below have differing data dates for average calc.
-	Restored S-m27.
+  Tool now deals with missing data files, presenting the earliest and latest files at max and min.
+  Improved average code.
+  Displays N/A in tree when sensors below have differing data dates for average calc.
+  Restored S-m27.
 
 
 v1.8.6:
-	Code clean up.
-	Added overall meter on load.
+  Code clean up.
+  Added overall meter on load.
 
 
 v1.8.5:
-	Bug fixes.
-	Started additions to HTML validation.
-	Now uses coverage fields from data in tree and table.
-	Now indexes daily meter data.
-	Ignores S-m27 meter for release.
+  Bug fixes.
+  Started additions to HTML validation.
+  Now uses coverage fields from data in tree and table.
+  Now indexes daily meter data.
+  Ignores S-m27 meter for release.
 
 
 v1.8:
-	Plots no longer jump colours on sensor changes.
-	Added months for which node averages were calculated into tree text.
-	Added Google Chrome Frame banner for IE users.
-	Added colour swatches in table.
-	Added simple caching of sensor files.
+  Plots no longer jump colours on sensor changes.
+  Added months for which node averages were calculated into tree text.
+  Added Google Chrome Frame banner for IE users.
+  Added colour swatches in table.
+  Added simple caching of sensor files.
 
 
 v1.7:
-	Added support for displaying previous months data as well as the current month. 
-	Tidied up the UI, split the time and date below and above the main graph panel.
+  Added support for displaying previous months data as well as the current month. 
+  Tidied up the UI, split the time and date below and above the main graph panel.
 
 
 v1.6:
-	Added increased number of plots to be displayed, and general code and UI tweaks
+  Added increased number of plots to be displayed, and general code and UI tweaks
 
 
 v1.5:
-	Added ability for Average nodes to display summation of all nodes beneath them.
+  Added ability for Average nodes to display summation of all nodes beneath them.
 
 
 v1.4:
-<<<<<<< HEAD
-	Added Average nodes into the exploration tree.
-=======
-    Added Average nodes into the exploration tree.
->>>>>>> fcbfa909cf6b048fa42c28c6ab34e66d234bd681
+  Added Average nodes into the exploration tree.
