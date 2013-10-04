@@ -36,7 +36,7 @@ var utils = {
 		if (next === null) return;
 
 		if ((next.start != accum.start) || (next.step != accum.step) || (next.readings.length != accum.readings.length)) {
-			console.warn("Unmatched time series");
+			console.warn("A virtual meter is being created which combines unmatched timeseries.");
 		}
 		for (var i=0; i<next.readings.length; i++){
 			accum.readings[i] += sign * next.readings[i];
@@ -56,37 +56,6 @@ var utils = {
 		}
 		return args;
 	},
-
-// 	function mapper2 (treeObj, j) {
-// 		
-// 		typeof j == 'undefined' ? j=1 : j++;
-// 		
-// 		var remappedTree = new Array();
-// 		var i = 100;
-// 		
-// 		_.map(treeObj, function (value, key, list) { 
-// 			
-// 			var temp = new Object();
-// 
-// 			if (typeof value == 'number') {
-// 				temp.name = key;
-// 				temp.id = value;
-// 				key == 'Building' ? temp.show = true : temp.show = false; // to be set at tree generation stage
-// 				remappedTree.push(temp);
-// 			} else if (typeof value == 'object') {
-// 				temp.name = key;
-// 				temp.id = j*i; // solve ID problem on non-leaves
-// 				temp._children = mapper(value, j);
-// 				remappedTree.push(temp);
-// 			}
-// 			
-// 			i++;
-// 			
-// 		});
-// 
-// 		return remappedTree;
-// 		
-// 	}
 
 	nulls : function (l) {
 	

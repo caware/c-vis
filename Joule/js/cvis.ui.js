@@ -361,7 +361,7 @@ function JouleUIController(){
 		
 		genHTML += "</strong>" + errorText + "</div>";
 		
-		$('#alert-bar').prepend(genHTML);
+		$('#alert-bar').show().prepend(genHTML);
 		
 		var time = timeout*1000;
 		var t = setTimeout('ui.hideError('+id+')', time);
@@ -369,7 +369,7 @@ function JouleUIController(){
 	
 	this.hideError = function (id){
 		jQid = '#'+id;
-		$(jQid).hide("fast", function(){
+		$(jQid + ", #alert-bar").hide("fast", function(){
 			$(jQid).remove();
 		});
 	};

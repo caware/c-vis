@@ -1,0 +1,134 @@
+{
+    "functionTree" : 
+    {"nodeName" : "Electricy Use", "pLName" : null, "children" :[
+        {"nodeName" : "Building", "pLName" : "PLBuilding",
+                        "description": "Entire Building", "master" : true},
+        {"nodeName" : "Monitored" , "pLName" : "PLMonitored",
+                        "description" : "Logical Sum of Sub Meters",
+                        "children" : [
+        {"nodeName" : "Building Operations", "pLName" : "PLOps", "children":[
+                {"nodeName" : "Chiller" , "pLName" : "S-m44"},
+                {"nodeName" : "Condensor" , "pLName" : "S-m43"},
+                {"nodeName" : "Emergency Lighting" , "pLName" : "S-m40"},
+                {"nodeName" : "Fire and Security" , "pLName" : "S-m45"},
+                {"nodeName" : "GW32 Plant" , "pLName" : "S-m37"},
+                {"nodeName" : "SW00 Air Con" , "pLName" : "S-m52"},
+                {"nodeName" : "MCC", "pLName" : "PLMCC", "children": [
+                    {"nodeName" : "GN19", "pLName" : "S-m47"},
+                    {"nodeName" : "GW16", "pLName" : "S-m38"},
+                    {"nodeName" : "SC17", "pLName" : "S-m51"},
+                    {"nodeName" : "SE02", "pLName" : "S-m50"},
+                    {"nodeName" : "SE22", "pLName" : "S-m46"}
+                    ]
+                }]
+        },
+
+        {"nodeName" : "Lighting", "pLName"  : "PLLighting", "children": [
+            {"nodeName" : "External", "pLName" : "S-m20"},
+            {"nodeName" : "Ground", "pLName" : "PLLightingGround", "children": [
+                {"nodeName" : "West", "pLName" : "S-m34"},
+                {"nodeName" : "Central", "pLName" : "S-m17"},
+                {"nodeName" : "Lecture Theatres", "pLName" : "S-m33"},
+                {"nodeName" : "North", "pLName" : "S-m22"},
+                {"nodeName" : "South", "pLName" : "S-m7"}
+                ]
+            },
+            {"nodeName" : "First", "pLName" : "PLLightingFirst", "children": [
+                {"nodeName" : "West", "pLName" : "S-m30"},
+                {"nodeName" : "Central", "pLName" : "S-m15"},
+                {"nodeName" : "North", "pLName" : "S-m23"},
+                {"nodeName" : "South", "pLName" : "S-m9"}
+                ]
+            },
+            {"nodeName" : "Second", "pLName" : "PLLightingSecond", "children": [
+                {"nodeName" : "West", "pLName" : "S-m28"},
+                {"nodeName" : "Central", "pLName" : "S-m13"},
+                {"nodeName" : "Intel Lab", "pLName" : "S-m1"},
+                {"nodeName" : "North", "pLName" : "S-m42"},
+                {"nodeName" : "South", "pLName" : "S-m11"}
+                ]
+            }]
+        },
+      
+        {"nodeName" : "Machine Rooms", "pLName"  : "PLMachineRooms", "children": [
+            {"nodeName" : "GN09", "pLName" : "PLMainMachineRoom", "children": [
+                {"nodeName" : "Rack Power", "pLName" : "pLMainMachineRack", "children": [
+	            {"nodeName" : "UPS", "pLName" : "S-m48"},
+                    {"nodeName" : "Non UPS", "pLName" : "S-m18"}
+		    ]},
+                {"nodeName" : "A/C", "pLName" : "S-m19"}
+                ]
+            },
+            {"nodeName" : "SE18", "pLName" : "PLSE18Total", "children": [
+                {"nodeName" : "Rack Power", "pLName" : "PLSE18Power"},
+                {"nodeName" : "A/C", "pLName" : "S-m41"}
+                ]
+            }]
+        },
+        
+        {"nodeName" : "Sockets", "pLName"  : "PLSockets", "children": [
+            {"nodeName" : "Ground", "pLName" : "PLSocketsGround", "children": [
+                {"nodeName" : "West", "pLName" : "S-m35"},
+                {"nodeName" : "Central", "pLName" : "S-m16"},
+                {"nodeName" : "Kitchen", "pLName" : "S-m4"},
+                {"nodeName" : "Lecture Theatres", "pLName" : "S-m32"},
+                {"nodeName" : "North", "pLName" : "S-m21"},
+                {"nodeName" : "South", "pLName" : "S-m6"}
+                ]
+            },
+            {"nodeName" : "First", "pLName" : "PLSocketsFirst", "children": [
+                {"nodeName" : "West", "pLName" : "S-m31"},
+                {"nodeName" : "FW29 Sockets and Power" , "pLName" : "S-m3"},
+                {"nodeName" : "Central", "pLName" : "S-m14"},
+                {"nodeName" : "North", "pLName" : "S-m24"},
+                {"nodeName" : "South", "pLName" : "S-m8"}
+                ]
+            },
+            {"nodeName" : "Second", "pLName" : "PLSocketsSecond", "children": [
+                {"nodeName" : "West", "pLName" : "S-m29"},
+                {"nodeName" : "Central", "pLName" : "S-m12"},
+                {"nodeName" : "Intel Lab", "pLName" : "S-m2"},
+                {"nodeName" : "North", "pLName" : "S-m26"},
+                {"nodeName" : "South", "pLName" : "S-m10"}
+                ]
+            }]
+        },
+        {"nodeName" : "Miscellaneous", "pLName" : "PLMisc", "children":[
+            {"nodeName" : "Kitchen Power" , "pLName" : "S-m4"},
+            {"nodeName" : "Lifts" , "pLName" : "S-m39"},
+            {"nodeName" : "PABX Room" , "pLName" : "S-m49"}
+            ]
+        }]},
+        {"nodeName" : "Monitored Difference", "pLName": "PLMonDiff",
+                    "description" : "Unaccounted For"},
+	{"nodeName" : "50 kilowatt", "pLName": "S-m1000", 
+		    "description" : "50 kW Reference"}
+    ]},
+    "plotLines": [
+        {"pLName" :"PLBuilding", "mode" : "SUM", 
+            "components" : ["S-m36"]},
+        {"pLName" : "PLMonitored", "mode" : "SUM",
+            "components"  : [
+                "S-m1", "S-m2", "S-m3", "S-m4", "S-m5",
+                "S-m6", "S-m7", "S-m8", "S-m9", "S-m10",
+                "S-m11", "S-m12", "S-m13", "S-m14", "S-m15",
+                "S-m16", "S-m17", "S-m18", "S-m19", "S-m20",
+                "S-m21", "S-m22", "S-m23", "S-m24",
+                "S-m26", "S-m27", "S-m28", "S-m29", "S-m30",
+                "S-m31", "S-m32", "S-m33", "S-m34", "S-m35",
+                         "S-m37", "S-m38", "S-m39", "S-m40",
+                         "S-m42", "S-m43", "S-m44", "S-m45",
+                "S-m46", "S-m47", "S-m48", "S-m49", "S-m50",
+                "S-m51", "S-m52"]},
+        {"pLName" : "PLMonDiff", "mode" : "DIFF",
+            "components" : ["PLBuilding", "PLMonitored"]},
+        {"pLName" :  "PLSE18Total", "mode" : "SUM",
+            "components" : [ "S-m27"]},
+        {"pLName" :  "PLSE18Power", "mode" : "DIFF",
+            "components" : [ "S-m27", "S-m41"]}
+                        
+    ]
+}
+                
+
+ 

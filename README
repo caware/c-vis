@@ -3,6 +3,15 @@ Repo for the development of a visualisation tool to display the energy use of C-
 More information about the project can be found at http://www.cl.cam.ac.uk/research/srg/netos/c-aware/
 
 
+Dependencies:
+	jQuery v1.9.1
+	underscore.js v1.5.2
+	Date.js v1.0 Alpha-1
+	D3.js v3.3.2
+	SlickGrid v2.2
+	Bootstrap v3.0
+	Datepicker for Bootstrap v1.2.0
+
 
 
 Change log:
@@ -108,4 +117,8 @@ v1.5:
 
 
 v1.4:
+<<<<<<< HEAD
 	Added Average nodes into the exploration tree.
+=======
+    Added Average nodes into the exploration tree.
+>>>>>>> fcbfa909cf6b048fa42c28c6ab34e66d234bd681

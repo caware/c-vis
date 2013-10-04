@@ -24,6 +24,7 @@ div.container {
 	width: 1100px;
 	position: absolute;
 	z-index: 101;
+	display: none;
 }
 #IEAlert {
 	padding: 5px 20px 5px 45px;
