@@ -16,7 +16,7 @@
     <link rel="stylesheet" type="text/css" href="css/slick.grid.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/slick-default-theme.css" media="screen" charset="utf-8"/>
     <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" media="screen" charset="utf-8"/>
-    <link rel="stylesheet" type="text/css" href="css/datepicker.css" media="screen" charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="css/datetimepicker.css" media="screen" charset="utf-8"/>
     
     <script type="text/javascript" src="js/lib/spin.js"></script>
     
@@ -29,7 +29,7 @@
 </head>
 <body>
     <!--[if IE]>
-        <div id="topbar">
+        <div id="IEAlert">
             <p class="alert">This tool does not support Internet Explorer. However you can use the tool if you install Google Chrome Frame within Internet Explorer. For more information: <a href="http://www.google.com/chromeframe">http://www.google.com/chromeframe</a>.</p>
             <p class="alert">Alternatively you may use another broswer such as <a href="http://www.google.com/chrome/">Chrome</a>, <a href="http://www.mozilla.com/">Firefox</a> or <a href="http://www.apple.com/safari/">Safari</a>.</p>
         </div>
@@ -61,101 +61,133 @@
 		  </ul>
 	  </div>
   </div>
-</header>  
+</header>
+
 <div class="container">    
-        <div class="content">
-        
-                <div id="alert-bar">
+	<div id="content">
+		<div id="alert-bar">
 			<noscript>
 				<div class="alert alert-error">
-				    <p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
+					<p><strong>Javascript Error!</strong> Your browser either does not support Javascript or it is not enabled. Please enable JavaScript, or update your browser (Joule works in recent versions of <a href="http://www.google.com/chrome/"><strong>Chrome</strong></a>, <a href="http://www.mozilla.com/"><strong>Firefox</strong></a> or <a href="http://www.apple.com/safari/"><strong>Safari</strong></a>).</p>
 				</div>
 			</noscript>
-			<!-- <div class="alert-message info" id="loading-message">
-			    <p><strong>Loading...</strong></p>
-			</div> -->
 		</div>
-            
-		<div id="diacontainer">
-			<div id="treecontainer">
+		<div id="visContainer">
+			<div id="treeContainer">
 				<div id="treeTitle">
-					<h2>Selection tree <button class="btn btn-xs btn-default" onclick="cvis.ui.reset()"><span class="glyphicon glyphicon-refresh"></span></button></h2>
+					<h2>Selection tree</h2>
+					<button class="btn btn-xs btn-default" onclick="cvis.ui.tree.reset()" title="Reset to initial selection"><span class="glyphicon glyphicon-refresh"></span></button>
+					<button class="btn btn-xs btn-default" onclick="cvis.ui.tree.expand()" title="Expand all"><span class="glyphicon glyphicon-resize-full"></span></button>
+					<button class="btn btn-xs btn-default" onclick="cvis.ui.tree.collapse()" title="Collapse all"><span class="glyphicon glyphicon-resize-small"></span></button>
 				</div>
-				<div id="treediv"></div>
+				<div id="tree"></div>
 			</div>
-			
-			
-			<div id="chartcontainer">
-			<!--<div id="loading"></div>!-->
-				<div id="chartHeader" style="color:black; ">
+			<div id="chartContainer">
+				<div id="chartHeader">
 					<div class="btn-group">
-					  <button class="btn btn-lg btn-default btn-units">Power (kW)</button>
-					  <button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-					  <ul class="dropdown-menu" role="menu">
-					    <li role="unit" unit="power" onclick="cvis.ui.units(this)" class="active"><a href="#" class="noLink">Power (kW)</a></li>
-					    <li role="unit" unit="carbon" onclick="cvis.ui.units(this)"><a href="#" class="noLink">CO<sub>2</sub> (g/s)</a></li>
-					  </ul>
+						<button class="btn btn-lg btn-default btn-units">Power (kW)</button>
+						<button type="button" class="btn btn-lg btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+						<ul class="dropdown-menu" role="menu">
+							<li role="unit" unit="power" onclick="cvis.ui.units(this)" class="active"><a href="#" class="noLink">Power (kW)</a></li>
+							<li role="unit" unit="carbon" onclick="cvis.ui.units(this)"><a href="#" class="noLink">CO<sub>2</sub> (g/s)</a></li>
+						</ul>
 					</div>
 					<div class="btn-group" style="float:right;">
-					  <button class="btn btn-sm btn-success" onclick="ui.graph(this, 'line')">Line</button>
-					  <button class="btn btn-sm btn-default" onclick="ui.graph(this, 'sankey')">Sankey</button>
-					  <button class="btn btn-sm btn-default" onclick="null;//ui.graph(this, 'pie')">Pie</button>
+						<button name="line" class="btn btn-sm btn-default" onclick="cvis.ui.graph(this, 'line')" title="Create line chart">Line</button>
+						<button name="sankey" class="btn btn-sm btn-default" onclick="cvis.ui.graph(this, 'sankey')" title="Create sankey diagram">Sankey</button>
+						<button name="treeMap" class="btn btn-sm btn-default" onclick="cvis.ui.graph(this, 'treeMap')" title="Create tree map">Tree map</button>
+					</div>
+					<div class="progress">
+					<div class="progress-bar progress-bar-success" style="width: 0%"></div>
+					<div class="progress-bar progress-bar-warning" style="width: 0%"></div>
+					<div class="progress-bar progress-bar-danger" style="width: 0%"></div>
 					</div>
 				</div>
-				
-				<div id="chartBody"></div>
+				<div id="chartBody"><div id="loading"></div></div>
 				<div id="chartControls">
-				<div class="btn-toolbar line-toolbar" style="margin-right: 10px; margin-left: 10px; float: right;">
-				    <div class="btn-group" style="float: left;">
-				      <button class="btn btn-sm btn-default" id="scaleAllButton" onclick="ui.jouleScaleSelectionToggle(ui, 'all')">All Data</button>
-				      <button class="btn btn-sm btn-default active" id="scaleSelectionButton" onclick="ui.jouleScaleSelectionToggle(ui, 'scale')">Selection</button>
-				      <button class="btn btn-sm btn-default" id="zoomButton" onclick="ui.jouleScaleSelectionToggle(ui, 'zoom')">Zoom Selection</button>
-				    </div>
-				    <div class="btn-group">
-				      <form class="form-inline" role="form">
-					Start:
-					<div class="form-group">
-					  <input name="startDate" type="text" class="form-control date" placeholder="Start date">
+					<div class="btn-toolbar line">
+						<div class="btn-group" style="float: left;">
+							<button class="btn btn-sm btn-default" id="scaleAllButton" onclick="cvis.ui.line.scaleChange('all')" title="Limit Y axis scale to all data">All Data</button>
+							<button class="btn btn-sm btn-default active" id="scaleSelectionButton" onclick="cvis.ui.line.scaleChange('scale')" title="Limit Y axis scale to loaded data">Selection</button>
+							<button class="btn btn-sm btn-default" id="zoomButton" onclick="cvis.ui.line.scaleChange('zoom')" title="Limit Y axis scale to selected data">Zoom Selection</button>
+						</div>
+						<div class="btn-group">
+							<form class="form-inline" role="form">
+								Start:
+								<div class="form-group">
+									<input name="startDate" type="text" class="form-control date input-sm" placeholder="Start date" title="Set a starting date for the context">
+								</div>
+								End:
+								<div class="form-group">
+									<input name="endDate" type="text" class="form-control date input-sm" placeholder="End date" title="Set an ending date for the context">
+								</div>
+							</form>
+						</div>
+						<div class="btn-group">
+							<button class="btn btn-sm btn-default" onclick="cvis.ui.line.toggleFilter()" id="filter" title="Smoothen the data using a gaussian filter">Smooth</button>
+							<button class="btn btn-sm btn-default active" onclick="cvis.ui.line.toggleAreas()" id="areas" title="Toggle area gradients beneath the plot lines">Area gradient</button>
+						</div>
 					</div>
-					End:
-					<div class="form-group">
-					  <input name="endDate" type="text" class="form-control date" placeholder="End date">
+					<div class="btn-toolbar sankey">
+						<form class="form-inline" role="form">
+							<button class="btn btn-sm btn-default" onclick="cvis.ui.sankey.stepDown()" name="stepDown" title="Move back by one frame"><span class="glyphicon glyphicon-chevron-left"></span></button>
+							<button class="btn btn-sm btn-default" onclick="cvis.ui.sankey.play()" name="play" title="Animate the data from start to end date"><span class="glyphicon glyphicon-play"></span></button>
+							<button class="btn btn-sm btn-default" onclick="cvis.ui.sankey.fastForward()" name="ff" title="Increase animation speed"><span class="glyphicon glyphicon-forward"></span></button>
+							<button class="btn btn-sm btn-default" onclick="cvis.ui.sankey.stepUp()" name="stepUp" title="Move forward by one frame"><span class="glyphicon glyphicon-chevron-right"></span></button>
+							<div class="form-group">
+								<select class="form-control input-sm" name="interval" onchange="cvis.ui.sankey.intervalChange()" title="Set the interval between consecutive frames">
+									<option value="hourly">Hourly</option>
+									<option value="daily">Daily</option>
+									<option value="weekly">Weekly</option>
+									<option value="monthly">Monthly</option>
+								</select>
+							</div>
+							Start:
+								<div class="form-group">
+									<input name="startDate" type="text" class="form-control date input-sm" placeholder="Start date" title="Set a starting date for the data">
+								</div>
+							End:
+								<div class="form-group">
+									<input name="endDate" type="text" class="form-control date input-sm" placeholder="End date" title="Set an ending date for the data">
+								</div>
+							<button class="btn btn-sm btn-default" onclick="cvis.ui.sankey.levelUp()" name="levelUp" title="Navigate up one level">Level <span class="glyphicon glyphicon-arrow-up"></button>
+							Max depth: 
+								<div class="form-group">
+									<input name="maxDepth" type="number" onchange="cvis.ui.sankey.changeDepth(this)" class="form-control input-sm" placeholder="Max depth" min="1" max="5" value="5"  title="Set the maximum depth of the diagram">
+								</div>
+						</form>
 					</div>
-					</form>
-				      <!--<button class="btn btn-sm btn-default" onclick="ui.addMonth()" id="rangeUp">Range <span class="glyphicon glyphicon-arrow-up"></span></button>
-				      <button class="btn btn-sm btn-default disabled" onclick="ui.removeMonth()" id="rangeDown">Range <span class="glyphicon glyphicon-arrow-down"></span></button>-->
-				    </div>
-				    <div class="btn-group">
-				      <button class="btn btn-sm btn-default" onclick="cvis.ui.toggleFilter()" id="filter">Smooth</button>
-				      <button class="btn btn-sm btn-default active" onclick="ui.toggleAreas()" id="areas">Area gradient</button>
-				    </div>
+					<div class="btn-toolbar treeMap">
+						<form class="form-inline" role="form">
+							Average data from:
+								<div class="form-group">
+									<input name="startDate" type="text" class="form-control date input-sm" placeholder="Start date" title="Set a starting date for the data">
+								</div>
+							to:
+								<div class="form-group">
+									<input name="endDate" type="text" class="form-control date input-sm" placeholder="End date" title="Set an ending date for the data">
+								</div>
+						</form>
+					</div>
 				</div>
-				<div class="btn-toolbar sankey-toolbar" style="margin-right: 10px; margin-left: 10px; float: right; display: none;">			    
-				    <form class="form-inline" role="form">
-				      <button class="btn btn-sm btn-default" onclick="cvis.ui.levelUp()" name="levelUp">Level <span class="glyphicon glyphicon-arrow-up"></button>
-				      Maximum depth: 
-				      <div class="form-group">
-					<input name="maxDepth" type="number" onchange="cvis.ui.changeDepth(this)" class="form-control" placeholder="Max depth" min="1" max="5" value="5">
-				      </div>
-				    </form>
+				<div id="chartInfo">
+					<div id="data-table"></div>
 				</div>
-				</div>
-				<div id="chartinfo"><div id="myGrid"></div></div>
 			</div>
 		</div>
 	</div>
         
-        <footer>
+	<footer>
 		<p>Joule v3.3 | University Of Cambridge Computer Lab: <a href="http://www.cl.cam.ac.uk/research/srg/netos/c-aware/index.html" target="_blank">C-AWARE Project</a></p>
 	</footer>
 
 </div>
 
-<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
-<script type="text/javascript" src="js/lib/jquery.event.drag-2.0.min.js"></script>
+<script type="text/javascript" src="js/lib/jquery.event.drag-2.2.js"></script>
 <script type="text/javascript" src="js/lib/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/lib/bootstrap-datepicker.js"></script>
+<script type="text/javascript" src="js/lib/bootstrap-datetimepicker.min.js"></script>
 <script type="text/javascript" src="js/lib/d3.v3.min.js"></script>
 <script type="text/javascript" src="js/lib/d3.sankey.js"></script>
 <script type="text/javascript" src="js/lib/underscore-min.js"></script>
@@ -165,6 +197,7 @@
 <script type="text/javascript" src="js/lib/slick.editors.js"></script>
 <script type="text/javascript" src="js/lib/slick.formatters.js"></script>
 <script type="text/javascript" src="js/lib/slick.dataview.js"></script>
+<script type="text/javascript" src="js/lib/spin.min.js"></script>
 <script type="text/javascript" src="js/cvis.utils.js"></script>
 <script type="text/javascript" src="js/cvis.JSONCache.js"></script>
 <script type="text/javascript" src="js/cvis.tree.js"></script>
@@ -174,56 +207,62 @@
 <script type="text/javascript" src="js/cvis.ui.js"></script>
 
 <script type="text/javascript">
- 
-    // Default Location
-    var cvis = new Object();
-    var configFile = "config.json";
-    console.groupCollapsed("Joule starting routines");
 
-    var opts = getUrlArgs();
+	// Default Location
+	var cvis = new Object();
+	var configFile = "config.json";
+	console.groupCollapsed("Joule starting routines");
 
-    if (opts.hasOwnProperty("config")) configFile = opts.config;
-     
-    var cache = new JSONCache();
-    var ui = new JouleUIController();
-    console.log("Attempting to read " + configFile);    
+	var opts = utils.getUrlArgs();
+	console.log(opts);
+	if (opts.hasOwnProperty("config")) configFile = opts.config;
+	
+	var cache = new JSONCache();
+	var ui = new JouleUIController();
+	console.log("Attempting to read " + configFile);    
 
-    var config = ui.catchError(ui, cache.getObject, configFile).config;
+	var config = ui.catchError(ui, cache.getObject, [configFile, false]).responseJSON.config;
 
-    console.log("Read Configuration");
+	console.log("Read Configuration");
 
-    var funcTree = ui.catchError(ui, cache.getObject, config.treeUrl.value);      
-    console.log("Loaded tree");
-    
-    var dev_tree = new tree(funcTree);
+	var funcTree = ui.catchError(ui, cache.getObject, [config.treeUrl.value, false]).responseJSON;      
+	console.log("Loaded tree");
+	var tree = new tree(funcTree);
+	
+	cvis = {
+		tree : tree,
+		data : new data(tree.plotLineDesc),
+		chart : new chart({
+			w : 750,
+			h1 : 400,
+			h2 : 50,
+			spacing : 30,
+			margin_top : 30,
+			margin_right : 20,
+			margin_bottom : 20,
+			margin_left : 30,
+			type : typeof config.defaultChart !== 'undefined' ? config.defaultChart.value : "line"
+		}),
+		config : config,
+		ui : ui,
+		utils : utils,
+		cache : cache
+	};
 
-    console.log("Built config"); 
-    
-    var dev_data = new data(dev_tree.plotLineDesc);
-    var dev_chart = new chart();
-    dev_data.chart = dev_chart;
-       
-    cvis = {
-      tree : dev_tree,
-      data : dev_data,
-      chart : dev_chart,
-      config : config,
-      ui : ui,
-      utils : null
-    };
-    
-    console.log("Built tree");    
-    console.groupEnd();
-    
-    $(document).ready(function() {
-      
-      ui.jouleFinishedLoading(ui, 'line');
-      ui.jouleStopLoading(ui);
-      
-    });
+	delete config;
+	delete ui;
+	console.log("Built tree");    
+	console.groupEnd();
 
-   
-    </script>
+	$(document).ready(function() {
+	
+		ui.jouleFinishedLoading(ui, 'line');
+		ui.jouleStopLoading(ui);
+	
+	});
+
+
+	</script>
 
 </body>
 </html>

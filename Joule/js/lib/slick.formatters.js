@@ -17,7 +17,7 @@
         "PercentCompleteBar": PercentCompleteBarFormatter,
         "YesNo": YesNoFormatter,
         "Checkmark": CheckmarkFormatter,
-	"Color" : ColorFormatter
+	"Color" : buildColorFormatter
       }
     }
   });
@@ -32,6 +32,14 @@
     }
   }
   
+  function buildColorFormatter(colorFn) {
+	  
+	  function ColorFormatter(row, cell, value, columnDef, dataContext) {
+		return "<span class='colour-swatch' style='background:" + colorFn(value) + "; width:96%; height: 96%; display: inline-block; -webkit-border-radius: 3px;'></span>";
+		}
+	  
+	  return ColorFormatter;
+	}
   
   function ColorFormatter(row, cell, value, columnDef, dataContext) {
      return "<span class='colour-swatch' style='background:" + value + "; width:96%; height: 96%; display: inline-block; -webkit-border-radius: 3px;'></span>";
