@@ -33,11 +33,11 @@
 		},
 		"sensorRootUrl" : {
 			"description" : "URL of the root of the dir structure containing the sensor data.",
-			"value" : "http://www.cl.cam.ac.uk/meters/elec/published"
+			"value" : "https://www.cl.cam.ac.uk/meters/elec/published"
 		},
 		"carbonRootUrl" : {
 			"description" : "URL prefix of the carbon data.",
-			"value" : "http://www.cl.cam.ac.uk/meters/carbon/CarbonInt"
+			"value" : "https://www.cl.cam.ac.uk/meters/carbon/CarbonInt"
 		}
 	}
 }
